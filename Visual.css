@@ -4,6 +4,9 @@ body {
     padding: 0;
 }
 
+
+
+
 /* Tela de Apresentação do projeto(tela inicial) */
 
     /* Topo (imagem, textos e botões) */
@@ -74,7 +77,108 @@ body {
 }
 
 
+
+
     /* Conta (superior esquerdo mostra nome de usuario e icone) */
+.login-area {
+    position: absolute;
+    top: 20px; /* Ajuste a distância do topo conforme necessário */
+    right: 20px; /* Ajuste a distância da direita conforme necessário */
+    z-index: 3; /* Garante que fique acima da imagem e da caixa */
+}
+
+.login-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer; /* Indica que é clicável */
+}
+
+.login-icon {
+    margin-right: 5px;
+}
+
+.login-icon svg {
+    /* Estilos para o ícone SVG, se estiver usando */
+}
+
+.user-name {
+    color: white;
+    font-weight: bold;
+}
+
+/* Popup de Login */
+.login-popup {
+    position: absolute;
+    top: 100%; /* Posiciona abaixo da área de login */
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    width: 300px; /* Largura do popup */
+    display: none; /* Inicialmente escondido */
+    z-index: 4; /* Garante que fique acima de outros elementos */
+}
+
+.login-popup h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.login-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #218838;
+}
+
+.signup-link {
+    margin-top: 10px;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
 
 
 
@@ -111,6 +215,8 @@ body {
     border: none;
     Font-size: 20px;
 }
+
+
 
 
     /* Divulgação de outras campanhas (titulo e imagens) */
@@ -158,6 +264,8 @@ body {
 }
 
 
+
+
     /* Divulgação patrocinadores e parceiros (titulo e imagens) */
 .parceiros {
     
@@ -201,6 +309,8 @@ body {
     transition: transform 0.3s ease;
     box-shadow: 0px 0px 5px BLACK;
 }
+
+
 
 
 /* Rodapé (Botão voltar ao topo e links) */

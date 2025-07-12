@@ -35,3 +35,20 @@ function scrollToTop(duration) {
 
     animateScroll(); // Inicia a animação
 }
+
+
+
+
+const loginInfo = document.getElementById('loginInfo');
+const loginPopup = document.getElementById('loginPopup');
+
+loginInfo.addEventListener('click', function() {
+    loginPopup.style.display = loginPopup.style.display === 'none' ? 'block' : 'none';
+});
+
+// Opcional: Fechar o popup ao clicar fora dele
+document.addEventListener('click', function(event) {
+    if (loginPopup.style.display === 'block' && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
+        loginPopup.style.display = 'none';
+    }
+});
