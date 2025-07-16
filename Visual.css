@@ -7,7 +7,7 @@ body {
 
 
 
-/* Tela de Apresentação do projeto(tela inicial) */
+/* Tela de Apresentação do projeto tela inicial */
 
     /* Topo (imagem, textos e botões) */
 .top {
@@ -17,7 +17,7 @@ body {
     justify-content: center; 
     align-items: center;
     height: 850px; 
-    margin-bottom: 50px
+    margin-bottom: 50px;
 }
 
 .big-img {
@@ -31,7 +31,7 @@ body {
     z-index: 1; /* Garante que a imagem esteja 'abaixo' do conteúdo */
 }
 
-.caixa {
+.caixa { 
     position: absolute; /* Posiciona este div em relação ao .top */
     z-index: 2; /* Garante que o conteúdo esteja 'acima' da imagem */
     text-align: center; /* Centraliza o texto e botões */
@@ -76,56 +76,75 @@ body {
     transition: background-color 0.3s ease; /* Transição suave ao passar o mouse */
 }
 
-
-
-
-    /* Conta (superior esquerdo mostra nome de usuario e icone) */
-.login-area {
-    position: absolute;
-    top: 20px; /* Ajuste a distância do topo conforme necessário */
-    right: 20px; /* Ajuste a distância da direita conforme necessário */
-    z-index: 3; /* Garante que fique acima da imagem e da caixa */
+    /* barra de ações fixa no topo do site */
+.top-bar {
+    z-index: 20;
+    background-color: transparent;
+    display: flex;
+    justify-content: space-around;
+    border: none;
+    padding: 15px;
+    margin-top: 0px;
+    width: 100%;
+    position: fixed;
 }
 
+.top-bar:hover {
+    background-color: rgba(0, 0, 0, 0.479);
+    transition: background-color 0.3s ease;
+}
+
+.categoria {
+    font-size: 20px;
+    color: white;
+    font-family: monospace;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.categoria:hover {
+    box-shadow: 0px 2px 0px #218837ef;
+    background-color: transparent;
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+    /* Conta (superior direito mostra nome de usuario, pontos e icone) ao clicar ativa popup de login */
 .login-info {
     display: flex;
     align-items: center;
-    cursor: pointer; /* Indica que é clicável */
 }
 
 .login-icon {
     margin-right: 5px;
 }
 
-.login-icon svg {
-    /* Estilos para o ícone SVG, se estiver usando */
-}
-
 .user-name {
-    color: white;
     font-weight: bold;
 }
 
-/* Popup de Login */
+    /* Popup de Login */
 .login-popup {
     position: absolute;
     top: 100%; /* Posiciona abaixo da área de login */
-    right: 0;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    right: 0px;
+    background-color: #bcdbca;
+    border-radius: 25px;
+    box-shadow: 0 2px 10px black;
     padding: 20px;
     width: 300px; /* Largura do popup */
     display: none; /* Inicialmente escondido */
     z-index: 4; /* Garante que fique acima de outros elementos */
+    cursor:default;
 }
 
 .login-popup h2 {
     margin-top: 0;
     margin-bottom: 15px;
     text-align: center;
-    color: #333;
+    color: black;
+    font-size: 25px;
 }
 
 .form-group {
@@ -135,15 +154,17 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 5px;
-    color: #555;
+    color: black;
+    font-size: 15px;
     font-weight: bold;
+    margin-left: 20px;
 }
 
 .form-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
+    border: solid 2px #218837ef;
+    border-radius: 20px;
     box-sizing: border-box;
 }
 
@@ -153,14 +174,14 @@ body {
     padding: 12px 15px;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     width: 100%;
     font-size: 16px;
-    transition: background-color 0.3s ease;
 }
 
 .login-btn:hover {
     background-color: #218838;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
 }
 
 .signup-link {
@@ -177,12 +198,13 @@ body {
 
 .signup-link a:hover {
     text-decoration: underline;
+    cursor: pointer;
 }
 
 
 
 
-    /* Subtitulos e textos */
+    /* Subtitulos e textos tela inicial */
 .corpo {
     align-items: center;
     width: 90%;
@@ -219,7 +241,7 @@ body {
 
 
 
-    /* Divulgação de outras campanhas (titulo e imagens) */
+    /* Divulgação de outras campanhas (titulo e imagens) tela inicial */
 .promocional {
     margin-bottom: 50px;
 }
@@ -248,7 +270,7 @@ body {
     gap: 15px;
 }
 
-.imagem-promo {
+.img-promo {
     border-radius: 10px;
     width: 100%;
     height: auto;
@@ -256,7 +278,7 @@ body {
     background-color: transparent;
 }
 
-.imagem-promo:hover {
+.img-promo:hover {
     cursor: pointer;
     transform: scale(1.01);
     transition: transform 0.3s ease;
@@ -266,7 +288,7 @@ body {
 
 
 
-    /* Divulgação patrocinadores e parceiros (titulo e imagens) */
+    /* Divulgação patrocinadores e parceiros (titulo e imagens) tela inicial */
 .parceiros {
     
 }
@@ -295,7 +317,7 @@ body {
     gap: 15px;
 }
 
-.imagem-parceiros {
+.img-parceiros {
     border-radius: 10px;
     width: 100%;
     height: auto;
@@ -303,7 +325,7 @@ body {
     background-color: transparent;
 }
 
-.imagem-parceiros:hover {
+.img-parceiros:hover {
     cursor: pointer;
     transform: scale(1.01);
     transition: transform 0.3s ease;
@@ -371,4 +393,100 @@ body {
     background-color: #218837ef; /* Cor mais escura ao passar o mouse */
     cursor: pointer;
     transition: background-color 0.3s ease; /* Transição suave ao passar o mouse */
+}
+
+
+
+
+
+
+
+
+
+
+/* TELA DE CADASTRO (empresa/pessoa - coleta informações - btn enviar)*/
+.cad {
+    background-color: #218837be;
+    box-shadow: 2px 2px 30px black;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+    max-width: 800px;
+    padding: 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+.cad-titulo {
+    background-color: transparent;
+    font-size: 32px;
+    font-family:'Franklin Gothic Medium';
+    text-align: center;
+}
+
+.cad-campos {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    background-color: transparent;
+    align-items: center;
+}
+
+.cad-divs {
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    max-width: 600px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cad-txt {
+    background-color: transparent;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: arial;
+}
+
+.cad-campos-imput {
+    background-color: white;
+    width: 70%;
+    height: 35px;
+    border: solid 2px black;
+    border-radius: 15px;
+    padding-left: 15px;
+    font-size: 100%;
+}
+
+.cad-enviar {
+    width: 150px;
+    padding: 10px;
+    background-color: #155e25ef;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.cad-enviar:hover {
+    background-color: #28a745;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.cad-enviar a {
+    text-decoration: none;
+    color: black;
+}
+
+.cad-check {
+    background-color: transparent;
+    align-items: center;
+    flex-direction: row;
 }
