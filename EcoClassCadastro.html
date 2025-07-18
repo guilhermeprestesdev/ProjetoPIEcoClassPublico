@@ -36,7 +36,7 @@
                             <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
                         </div>
                         <button type="submit" class="login-btn">Entrar</button>
-                        <p class="signup-link">Não tem conta? <a href="#">Cadastre-se</a></p>
+                        <p class="signup-link">Não tem conta? <a href="EcoClassCadastro.html">Cadastre-se</a></p>
                     </form>
                 </div>
             </div>
@@ -47,41 +47,51 @@
         <div class="cad" id="cad">
             <p class="cad-titulo">CRIAR NOVA CONTA</p>
             <div class="cad-campos" id="cad-campos">
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">Nome</p>
                     <input type="text" maxlength="20" placeholder="Gaming Store" class="cad-campos-imput">
                 </div>
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">CPF/CNPJ</p>
                     <input type="number" maxlength="20" placeholder="000.000.000.00 ou 00.000.000/0000-00" class="cad-campos-imput">
                 </div>
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">Telefone</p>
                     <input type="tel" maxlength="12" placeholder="(00)0 0000-0000" class="cad-campos-imput">
                 </div>
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">Nascimento</p>
                     <input type="date" placeholder="dd/mm/aa" class="cad-campos-imput">
                 </div>
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">Email</p>
                     <input type="email" maxlength="50" placeholder="gamingstore@gmail.com" class="cad-campos-imput">
                 </div>
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">Senha</p>
                     <input type="password" maxlength="50" placeholder="Digite sua senha" class="cad-campos-imput">
                 </div>
-                <div class="cad-divs" id="cad-divs">
+                <div class="cad-divs">
                     <p class="cad-txt">Confirmar senha</p>
                     <input type="password" maxlength="50" placeholder="Confirme sua senha" class="cad-campos-imput">
                 </div>
-                <div class="cad-check">
-                    <input type="checkbox">
-                    <p>texto</p>
+
+                <div class="cad-radio-group"> <label for="tipoEstudante">
+                        <input class="cad-radio" type="radio" id="tipoEstudante" name="tipo_usuario" value="estudante" required>
+                        <p class="cad-radio-text">Sou Estudante</p>
+                    </label>
+                    <label for="tipoInstituicao">
+                        <input class="cad-radio" type="radio" id="tipoInstituicao" name="tipo_usuario" value="instituicao">
+                        <p class="cad-radio-text">Sou Instituição Escolar</p>
+                    </label>
+                    <label for="tipoEmpresa">
+                        <input class="cad-radio" type="radio" id="tipoEmpresa" name="tipo_usuario" value="empresa">
+                        <p class="cad-radio-text">Sou Empresa/Doador Geral</p>
+                    </label>
                 </div>
 
-                <submit class="cad-enviar"><a href="EcoClass.html">Cadastre-se</a></submit>
-            </div>
+                <button type="submit" class="cad-enviar"><a href="EcoClassInicio.html">Cadastre-se</a></button>
+                </div>
         </div>
 
         <div class="rodape" id="rodape">
