@@ -78,8 +78,8 @@ body {
 
     /* barra de ações fixa no topo do site */
 .top-bar {
+    background-color: #589A4F;
     z-index: 20;
-    background-color: transparent;
     display: flex;
     justify-content: space-around;
     border: none;
@@ -87,11 +87,6 @@ body {
     margin-top: 0px;
     width: 100%;
     position: fixed;
-}
-
-.top-bar:hover {
-    background-color: #589A4F;
-    transition: background-color 0.3s ease;
 }
 
 .categoria {
