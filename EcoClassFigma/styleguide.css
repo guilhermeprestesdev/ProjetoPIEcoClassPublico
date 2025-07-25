@@ -1,0 +1,26 @@
+:root {
+  --fundo: rgba(250, 255, 243, 1);
+  --fundo-2: rgba(56, 85, 54, 1);
+  --logo: rgba(14, 199, 20, 1);
+  --boto: rgba(250, 255, 243, 1);
+  --titulos: rgba(31, 136, 44, 0.8);
+  --d-9d-9d-9: rgba(0, 0, 0, 1);
+  --text-font-family: "Actor", Helvetica;
+  --text-font-weight: 400;
+  --text-font-size: 32px;
+  --text-letter-spacing: 0px;
+  --text-line-height: normal;
+  --text-font-style: normal;
+  --collection-1-color: rgba(166, 193, 236, 1);
+  --collection-1-color-2: rgba(243, 247, 255, 1);
+  --collection-1-color-3: rgba(23, 6, 89, 1);
+  --collection-1-color-4: rgba(251, 219, 198, 1);
+  --collection-1-color-5: rgba(98, 33, 27, 1);
+  --collection-1-color-6: rgba(136, 10, 31, 1);
+  --collection-1-color-7: rgba(255, 135, 147, 1);
+  --collection-1-color-8: rgba(253, 197, 102, 1);
+  --collection-1-color-9: rgba(220, 241, 160, 1);
+  --collection-1-color-10: rgba(0, 0, 0, 1);
+  --collection-1-color-11: rgba(255, 255, 210, 1);
+  --collection-1-color-12: rgba(255, 255, 255, 1);
+}
