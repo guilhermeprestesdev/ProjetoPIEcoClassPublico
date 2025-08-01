@@ -1,0 +1,1088 @@
+/* Reset Básico */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; /* Fonte padrão */
+    background-color: #FAFFF3; /* Um cinza claro para o fundo da página */
+}
+
+
+
+
+/* --- Cabeçalho Principal Fixo --- */
+.main-header {
+    position: fixed; /* Torna o cabeçalho fixo no topo */
+    top: 0; /* Alinha ao topo */
+    left: 0; /* Alinha à esquerda */
+    width: 100%; /* Ocupa a largura total */
+    background-color: #385536; /* Cor de fundo do cabeçalho (verde escuro da imagem) */
+    display: flex; /* Usa Flexbox para organizar os itens */
+    justify-content: space-between; /* Espaça logo, navegação e info do usuário */
+    align-items: center; /* Centraliza verticalmente os itens */
+    padding: 10px; /* Espaçamento interno (vertical, horizontal) */
+    box-shadow: 0 2px 5px black; /* Sombra sutil para destaque */
+    z-index: 100; /* Garante que fique acima de outros elementos ao rolar */
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    height: 60px; /* Ajuste o tamanho da logo */
+    border-radius: 50%; /* Deixa a logo circular */
+    margin-left: 20px;
+}
+
+
+
+
+    /* --- Navegação Central do Cabeçalho --- */
+.nav-item-with-popup {
+    position: relative;
+}
+
+/* --- Estilo do Popup de Pontuação --- */
+.points-popup {
+    position: absolute; /* Posiciona o popup em relação ao .nav-item-with-popup */
+    top: 200%; /* Aparece logo abaixo do link de navegação */
+    left: 50%; /* Tenta centralizar horizontalmente sob o link */
+    transform: translateX(-50%); /* Ajusta para centralização exata baseada no próprio tamanho */
+    
+    background-color: #385536; /* Fundo verde escuro */
+    color: white;
+    padding: 25px; /* Reduz padding para caber melhor */
+    border-radius: 20px;
+    box-shadow: 0 5px 20px black;
+    
+    width: 510px; /* Largura fixa (ou max-width) para ser maior que o login mas menor que a tela */
+    max-width: 90vw; /* Garante que não seja maior que a viewport em telas muito pequenas */
+    height: auto; /* Altura se ajusta ao conteúdo */
+    max-height: 80vh; /* Limita a altura em telas grandes para evitar que cubra tudo */
+    
+    overflow-y: none; /* Adiciona scroll se o conteúdo for muito grande */
+    display: none; /* Inicialmente escondido */
+    z-index: 1001; /* Garante que fique acima de outros elementos do cabeçalho */
+    white-space: normal; /* Garante que o texto dentro do popup quebre a linha */
+}
+
+.points-popup h2 {
+    font-size: 1.8em; /* Tamanho do título "PONTUAÇÃO" */
+    color: #E0FFE0;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: -10px;
+}
+
+.points-summary {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.points-summary p {
+    font-size: 1em;
+    margin: 5px 0;
+}
+
+.points-summary .points-value, .points-summary .donations-value {
+    font-weight: normal;
+    color: #a8e6ee;
+}
+
+.points-info-text {
+    font-size: 0.85em;
+    text-align: left;
+    margin-top: 10px;
+    line-height: 1.3;
+    font-weight: normal;
+}
+
+.points-info-text-example {
+    font-size: 0.8em;
+    text-align: left;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.points-popup h3 {
+    font-size: 1.2em;
+    color: #E0FFE0;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-top: 30px;
+}
+
+/* --- Tabela de Pontos --- */
+.points-popup table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.85em;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden; /* Garante que as bordas arredondadas funcionem */
+}
+
+.points-popup th, .points-popup td {
+    padding: 10px 8px; /* Ajusta padding para caber mais */
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    white-space: normal; /* Permite que o texto quebre dentro das células */
+}
+
+.points-popup th {
+    background-color: #314E33;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Responsividade para a Tabela (ajustado para caber no popup menor) */
+@media (max-width: 450px) { /* Breakpoint menor para o popup */
+    .points-popup {
+        width: 95vw; /* Ocupa quase toda a largura da viewport */
+        padding: 15px;
+        font-size: 0.9em;
+    }
+    .points-popup table {
+        display: block; 
+        overflow-x: auto; 
+        white-space: nowrap; 
+    }
+
+    .points-popup thead, .points-popup tbody, .points-popup th, .points-popup td, .points-popup tr {
+        display: block; 
+    }
+
+    .points-popup thead tr {
+        position: absolute;
+        top: -9999px; 
+        left: -9999px;
+    }
+
+    .points-popup tr {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 8px;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .points-popup td {
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        padding-left: 45%; /* Reduz espaço para label */
+        text-align: right;
+    }
+
+    .points-popup td:before {
+        content: attr(data-label); 
+        position: absolute;
+        left: 6px;
+        width: 40%; /* Reduz largura do label */
+        padding-right: 5px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #E0FFE0;
+    }
+}
+
+.main-nav-div {
+    display:flex;
+    width: 100%;
+    background-color: transparent;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.main-nav {
+    display: flex;
+    gap: 50%; /* Espaçamento entre os itens da navegação */
+}
+
+.nav-item {
+    color: white; /* Cor do texto dos links */
+    text-decoration: none; /* Remove o sublinhado padrão */
+    font-size: 1.1em; /* Tamanho da fonte */
+    font-weight: bold;
+    padding: 5px 0; /* Espaçamento para o hover */
+    transition: color 0.3s ease, transform 0.2s ease; /* Transição suave para hover */
+}
+
+.nav-item:hover {
+    color: #a8e6ee; /* Cor ao passar o mouse (azul claro/ciano) */
+    transform: scale(1.05); /* Pequeno zoom */
+}
+
+
+
+
+/* --- Informações do Usuário (Direita do Cabeçalho) --- */
+.login-info {
+    display: flex;
+    align-items: center;
+    color: white; /* Cor do texto */
+    font-size: 0.9em;
+    margin-right: 25px; /* Ajuste a margem da direita para posicionar o popup */
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.login-info:hover {
+    opacity: 0.8;
+}
+
+.login-icon {
+    margin-right: 8px;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.user-points {
+    font-size: 0.85em;
+    color: #a8e6ee;
+}
+
+/* --- Estilo do Popup de Login --- */
+.login-popup {
+    position: absolute;
+    /* top: calc(100% + 10px); */ /* Se o popup deve aparecer abaixo da barra de cabeçalho, use top com valor fixo */
+    top: 85px; /* Ajusta para ficar abaixo do cabeçalho fixo. Pode precisar de ajuste fino */
+    right: 30px; /* Alinha o popup à direita, ajuste para ficar ao lado da info do usuário */
+    background-color: #385536; /* Cor de fundo do popup (verde escuro da imagem) */
+    border-radius: 20px; /* Bordas mais arredondadas */
+    box-shadow: 0 5px 15px black; /* Sombra mais escura */
+    padding: 25px;
+    width: 300px; /* Largura do popup */
+    display: none; /* Inicialmente escondido */
+    z-index: 100; /* Garante que fique acima de outros elementos */
+    color: #FAFFF3; /* Cor padrão do texto dentro do popup */
+}
+
+.login-popup h2 {
+    margin-top: 0;
+    margin-bottom: 30px; /* Mais espaço abaixo do título */
+    text-align: center;
+    color: #FAFFF3; 
+    font-size: 1.6em; /* Tamanho do título "Acessar Minha Conta" */
+}
+
+.form-group {
+    margin-bottom: 20px; /* Mais espaço entre os grupos de input */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px; /* Mais espaço abaixo do label */
+    color: white; /* Labels brancas */
+    font-size: 1em;
+    font-weight: bold;
+    text-align: left; /* Alinha labels à esquerda */
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px; /* Mais padding para inputs */
+    border: none; /* Remove bordas */
+    border-radius: 10px; /* Bordas arredondadas para inputs */
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+
+/* Estilo do botão "ENTRAR" */
+.login-submit-btn {
+    background-color: #FAFFF3;
+    color: #385536; /* Texto verde escuro */
+    padding: 14px 20px; /* Mais padding */
+    border: solid 1px #FAFFF3;
+    border-radius: 25px; /* Bordas bem arredondadas */
+    width: 100%;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 15px; /* Espaço acima do botão */
+    
+}
+
+.login-submit-btn:hover {
+    background-color: #385536; /* Mantém branco no hover, mas muda a sombra ou borda */
+    color: #FAFFF3; /* Escurece um pouco o texto no hover */
+    border-color: #FAFFF3;    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Adiciona sombra no hover */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    transform: translateY(-2px); /* Efeito de "levantar" */
+}
+
+
+/* Estilo do link "Não tem conta? Cadastre-se" */
+.signup-link {
+    margin-top: 20px; /* Mais espaço acima do link */
+    text-align: center;
+    color: white; /* Texto "Não tem conta?" branco */
+    font-size: 0.9em;
+}
+
+.signup-link a {
+    color: #6AC045; /* Cor verde vibrante para "Cadastre-se" */
+    text-decoration: underline; /* Sublinhado */
+    transition: color 0.3s ease;
+}
+
+.signup-link a:hover {
+    color: #5BAF3B; /* Verde um pouco mais escuro no hover */
+    text-decoration: none; /* Remove sublinhado no hover, opcional */
+}
+
+
+/* --- Responsividade do Cabeçalho --- */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: row; /* Empilha os itens verticalmente */
+        align-items: center; /* Centraliza-os horizontalmente */
+        padding: 15px 10px; /* Ajusta padding para telas menores */
+    }
+
+    .header-left {
+        margin-bottom: 10px; /* Espaço abaixo da logo */
+    }
+
+    .main-nav {
+        flex-direction: row; /* Empilha os links de navegação */
+        gap: 10px; /* Diminui o espaçamento */
+        margin-bottom: 15px; /* Espaço abaixo da navegação */
+    }
+
+    .nav-item {
+        font-size: 1em; /* Ajusta tamanho da fonte */
+        padding: 3px 0;
+    }
+
+    .header-right {
+        font-size: 0.85em; /* Ajusta tamanho da fonte do usuário */
+    }
+}
+
+@media (max-width: 480px) {
+    .header-logo {
+        height: 40px; /* Logo um pouco menor em telas muito pequenas */
+    }
+
+    .main-nav {
+        gap: 8px;
+    }
+
+    .nav-item {
+        font-size: 0.9em;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* RODAPÉ */
+.main-footer {
+    margin-top: 60px;
+    background-color: #385536; /* Verde escuro principal do rodapé */
+    color: white;
+    padding: 50px 50px 20px 50px; /* Top, Right, Bottom, Left (ajustado para espaço do botão) */
+    position: relative; /* Para posicionar o botão "Voltar ao topo" e o mascote */
+    display: flex;
+    flex-direction: column; /* Organiza conteúdo principal e barra inferior em coluna */
+    align-items: center; /* Centraliza conteúdo */
+    min-height: 280px; /* Altura mínima para o rodapé */
+}
+
+/* Botão Voltar ao Topo */
+.back-to-top-btn {
+    background-color: #FAFFF3; /* Verde mais claro para o botão */
+    color: #385536;
+    padding: 10px 20px;
+    border: solid 1px;
+    border-radius: 25px; /* Botão arredondado */
+    font-size: 1em;
+    font-weight: bold;
+    position: absolute; /* Posicionamento absoluto em relação ao .main-footer */
+    top: -25px; /* Sobe o botão metade da altura dele para a divisão */
+    right: 30%; /* Distância da direita */
+    box-shadow: 0 4px 10px black; /* Sombra para destacar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espaço entre texto e seta */
+}
+
+.back-to-top-btn:hover {
+    background-color: #385536; /* Verde um pouco mais escuro no hover */
+    color: #FAFFF3;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.arrow-icon {
+    font-size: 1.2em;
+    line-height: 1; /* Alinha verticalmente */
+}
+
+
+/* --- Conteúdo Superior do Rodapé (Logo, Colunas de Links, Mascote) --- */
+.footer-top-content {
+    display: flex;
+    justify-content: space-around; /* Espaça as colunas */
+    align-items: flex-start; /* Alinha o conteúdo ao topo das colunas */
+    width: 100%;
+    max-width: 1200px; /* Largura máxima para centralizar conteúdo */
+    margin-bottom: 30px; /* Espaço antes da barra inferior */
+    flex-wrap: wrap; /* Permite que as colunas quebrem a linha em telas menores */
+    padding-left: 20px; /* Um pouco de padding para alinhar com a logo na esquerda */
+}
+
+.footer-col {
+    flex-basis: 20%; /* Base para a largura de cada coluna */
+    min-width: 180px; /* Largura mínima para evitar quebras ruins */
+    margin-bottom: 20px; /* Margem para quando as colunas quebrarem */
+    text-align: left; /* Alinhamento do texto padrão */
+}
+
+/* Coluna da Logo */
+.footer-logo-col {
+    flex-basis: 25%; /* A logo pode ocupar um pouco mais de espaço */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-right: 20px;
+    margin-bottom: -50px;
+}
+
+.footer-logo {
+    width: 200px; /* Tamanho da logo */
+    height: auto;
+}
+
+/* Títulos das Colunas */
+.footer-col h3 {
+    font-size: 1.25em;
+    margin-bottom: 15px;
+    color: #E0FFE0; /* Cor do título (verde claro) */
+}
+
+/* Listas de Links */
+.footer-col ul {
+    list-style: none; /* Remove marcadores de lista */
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 8px; /* Espaço entre os itens da lista */
+}
+
+.footer-col ul li a {
+    color: white; /* Cor dos links */
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
+}
+
+.footer-col ul li a:hover {
+    color: #a8e6ee; /* Cor ao passar o mouse */
+    text-decoration: underline;
+}
+
+/* Coluna do Mascote */
+.footer-mascot-col {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Alinha o mascote à parte inferior da sua área */
+    padding-left: 20px;
+    transform: translateY(-50px); /* Deixa imagem um pouco acima do restante */
+    margin-bottom: -100px;
+}
+
+.footer-mascot {
+    width: 300px; /* Tamanho do mascote */
+    height: auto;
+}
+
+
+/* --- Barra Inferior do Rodapé --- */
+.footer-bottom-bar {
+    width: 100%;
+    max-width: 1200px; /* Largura máxima, centralizado pelo pai */
+    display: flex;
+    flex-direction: column; /* Empilha o conteúdo principal e o copyright */
+    align-items: center; /* Centraliza horizontalmente o conteúdo */
+    padding-top: 20px;
+    padding-left: 15px;
+    border-top: 2px solid #FAFFF3; /* Linha divisória sutil */
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85em;
+    margin-top: 20px; /* Espaço entre o conteúdo superior do rodapé e esta barra */
+}
+
+.footer-bottom-main-row {
+    width: 100%; /* Ocupa a largura total da barra inferior */
+    display: flex;
+    justify-content: space-between; /* Espaça links de política e ícones sociais */
+    align-items: center;
+    flex-wrap: wrap; /* Permite quebrar em telas menores */
+    margin-bottom: 10px; /* Espaço entre esta linha e o copyright */
+}
+
+.footer-policy-links {
+    display: flex;
+    flex-basis: auto; /* Deixa flexbox decidir a largura base */
+    flex-grow: 1; /* Permite crescer para ocupar espaço */
+    justify-content: left; /* fixa os links a esquerda */
+    flex-wrap: wrap; /* Permite quebrar em telas menores */
+}
+
+.footer-policy-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    padding: 0 10px; /* Espaçamento interno: 0px em cima/baixo, 10px nas laterais */
+    border-right: 1px solid rgba(255,255,255,0.3); /* Borda direita: 1px, sólida, cor branca semi-transparente */
+}
+
+.footer-policy-links a:hover {
+    color: #a8e6ee;
+    text-decoration: underline;
+}
+
+/* Remove a borda direita do último link */
+.footer-policy-links a:last-child {
+    border-right: none;
+}
+
+.footer-social-icons {
+    display: flex;
+    gap: 15px; /* Espaço entre os ícones sociais */
+    flex-basis: auto; /* Deixa flexbox decidir a largura base */
+    flex-shrink: 0; /* Não encolhe os ícones */
+    justify-content: flex-end; /* Alinha os ícones à direita dentro de sua área */
+    margin-left: auto; /* Empurra para a direita se houver espaço extra */
+}
+
+.footer-social-icons a {
+    color: white; /* Cor dos ícones */
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.footer-social-icons a:hover {
+    transform: translateY(-3px); /* Efeito de "levantar" no hover */
+    color: #a8e6ee;
+}
+
+.footer-social-icons svg {
+    width: 20px; /* Tamanho dos ícones SVG */
+    height: 20px;
+}
+
+.footer-copyright {
+    width: 100%; /* Ocupa a largura total para ficar em sua própria linha */
+    text-align: left;
+    font-size: 0.8em; /* Tamanho da fonte do copyright */
+    color: rgba(255,255,255,0.6); /* Cor um pouco mais suave para o copyright */
+    margin-top: 10px; /* Espaço acima do copyright */
+}
+
+/* --- Responsividade do Rodapé --- */
+@media (max-width: 992px) {
+    .footer-top-content {
+        flex-direction: column; /* Empilha as colunas */
+        align-items: center; /* Centraliza tudo */
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .footer-col {
+        flex-basis: 100%; /* Cada coluna ocupa a largura total */
+        min-width: auto;
+        margin-bottom: 30px;
+    }
+
+    .footer-logo-col, .footer-mascot-col {
+        padding: 0;
+        margin-bottom: 30px;
+    }
+
+    .footer-mascot {
+        transform: translateY(0); /* Remove o ajuste fino em mobile */
+    }
+
+    .back-to-top-btn {
+        right: 20px;
+        top: -40px; /* Ajusta a posição em telas menores */
+    }
+
+    .footer-bottom-bar {
+        flex-direction: column; /* Empilha os itens da barra inferior */
+        text-align: center;
+        gap: 15px;
+    }
+
+    .footer-copyright, .footer-policy-links, .footer-social-icons {
+        flex-basis: 100%;
+        justify-content: center; /* Centraliza tudo */
+    }
+}
+
+@media (max-width: 600px) {
+    .main-footer {
+        padding: 40px 15px 15px 15px; /* Menor padding em telas muito pequenas */
+    }
+
+    .back-to-top-btn {
+        width: 150px; /* Botão um pouco menor */
+        font-size: 0.9em;
+        padding: 8px 15px;
+        top: -30px;
+    }
+
+    .footer-logo {
+        width: 100px; /* Logo menor */
+    }
+
+    .footer-mascot {
+        width: 120px; /* Mascote menor */
+    }
+
+    .footer-col h3 {
+        font-size: 1.15em;
+    }
+
+    .footer-col ul li a {
+        font-size: 0.85em;
+    }
+
+    .footer-bottom-bar {
+        font-size: 0.75em;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Seção de Chamada para Ação (abaixo do cabeçalho) (doar/receber) --- */
+.call-to-action-section {
+    position: relative; /* Para posicionar a imagem de fundo e o overlay */
+    width: 100%;
+    min-height: 450px; /* Altura mínima da seção */
+    display: flex;
+    justify-content: center; /* Centraliza o overlay horizontalmente */
+    align-items: center; /* Centraliza o overlay verticalmente */
+    overflow: hidden; /* Garante que elementos filhos não vazem */
+    text-align: center; /* Centraliza o texto dentro do overlay */
+    color: white; /* Cor padrão do texto */
+    padding: 50px 0; /* Padding superior e inferior para dar mais "respiro" */
+    margin-top: 60px;
+}
+
+.cta-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Ocupa 100% da largura da seção pai */
+    height: 100%; /* Ocupa 100% da altura da seção pai */
+    object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+    z-index: 0; /* Fica por baixo do overlay */
+}
+
+.cta-overlay {
+    position: relative; /* Fica acima da imagem de fundo */
+    z-index: 2;
+    background-color: #385536a9; /* Cor do cabeçalho com opacidade */
+    padding: 40px 20px; /* Padding interno do retângulo verde */
+    border-radius: 50px; /* Bordas arredondadas */
+    max-width: 900px; /* Largura máxima do retângulo em telas grandes */
+    width: 90%; /* Ocupa 90% da largura disponível (para responsividade) */
+    display: flex;
+    flex-direction: column; /* Empilha logo, título, subtítulo e botões */
+    align-items: center; /* Centraliza os itens horizontalmente dentro do overlay */
+    justify-content: center; /* Centraliza os itens verticalmente dentro do overlay */
+}
+
+.cta-logo {
+    width: 25%; /* Tamanho da logo dentro do overlay */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.cta-title {
+    font-size: 25px;
+    margin-bottom: 15px;
+    line-height: 1.2;
+    font-weight: bold;
+    color: white;
+}
+
+.cta-subtitle {
+    font-size: 15px;
+    margin-bottom: 100px;
+    max-width: 600px; /* Limita a largura do subtítulo para melhor leitura */
+    color: white;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 100px; /* Espaço entre os botões */
+    flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas menores */
+    justify-content: center; /* Centraliza os botões se eles quebrarem */
+}
+
+.cta-main-btn {
+    background-color: #FAFFF3; 
+    color: #385536;
+    padding: 15px 35px;
+    border: solid 1px #385536;
+    width: 250px;
+    border-radius: 30px;
+    font-size: 15px; 
+    font-weight: bold;
+    flex-shrink: 0; /* Impede que os botões encolham demais */
+}
+
+.cta-main-btn:hover {
+    background-color: #385536;
+    transform: translateY(-2px); /* Efeito de "levantar" */
+    color: #FAFFF3;
+    box-shadow: 0px 5px 10px black; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Seção de Conteúdo com Blocos de Texto (abaixo do Hero) --- */
+.info-section {
+    background-color: #FAFFF3; /* Fundo da seção, mesma cor do body */
+    padding: 60px 0; /* Espaçamento interno superior e inferior */
+}
+
+.content-wrapper {
+    max-width: 1000px; /* Largura máxima do conteúdo */
+    margin: 0 auto; /* Centraliza o wrapper na página */
+    padding: 0 20px; /* Espaçamento horizontal interno */
+}
+
+.text-content-block {
+    margin-bottom: 50px; /* Espaço entre cada bloco de texto (título + parágrafos) */
+}
+
+.text-content-block:last-child {
+    margin-bottom: 0; /* Remove a margem do último bloco de texto para não ter espaço extra no final da seção */
+}
+
+.section-title-bar {
+    background-color: #33632f; /* Cor verde escuro do título (mesma do cabeçalho) */
+    color: white;
+    padding: 10px 25px; /* Espaçamento interno do título */
+    border-radius: 8px; /* Bordas arredondadas */
+    font-size: 1.4em; /* Tamanho da fonte do título */
+    font-weight: bold;
+    display: inline-block; /* Faz com que a barra verde se ajuste à largura do texto */
+    margin-left: 20px; /* Alinha o título um pouco mais para a direita, como na imagem */
+    margin-top: 5px;
+}
+
+.info-section .text-content-block:first-child .section-title-bar,
+.image-display-section .section-title-bar {
+    margin-top: 0; /* Define a margem superior para 0 para o primeiro título (evita espaçamento duplicado)*/
+}
+
+.text-content-block p {
+    font-size: 1.1em;
+    line-height: 1.6; /* Espaçamento entre linhas para melhor leitura */
+    color: #444; /* Cor do texto (um cinza escuro) */
+    margin-bottom: 15px; /* Espaço entre parágrafos */
+    text-align: justify; /* Justifica o texto para ter bordas retas, como na imagem */
+}
+
+/* --- Responsividade para a Seção de Conteúdo --- */
+@media (max-width: 768px) {
+    .info-section {
+        padding: 40px 0; /* Reduz o padding em telas menores */
+    }
+
+    .content-wrapper {
+        padding: 0 15px; /* Ajusta o padding horizontal */
+    }
+
+    .section-title-bar {
+        font-size: 1.5em; /* Reduz o tamanho do título */
+        padding: 8px 20px;
+        margin-left: 0; /* Remove a margem esquerda para centralizar ou alinhar */
+        text-align: center; /* Centraliza o texto do título */
+        display: block; /* Ocupa a largura total para centralizar melhor */
+        width: auto; /* Permite que a largura se ajuste automaticamente */
+    }
+
+    .text-content-block p {
+        font-size: 1em; /* Reduz o tamanho da fonte dos parágrafos */
+        text-align: left; /* Em telas pequenas, justificar pode criar buracos grandes, melhor alinhar à esquerda */
+    }
+
+    .text-content-block {
+        margin-bottom: 30px; /* Reduz o espaço entre os blocos de texto */
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title-bar {
+        font-size: 1.3em;
+        padding: 6px 15px;
+    }
+
+    .text-content-block p {
+        font-size: 0.95em;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Seção de Imagens Clicáveis (Outras formas de fazer o bem) --- */
+.image-display-section {
+    background-color: transparent; /* Fundo da seção, mesma cor do body */
+}
+
+/* O .content-wrapper e .section-title-bar já estão definidos, apenas o reutilizamos */
+
+.image-cards-container {
+    background-color: #33632f;
+    border-radius: 20px;
+    padding: 15px;
+    display: flex; /* Usa Flexbox para organizar as imagens lado a lado */
+    justify-content: center; /* Centraliza as imagens horizontalmente */
+    gap: 30px; /* Espaçamento entre as imagens */
+    flex-wrap: wrap; /* Permite que as imagens quebrem a linha em telas menores */
+    margin-top: -20px; 
+}
+
+.image-card {
+    background-color: #D9D9D9; /* Cor cinza do placeholder */
+    border-radius: 10px; /* Bordas arredondadas, como na imagem */
+    overflow: hidden; /* Garante que a imagem e outros conteúdos fiquem dentro do card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transição suave para efeitos de hover */
+    
+    /* Tamanho base das imagens */
+    flex-basis: 30%; /* Ocupa cerca de 30% da largura, para caberem 3 em uma linha */
+    max-width: 320px; /* Largura máxima para cada card */
+    min-width: 280px; /* Largura mínima para o card em telas menores antes de quebrar */
+    height: 180px; /* Altura fixa para as caixas, ajuste se suas imagens tiverem proporções diferentes */
+    
+    display: flex; /* Para centralizar conteúdo se precisar */
+    align-items: center;
+    justify-content: center;
+    color: #666; /* Cor do texto placeholder se não tiver imagem */
+    font-weight: bold;
+}
+
+.image-card:hover {
+    transform: translateY(-5px); /* Efeito de "levantar" no hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra mais intensa no hover */
+    cursor: pointer;
+}
+
+.image-card a {
+    display: block; /* Faz o link ocupar todo o card */
+    width: 100%;
+    height: 100%;
+    text-decoration: none; /* Remove sublinhado do link */
+    color: inherit; /* Hereda a cor do texto */
+}
+
+.image-card img {
+    width: 100%; /* Imagem preenche a largura do card */
+    height: 100%; /* Imagem preenche a altura do card */
+    object-fit: cover; /* Recorta a imagem para cobrir a área, evitando distorção */
+    border-radius: 10px; /* Bordas arredondadas para a imagem também */
+}
+
+
+/* --- Responsividade para a Seção de Imagens --- */
+@media (max-width: 992px) {
+    .image-cards-container {
+        gap: 20px; /* Ajusta o gap */
+    }
+
+    .image-card {
+        flex-basis: 45%; /* Em telas médias, 2 imagens por linha */
+        max-width: 45%;
+        height: 160px; /* Ajusta altura */
+    }
+}
+
+@media (max-width: 768px) {
+    .image-cards-container {
+        gap: 15px;
+    }
+    .image-card {
+        flex-basis: 90%; /* Em telas pequenas, 1 imagem por linha */
+        max-width: 90%;
+        height: 200px; /* Aumenta um pouco a altura para melhor visualização */
+    }
+}
+
+@media (max-width: 480px) {
+    .image-card {
+        height: 180px; /* Ajuste para telas muito pequenas */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Nova Seção de Parceiros do Projeto (abaixo da seção de imagens) --- */
+.partners-section {
+    background-color: #FAFFF3; /* Fundo da seção, mesma cor do body */
+    padding: 60px 0; /* Espaçamento interno superior e inferior */
+}
+
+/* O .content-wrapper e .section-title-bar já estão definidos, apenas o reutilizamos */
+
+/* Estilos específicos para o container de logos de parceiros (dentro da .partners-section) */
+.partners-section .image-cards-container {
+    background-color: #33632f; /* Cor de fundo do container de logos */
+    border-radius: 20px;
+    padding: 15px;
+    justify-content: center;
+    gap: 20px; /* Espaçamento entre os logos */
+    margin-top: -20px; /* Espaço entre o título e os logos */
+}
+
+/* Estilos específicos para os cards de logos dos parceiros */
+.partner-logo-card {
+    background-color: #D9D9D9; /* Cor cinza do placeholder */
+    border-radius: 10px; /* Bordas arredondadas */
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* Tamanho para os cards de logos (quadrados) */
+    width: 100px;
+    height: 100px; 
+    
+    flex-shrink: 0; /* Impede que encolham demais */
+    display: flex; /* Para centralizar o logo dentro do card */
+    align-items: center;
+    justify-content: center;
+}
+
+.partner-logo-card img {
+    width: 90%; /* Logo ocupa 90% da largura do card */
+    height: 90%; /* Logo ocupa 90% da altura do card */
+    object-fit: contain; /* IMPORTANTE: Garante que o logo inteiro apareça sem cortar,
+                            e adiciona barras de espaço se a proporção não for quadrada */
+    border-radius: 5px; /* Bordas arredondadas para o logo */
+}
+
+/* --- Responsividade para a Seção de Parceiros --- */
+@media (max-width: 992px) {
+    .partners-section .image-cards-container {
+        gap: 15px; /* Ajusta o gap */
+    }
+
+    .partner-logo-card {
+        width: 100px; /* Reduz o tamanho em telas médias */
+        height: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .partners-section .image-cards-container {
+        gap: 15px;
+    }
+    .partner-logo-card {
+        width: 120px; /* Pode aumentar um pouco para melhor visualização em telas menores */
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .partners-section .image-cards-container {
+        gap: 10px;
+    }
+    .partner-logo-card {
+        width: 100px; /* Ajuste para telas muito pequenas */
+        height: 100px;
+    }
+}
