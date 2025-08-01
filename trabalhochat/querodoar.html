@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Material</title>
+  <link rel="stylesheet" href="querodoar.css">
+</head>
+<body>
+
+  <div class="form-container">
+    <div class="image-upload">
+      <img src="https://img.icons8.com/ios/50/camera--v1.png" alt="camera" class="camera-icon">
+      <p>Clique ou arraste para adicionar imagem</p>
+    </div>
+
+    <label for="categoria">Categoria</label>
+    <select id="categoria">
+      <option>Selecionar Opção</option>
+    </select>
+
+    <label for="nome">Nome</label>
+    <input type="text" id="nome" placeholder="Ex: Lápis de Escrever">
+
+    <label for="descricao">Descrição</label>
+    <textarea id="descricao" placeholder="Ex: Lápis de Escrever Faber Castell Nº2 com Borracha"></textarea>
+
+    <label for="estado">Estado do Material</label>
+    <div class="stars">
+      <span class="star filled">★</span>
+      <span class="star filled">★</span>
+      <span class="star filled">★</span>
+      <span class="star filled">★</span>
+      <span class="star">★</span>
+    </div>
+
+    <label for="ponto">Ponto de Entrega</label>
+    <select id="ponto">
+      <option>Selecionar Opção</option>
+    </select>
+
+    <button class="submit-btn">Cadastrar</button>
+  </div>
+
+</body>
+</html>
