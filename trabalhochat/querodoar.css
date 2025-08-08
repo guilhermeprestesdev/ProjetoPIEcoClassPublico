@@ -92,3 +92,19 @@ textarea {
 .submit-btn:hover {
   background-color: #e6e6e6;
 }
+
+    .stars {
+      display: inline-block;
+      direction: ltr;
+    }
+
+    .star {
+      font-size: 40px;
+      color: #ccc;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .star.filled {
+      color: gold;
+    }
