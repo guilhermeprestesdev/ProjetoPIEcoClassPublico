@@ -130,3 +130,127 @@ document.addEventListener('DOMContentLoaded', function() {
     loadHTML('header.html', 'header-placeholder');
     loadHTML('footer.html', 'footer-placeholder');
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Lógica para o sistema de avaliação por estrelas
+document.addEventListener('DOMContentLoaded', function() {
+    const starsContainer = document.getElementById('doar-stars');
+
+    if (starsContainer) {
+        const stars = starsContainer.querySelectorAll('.doar-star');
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = parseInt(star.getAttribute('data-value'));
+
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.classList.add('filled');
+                    } else {
+                        s.classList.remove('filled');
+                    }
+                });
+            });
+        });
+    }
+
+
+
+
+    
+
+  // --- LÓGICA PARA PRÉ-VISUALIZAÇÃO DA IMAGEM E DRAG-AND-DROP ---
+    
+    // Seleciona o input de arquivo e a div de upload
+    const fileInput = document.getElementById('imagem');
+    const imageUploadDiv = document.querySelector('.doar-image-upload');
+    
+    // Seleciona o ícone da câmera, texto e formulário para escondê-los
+    const cameraIcon = imageUploadDiv.querySelector('.doar-camera-icon');
+    const uploadText = imageUploadDiv.querySelector('p');
+    const uploadForm = imageUploadDiv.querySelector('form');
+
+    // Função centralizada para lidar com a pré-visualização da imagem
+    function handleImagePreview(file) {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageUploadDiv.style.backgroundImage = `url(${e.target.result})`;
+                imageUploadDiv.style.backgroundSize = 'cover';
+                imageUploadDiv.style.backgroundPosition = 'center';
+                
+                // Esconde os elementos de placeholder
+                if (cameraIcon) cameraIcon.style.display = 'none';
+                if (uploadText) uploadText.style.display = 'none';
+                if (uploadForm) uploadForm.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Se nenhum arquivo foi selecionado, restaura os elementos de placeholder
+            imageUploadDiv.style.backgroundImage = 'none';
+            imageUploadDiv.style.backgroundColor = '#cfcfcf';
+            if (cameraIcon) cameraIcon.style.display = 'block';
+            if (uploadText) uploadText.style.display = 'block';
+            if (uploadForm) uploadForm.style.display = 'block';
+        }
+    }
+
+    if (fileInput && imageUploadDiv) {
+        // Adiciona um evento de 'change' ao input de arquivo (quando clicado)
+        fileInput.addEventListener('change', function() {
+            handleImagePreview(this.files[0]);
+        });
+        
+        // Adiciona um evento de 'click' na div para abrir a janela de seleção de arquivo
+        imageUploadDiv.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // --- Eventos de Drag and Drop (NOVOS) ---
+        
+        // Impede o comportamento padrão do navegador e adiciona classe visual
+        imageUploadDiv.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            imageUploadDiv.classList.add('dragover');
+        });
+
+        // Remove a classe visual quando o arquivo é arrastado para fora
+        imageUploadDiv.addEventListener('dragleave', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            imageUploadDiv.classList.remove('dragover');
+        });
+
+        // Captura o arquivo quando ele é solto
+        imageUploadDiv.addEventListener('drop', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            imageUploadDiv.classList.remove('dragover');
+
+            const files = event.dataTransfer.files;
+            if (files && files.length > 0) {
+                // Chama a função de pré-visualização com o arquivo solto
+                handleImagePreview(files[0]);
+
+                // Opcional: Atribui o arquivo solto ao input de arquivo para que ele seja enviado com o formulário
+                // A FileList é somente leitura, então a atribuição direta é complexa.
+                // A pré-visualização visual já é o que o usuário geralmente espera.
+            }
+        });
+    }
+});

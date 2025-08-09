@@ -2,10 +2,8 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    /* Fonte padrão */
-    background-color: #FAFFF3;
-    /* Um cinza claro para o fundo da página */
+    font-family: Arial, sans-serif;/* Fonte padrão */
+    background-color: #FAFFF3;/* fundo da página */
 }
 
 
@@ -13,28 +11,17 @@ body {
 
 /* --- Cabeçalho Principal Fixo --- */
 .main-header {
-    position: fixed;
-    /* Torna o cabeçalho fixo no topo */
-    top: 0;
-    /* Alinha ao topo */
-    left: 0;
-    /* Alinha à esquerda */
-    width: 100%;
-    /* Ocupa a largura total */
-    background-color: #385536;
-    /* Cor de fundo do cabeçalho (verde escuro da imagem) */
-    display: flex;
-    /* Usa Flexbox para organizar os itens */
-    justify-content: space-between;
-    /* Espaça logo, navegação e info do usuário */
-    align-items: center;
-    /* Centraliza verticalmente os itens */
-    padding: 10px;
-    /* Espaçamento interno (vertical, horizontal) */
-    box-shadow: 0 2px 5px black;
-    /* Sombra sutil para destaque */
-    z-index: 100;
-    /* Garante que fique acima de outros elementos ao rolar */
+    position: fixed; /* Torna o cabeçalho fixo no topo */
+    top: 0;/* Alinha ao topo */
+    left: 0;/* Alinha à esquerda */
+    width: 100%;/* Ocupa a largura total */
+    background-color: #385536;/* Cor de fundo do cabeçalho (verde escuro da imagem) */
+    display: flex;/* Usa Flexbox para organizar os itens */
+    justify-content: space-between;/* Espaça logo, navegação e info do usuário */
+    align-items: center;/* Centraliza verticalmente os itens */
+    padding: 10px;/* Espaçamento interno (vertical, horizontal) */
+    box-shadow: 0 2px 5px black;/* Sombra sutil para destaque */
+    z-index: 100;/* Garante que fique acima de outros elementos ao rolar */
 }
 
 .header-left,
@@ -44,10 +31,8 @@ body {
 }
 
 .header-logo {
-    height: 60px;
-    /* Ajuste o tamanho da logo */
-    border-radius: 50%;
-    /* Deixa a logo circular */
+    height: 60px;/* Ajuste o tamanho da logo */
+    border-radius: 50%;/* Deixa a logo circular */
     margin-left: 20px;
 }
 
@@ -58,6 +43,37 @@ body {
 .nav-item-with-popup {
     position: relative;
 }
+
+.main-nav-div {
+    display: flex;
+    width: 100%;
+    background-color: transparent;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.main-nav {
+    display: flex;
+    gap: 50%; /* Espaçamento entre os itens da navegação */
+}
+
+.nav-item {
+    color: white;/* Cor do texto dos links */
+    text-decoration: none;/* Remove o sublinhado padrão */
+    font-size: 1.1em;/* Tamanho da fonte */
+    font-weight: bold;
+    padding: 5px 0;/* Espaçamento para o hover */
+    transition: color 0.3s ease, transform 0.2s ease;/* Transição suave para hover */
+}
+
+.nav-item:hover {
+    color: #a8e6ee;/* Cor ao passar o mouse (azul claro/ciano) */
+    transform: scale(1.05);/* Pequeno zoom */
+    cursor:pointer;
+}
+
+
+
 
 /* --- Estilo do Popup de Pontuação --- */
 .points-popup {
@@ -235,40 +251,6 @@ body {
     }
 }
 
-.main-nav-div {
-    display: flex;
-    width: 100%;
-    background-color: transparent;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.main-nav {
-    display: flex;
-    gap: 50%;
-    /* Espaçamento entre os itens da navegação */
-}
-
-.nav-item {
-    color: white;
-    /* Cor do texto dos links */
-    text-decoration: none;
-    /* Remove o sublinhado padrão */
-    font-size: 1.1em;
-    /* Tamanho da fonte */
-    font-weight: bold;
-    padding: 5px 0;
-    /* Espaçamento para o hover */
-    transition: color 0.3s ease, transform 0.2s ease;
-    /* Transição suave para hover */
-}
-
-.nav-item:hover {
-    color: #a8e6ee;
-    /* Cor ao passar o mouse (azul claro/ciano) */
-    transform: scale(1.05);
-    /* Pequeno zoom */
-}
 
 
 
@@ -1515,4 +1497,125 @@ body {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));/* Mais compacto */
         gap: 10px;
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* --- Estilos da página de Cadastro de Material (querodoar.html) --- */
+.main-content-form {
+    background-color: #FAFFF3; /* Cor de fundo da seção de formulário, usei a cor do corpo do seu site */
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+    margin-top: 70px;
+}
+
+.doar-form-container {
+    background-color:  #166d19d8; /* Cor do fundo do formulário (verde escuro) */
+    padding: 30px 25px;
+    border-radius: 25px;
+    width: 80%;
+    max-width: 500px;
+    color: #FAFFF3; /* Cor do texto dentro do formulário */
+    box-shadow: 0 4px 12px black;
+}
+
+.doar-image-upload {
+    background-color: #cfcfcf;
+    border-radius: 20px;
+    height: 180px;
+    margin-bottom: 20px;
+    border: 3px solid #FAFFF3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    text-align: center;
+    padding: 10px;
+}
+
+.doar-image-upload:hover {
+    cursor: pointer;
+}
+
+.doar-camera-icon {
+    width: 40px;
+    margin-bottom: 10px;
+    opacity: 0.6;
+}
+
+.doar-form-container label {
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.doar-form-container input[type="text"],
+.doar-form-container select,
+.doar-form-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: solid 1px #FAFFF3;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: #FAFFF3;
+}
+
+
+.doar-form-container select:hover {
+    cursor: pointer;
+    border-color: #314E33;
+}
+
+.doar-form-container textarea {
+    height: 70px;
+    resize: none;
+}
+
+.doar-stars {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 20px;
+}
+
+.doar-star {
+    font-size: 40px;
+    color: #FAFFF3;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.doar-star.filled {
+    color: gold;
+}
+
+.doar-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #fff;
+    color: #385536;
+    border: solid 1px #FAFFF3;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.doar-submit-btn:hover {
+    color: #FAFFF3;
+    cursor: pointer;
+    transition: background 0.3s;
+    background-color: #385536;
 }
