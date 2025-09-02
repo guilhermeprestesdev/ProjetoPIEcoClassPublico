@@ -1,69 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Material - EcoClass</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Material - EcoClass</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <body>
+    <div id="header-placeholder"></div>
 
-<body>
+    <div class="main-content-form">
+      <div class="doar-form-container">
+        <div class="doar-image-upload" id="imageUploadContainer">
+          <img
+            src="https://img.icons8.com/ios/50/camera--v1.png"
+            alt="camera"
+            class="doar-camera-icon"
+          />
+          <p>Clique ou arraste para adicionar imagem</p>
+          <img id="imagePreview" class="image-preview" src="" alt="Pré-visualização da imagem do material" style="display: none;" />
+        </div>
+        <input type="file" id="imagem" name="imagem" accept="image/*" style="display: none;" />
 
-  <div id="header-placeholder"></div>
+        <label for="categoria">Categoria</label>
+        <select id="categoria">
+          <option>Selecionar Opção</option>
+          <option>Escrita</option>
+          <option>Cadernos e Papel</option>
+          <option>Desenho e Pintura</option>
+          <option>Mochilas</option>
+          <option>Organização</option>
+          <option>Corte e Colagem</option>
+          <option>Outros</option>
+        </select>
 
-  <div class="main-content-form">
-    <div class="doar-form-container">
-      <div class="doar-image-upload">
-        <img src="https://img.icons8.com/ios/50/camera--v1.png" alt="camera" class="doar-camera-icon">
-        <p>Clique ou arraste para adicionar imagem</p>
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" placeholder="Ex: Lápis de Escrever" />
 
-        <input type="file" id="imagem" name="imagem" accept="image/*" class="doar-file-input-hidden">
+        <label for="descricao">Descrição</label>
+        <textarea
+          id="descricao"
+          placeholder="Ex: Lápis de Escrever Faber Castell Nº2 com Borracha"
+        ></textarea>
+
+        <label for="estado">Estado do Material</label>
+        <div class="doar-stars" id="doar-stars">
+          <span class="doar-star" data-value="1">★</span>
+          <span class="doar-star" data-value="2">★</span>
+          <span class="doar-star" data-value="3">★</span>
+          <span class="doar-star" data-value="4">★</span>
+          <span class="doar-star" data-value="5">★</span>
+        </div>
+
+        <label for="ponto">Ponto de Entrega</label>
+        <select id="ponto">
+          <option>Selecionar Opção</option>
+          <option>Escola José Bonifácio</option>
+          <option>Mantovani</option>
+          <option>Haidee</option>
+        </select>
+
+        <button class="doar-submit-btn">Cadastrar</button>
       </div>
-
-      <label for="categoria">Categoria</label>
-      <select id="categoria">
-        <option>Selecionar Opção</option>
-        <option>Escrita</option>
-        <option>Cadernos e Papel</option>
-        <option>Desenho e Pintura</option>
-        <option>Mochilas</option>
-        <option>Organização</option>
-        <option>Corte e Colagem</option>
-        <option>Outros</option>
-      </select>
-
-      <label for="nome">Nome</label>
-      <input type="text" id="nome" placeholder="Ex: Lápis de Escrever">
-
-      <label for="descricao">Descrição</label>
-      <textarea id="descricao" placeholder="Ex: Lápis de Escrever Faber Castell Nº2 com Borracha"></textarea>
-
-      <label for="estado">Estado do Material</label>
-      <div class="doar-stars" id="doar-stars">
-        <span class="doar-star" data-value="1">★</span>
-        <span class="doar-star" data-value="2">★</span>
-        <span class="doar-star" data-value="3">★</span>
-        <span class="doar-star" data-value="4">★</span>
-        <span class="doar-star" data-value="5">★</span>
-      </div>
-
-      <label for="ponto">Ponto de Entrega</label>
-      <select id="ponto">
-        <option>Selecionar Opção</option>
-        <option>Escola José Bonifácio</option>
-        <option>Mantovani</option>
-        <option>Haidee</option>
-      </select>
-
-      <button class="doar-submit-btn">Cadastrar</button>
     </div>
-  </div>
 
-  <div id="footer-placeholder"></div>
+    <div id="footer-placeholder"></div>
 
-  <script src="script.js"></script>
-  <script src="cadastro_material.js"></script>
-</body>
-
+    <script src="script.js"></script>
+    <script src="cadastro_material.js"></script>
+  </body>
 </html>

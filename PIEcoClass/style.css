@@ -283,9 +283,14 @@ a {
 }
 
 .user-details {
+    /* Altera a direção dos itens para coluna, empilhando-os */
     display: flex;
     flex-direction: column;
+    /* Remove o espaço horizontal, pois os itens agora estão empilhados */
+    gap: 0;
     line-height: 1.2;
+    width: 100px;
+    margin-right: 25px;
 }
 
 .user-name {
@@ -1094,7 +1099,6 @@ a {
 
 
 
-
 /* --- Seção de Imagens Clicáveis (Outras formas de fazer o bem) --- */
 .image-display-section {
     background-color: transparent;
@@ -1260,7 +1264,7 @@ a {
 
     /* Tamanho para os cards de logos (quadrados) */
     width: 100px;
-    height: 100px;
+    height: 95px;
 
     flex-shrink: 0;/* Impede que encolham demais */
     display: flex;/* Para centralizar o logo dentro do card */
@@ -1537,10 +1541,35 @@ a {
     color: #444;
     text-align: center;
     padding: 10px;
+    position: relative;
+    /* Certifica que o conteúdo dinâmico fique dentro dos limites */
+    overflow: hidden;
+    cursor: pointer;
 }
 
-.doar-image-upload:hover {
-    cursor: pointer;
+
+.image-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ajusta a imagem para cobrir toda a área sem distorção */
+    border-radius: 20px;
+    z-index: 1;
+    /* Coloca a imagem acima do ícone e do texto */
+}
+
+.doar-image-upload.drag-over {
+    border: 3px dashed #385536;
+    background-color: #f0f0f0;
+}
+
+/* Estilos para quando a imagem for carregada */
+.doar-image-upload.has-image .doar-camera-icon,
+.doar-image-upload.has-image p {
+    display: none;
 }
 
 .doar-camera-icon {
@@ -1747,6 +1776,56 @@ a {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
+  /* Estilos para o asterisco de campo obrigatório */
+        .required-label::after {
+            content: ' *';
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Estilos para mensagens de validação */
+        .validation-message {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Estilo para campos inválidos */
+        .is-invalid {
+            border: 2px solid red !important;
+        }
+
+        /* Estilos para a animação de expansão */
+        .cad-form-group.cad-escola-field,
+        .cad-form-group.cad-nivel-escolar-field {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        .cad-form-group.cad-escola-field.show,
+        .cad-form-group.cad-nivel-escolar-field.show {
+            max-height: 100px; /* Ajuste conforme a altura real dos campos */
+            opacity: 1;
+        }
+
+        /* Ajuste para o formulário PJ para aprimorar a UX */
+        #formPessoaJuridica .cad-form-group.cad-codigo-inep-field {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        #formPessoaJuridica .cad-form-group.cad-codigo-inep-field.show {
+            max-height: 100px; /* Ajuste conforme a altura real do campo */
+            opacity: 1;
+        }
+
+
 /* Layout de Linhas de Formulário (com múltiplos campos na mesma linha) */
 .cad-form-row {
     display: flex;
@@ -1898,3 +1977,186 @@ a {
 
 
 
+
+
+
+
+
+
+
+/* --- Estilos da página "Preciso Receber" --- */
+
+/* Container Principal do Formulário (centralizado) */
+.receber-main-content {
+    background-color: #FAFFF3;
+    /* Usa a cor do body do site principal */
+    font-family: 'Poppins', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    margin-top: 100px;
+    /* Espaço para o cabeçalho fixo */
+}
+
+.receber-container {
+    background-color: #385536; /* Cor de fundo do formulário */
+    border-radius: 25px;
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 600px;
+    color: white; /* Ajustado para branco para combinar com o fundo escuro */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    position: relative; /* Necessário para posicionar o botão de voltar */
+}
+
+/* Estilos para o botão de Voltar */
+.receber-back-btn {
+    position: absolute; /* Posição absoluta dentro do .receber-container */
+    top: 10px; /* Distância do topo */
+    left: 20px; /* Distância da esquerda */
+    background: none; /* Sem fundo */
+    border: none; /* Sem borda */
+    color: white; /* Cor da seta */
+    font-size: 1.5em; /* Tamanho da seta */
+    cursor: pointer; /* Indica que é clicável */
+    transition: color 0.3s ease; /* Transição suave na cor */
+    z-index: 10; /* Garante que fique acima de outros elementos */
+}
+
+.receber-back-btn:hover {
+    color: #a8e6ee; /* Cor ao passar o mouse */
+}
+
+.receber-container label {
+    display: block;
+    margin: 15px 0 5px;
+    font-weight: bold;
+    color: white;
+    text-align: left;
+}
+
+/* Campos de seleção (select) desabilitados */
+.receber-container select[disabled] {
+    background-color: #e9e9e9; /* Cor de fundo para indicar que está desabilitado */
+    color: #555; /* Cor do texto */
+    cursor: not-allowed; /* Mudar o cursor */
+    width: 200px;
+    height: 27px;
+    font-size: 15px;
+}
+
+.receber-image-upload {
+    background-color: #cfcfcf;
+    height: auto;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+    font-size: 40px;
+    color: #555;
+    font-weight: bold;
+    pointer-events: none; /* Torna a imagem não interativa */
+    width: 100%;
+}
+
+.receber-container textarea {
+    resize: none;
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+    height: 80px;
+    margin-bottom: 15px;
+    font-weight: normal;
+    text-align: center; /* Centraliza o texto dentro do textarea */
+    width: 96.5%;
+    background-color: #e9e9e9; /* Cor de fundo para indicar que está readonly */
+    color: #555; /* Cor do texto */
+    cursor: default; /* Mudar o cursor */
+    font-size: 15px;
+}
+
+/* Estrelas não interativas e com estilo padrão */
+.receber-stars {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 20px;
+    pointer-events: none; /* Torna as estrelas não interativas */
+}
+
+.receber-star {
+    font-size: 40px;
+    color: #ccc;
+    cursor: default; /* Mudar o cursor */
+    transition: none; /* Remover transições de hover se existirem */
+}
+
+.receber-star.filled {
+    color: gold;
+}
+
+.receber-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #FAFFF3;
+    color: #385536;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1em;
+    margin-top: 20px;
+}
+
+.receber-submit-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Media query para responsividade, se necessário ajustar o botão de voltar */
+@media (max-width: 480px) {
+    .receber-back-btn {
+        top: 15px;
+        left: 15px;
+        font-size: 1.2em;
+    }
+}
+
+    .receber-container {
+        width: 100%;
+    }
+
+
+
+
+/* Estilos para a mensagem de sucesso da solicitação */
+.solicitacao-sucesso {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #385536;
+    color: #FAFFF3;
+    padding: 25px 40px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    z-index: 1000;
+    opacity: 0;
+    animation: fade-in 0.5s forwards;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}

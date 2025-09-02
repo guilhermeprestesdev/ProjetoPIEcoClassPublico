@@ -12,7 +12,7 @@
 
     <header class="main-header">
         <div class="header-left">
-            <img src="imagens\logo 3.svg" alt="Logo EcoClass" class="header-logo">
+            <a href="EcoClass.html"><img src="imagens\logo 3.svg" alt="Logo EcoClass" class="header-logo"></a>
         </div>
         <div class="main-nav-div" id="main-nav-div">
             <nav class="main-nav">
@@ -23,8 +23,8 @@
                     <div class="points-popup" id="pointsPopup">
                         <h2>PONTUAÇÃO</h2>
                         <div class="points-summary">
-                            <p>Meus pontos: <span class="points-value">99999</span></p>
-                            <p>Doações realizadas: <span class="donations-value">9999</span></p>
+                            <p>Meus pontos: <span class="points-value" id="popupPointsValue">99999</span></p>
+                            <p>Doações realizadas: <span class="donations-value" id="popupDonationsValue">9999</span></p>
                         </div>
                         <p class="points-info-text">Seus pontos podem ser trocados por cupons de desconto de até 100% nas lojas parceiras do EcoClass</p>
                         <p class="points-info-text">O sistema de pontos segue a tabela abaixo, variando entre as pontuações de acordo com a qualidade do produto doado</p>
@@ -62,8 +62,8 @@
                     </svg>
                 </div>
                 <div class="user-details">
-                    <span class="user-name">USUÁRIO</span>
-                    <span class="user-points">PONTOS: 9999</span>
+                    <span class="user-name" id="userNameDisplay">USUÁRIO</span>
+                    <span class="user-points" id="userPointsDisplay">PONTOS: 9999</span>
                 </div>
             </div>
 
@@ -82,6 +82,7 @@
                     </div>
                     <button type="submit" class="login-submit-btn">ENTRAR</button>
                     <p class="signup-link">Não tem conta? <a href="Cad_PF.html">Cadastre-se</a></p>
+                    <p id="loginError" style="color:red; font-weight:bold; margin-top:10px; display:none;">CPF ou senha incorretos.</p>
                 </form>
             </div>
         </div>
