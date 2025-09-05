@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const senhaValida = '123456';
 
                     if (cpf === cpfValido && senha === senhaValida) {
-                        document.getElementById('userNameDisplay').textContent = 'Julho';
+                        document.getElementById('userNameDisplay').textContent = 'Tibúrcio';
                         document.getElementById('userPointsDisplay').textContent = 'PONTOS: 75';
                         if (pointsPopup) {
                             document.getElementById('popupPointsValue').textContent = '75';
@@ -182,40 +182,65 @@ document.addEventListener('DOMContentLoaded', function() {
     const materialFormContainer = document.querySelector('.doar-form-container');
     if (materialFormContainer) {
         const materialForm = document.getElementById('materialForm');
+        const submitBtn = materialFormContainer.querySelector('.doar-submit-btn');
 
         // Lógica de validação e funcionalidade do formulário de doação
-        if (materialForm) {
-            materialForm.addEventListener('submit', function(event) {
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function(event) {
                 event.preventDefault();
-                const oldMessages = materialForm.querySelectorAll('.validation-message');
-                oldMessages.forEach(msg => msg.remove());
+
                 const fileInput = document.getElementById('imagem');
                 const categoriaSelect = document.getElementById('categoria');
                 const nomeInput = document.getElementById('nome');
                 const descricaoTextarea = document.getElementById('descricao');
-                const ratingInput = document.getElementById('ratingValue');
                 const pontoSelect = document.getElementById('ponto');
+                const starsContainer = document.getElementById('doar-stars');
+                const ratingInput = starsContainer.querySelector('input[type="hidden"]');
+                
+                // Clear existing validation messages
+                const oldMessages = materialFormContainer.querySelectorAll('.validation-message');
+                oldMessages.forEach(msg => msg.remove());
+
+                let formIsValid = true;
                 const fieldsToValidate = [
                     { element: fileInput, condition: fileInput.files.length === 0, message: 'Por favor, adicione uma imagem para o material.' },
-                    { element: categoriaSelect, condition: categoriaSelect.value === '', message: 'Por favor, selecione uma categoria.' },
+                    { element: categoriaSelect, condition: categoriaSelect.value === 'Selecionar Opção', message: 'Por favor, selecione uma categoria.' },
                     { element: nomeInput, condition: nomeInput.value.trim() === '', message: 'Por favor, preencha o nome do material.' },
                     { element: descricaoTextarea, condition: descricaoTextarea.value.trim() === '', message: 'Por favor, preencha a descrição do material.' },
                     { element: ratingInput, condition: ratingInput.value === '0', message: 'Por favor, selecione o estado do material (estrelas).' },
-                    { element: pontoSelect, condition: pontoSelect.value === '', message: 'Por favor, selecione um ponto de entrega.' }
+                    { element: pontoSelect, condition: pontoSelect.value === 'Selecionar Opção', message: 'Por favor, selecione um ponto de entrega.' }
                 ];
-                let formIsValid = true;
+
                 fieldsToValidate.forEach(field => {
+                    const targetElement = field.element;
                     if (field.condition) {
-                        showValidationMessage(field.element, field.message);
+                        showValidationMessage(targetElement, field.message);
                         formIsValid = false;
                     } else {
-                        field.element.classList.remove('is-invalid');
+                        targetElement.classList.remove('is-invalid');
                     }
                 });
+
                 if (formIsValid) {
-                    console.log('Formulário validado com sucesso! Envio para o servidor.');
-                    console.log('Material cadastrado com sucesso!');
-                    materialForm.reset();
+                    // Start confetti animation
+                    if (typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 150,
+                            spread: 90,
+                            origin: { y: 0.6 }
+                        });
+                    }
+
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'solicitacao-sucesso';
+                    successMessage.textContent = 'Doação cadastrada com sucesso!';
+                    document.body.appendChild(successMessage);
+
+                    // Redirect to the home page after a delay
+                    setTimeout(function() {
+                        window.location.href = 'EcoClass.html';
+                    }, 3000); // 3 seconds
                 }
             });
         }
@@ -374,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Redireciona após 3 segundos
             setTimeout(function() {
                 window.location.href = 'EcoClassReceberMaterial.html';
-            }, 3000); // 3 segundos
+            }, 3000); // 3 seconds
         });
     }
 
