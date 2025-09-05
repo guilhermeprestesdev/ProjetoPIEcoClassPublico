@@ -175,6 +175,19 @@ document.addEventListener('DOMContentLoaded', function() {
             element.classList.remove('is-invalid');
         }, 4000);
     }
+    
+    // Funçao auxiliar para exibir mensagens de sucesso COM redirecionamento
+    function showSuccessMessage(message, redirectUrl) {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'solicitacao-sucesso';
+        successMessage.textContent = message;
+        document.body.appendChild(successMessage);
+
+        setTimeout(() => {
+            successMessage.remove();
+            window.location.href = redirectUrl;
+        }, 3000);
+    }
 
     // --- LÓGICA ESPECÍFICA PARA AS PÁGINAS DE CADASTRO (DOAR) E SOLICITAÇÃO (RECEBER) ---
 
@@ -231,16 +244,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     }
 
-                    // Show success message
-                    const successMessage = document.createElement('div');
-                    successMessage.className = 'solicitacao-sucesso';
-                    successMessage.textContent = 'Doação cadastrada com sucesso!';
-                    document.body.appendChild(successMessage);
-
-                    // Redirect to the home page after a delay
-                    setTimeout(function() {
-                        window.location.href = 'EcoClass.html';
-                    }, 3000); // 3 seconds
+                    // Show success message and redirect
+                    showSuccessMessage('Doação cadastrada com sucesso! Redirecionando...', 'EcoClass.html');
                 }
             });
         }
@@ -512,7 +517,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-
             const senhaInput = document.getElementById('senha');
             const confirmarSenhaInput = document.getElementById('confirmar-senha');
             if (senhaInput && confirmarSenhaInput) {
@@ -528,6 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Cadastro finalizado! Faça login para acessar.');
                 formPessoaFisica.reset();
                 gerenciarCamposEstudante();
+                showSuccessMessage('Cadastro realizado com sucesso!', 'EcoClass.html');
             }
         });
     }
@@ -683,7 +688,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Cadastro finalizado! Faça login para acessar.');
                 formPessoaJuridica.reset();
                 gerenciarTipoEntidade();
+                showSuccessMessage('Cadastro realizado com sucesso!', 'EcoClass.html');
             }
         });
     }
 });
+
