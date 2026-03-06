@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro Pessoa Jurídica</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="cad-main-content">
+        <div class="cad-container">
+            <h1>CRIAR CONTA</h1>
+
+            <div class="account-type-toggle">
+                <button id="btnPessoaFisica">Pessoa Física</button>
+                <button class="active">Pessoa Jurídica</button>
+            </div>
+
+            <form id="formPessoaJuridica" novalidate>
+                <div class="cad-form-group">
+                    <label for="razaoSocial" class="required-label">Razão Social</label>
+                    <input type="text" id="razaoSocial" name="razaoSocial" placeholder="Digite a Razão Social" maxlength="100" required>
+                </div>
+
+                <div class="cad-form-row">
+                    <div class="cad-form-group">
+                        <label for="cnpj" class="required-label">CNPJ</label>
+                        <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
+                    </div>
+                    <div class="cad-form-group">
+                        <label for="ie">Inscrição Estadual</label>
+                        <input type="text" id="ie" name="ie" placeholder="000.000.000.000" maxlength="15">
+                    </div>
+                </div>
+
+                <div class="cad-form-group-checkbox">
+                    <input type="checkbox" id="isento" name="isento">
+                    <label for="isento">Sou ISENTO</label>
+                </div>
+
+                <div class="cad-form-row">
+                    <div class="cad-form-group">
+                        <label for="contato" class="required-label">Contato</label>
+                        <input type="tel" id="contato" name="contato" placeholder="(00) 00000-0000" maxlength="15" required>
+                    </div>
+                    <div class="cad-form-group">
+                        <label for="email" class="required-label">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+                    </div>
+                </div>
+
+                <h2>Endereço</h2>
+                <div class="cad-form-row">
+                    <div class="cad-form-group cad-short">
+                        <label for="cep" class="required-label">CEP</label>
+                        <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="10" required>
+                    </div>
+                    <div class="cad-form-group cad-long">
+                        <label for="logradouro" class="required-label">Logradouro</label>
+                        <input type="text" id="logradouro" name="logradouro" placeholder="Digite o nome da sua rua" maxlength="100" required>
+                    </div>
+                </div>
+
+                <div class="cad-form-row">
+                    <div class="cad-form-group cad-medium">
+                        <label for="bairro" class="required-label">Bairro</label>
+                        <input type="text" id="bairro" name="bairro" placeholder="Bairro" maxlength="50" required>
+                    </div>
+                    <div class="cad-form-group cad-medium">
+                        <label for="cidade" class="required-label">Cidade</label>
+                        <input type="text" id="cidade" name="cidade" placeholder="Cidade" maxlength="50" required>
+                    </div>
+                    <div class="cad-form-group cad-short">
+                        <label for="uf" class="required-label">UF</label>
+                        <select id="uf" name="uf" required>
+                            <option value="">Selecione a UF</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="cad-form-row">
+                    <div class="cad-form-group">
+                        <label for="senha" class="required-label">Senha</label>
+                        <input type="password" id="senha" name="senha" placeholder="Crie a sua senha" required>
+                    </div>
+                    <div class="cad-form-group">
+                        <label for="confirmar-senha" class="required-label">Confirme a senha</label>
+                        <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Confirme a sua senha" required>
+                    </div>
+                </div>
+
+                <div class="cad-form-row cad-special-checkboxes">
+                    <div class="cad-form-group-checkbox">
+                        <input type="checkbox" id="instituicao-ensino" name="tipo_empresa_pj">
+                        <label for="instituicao-ensino">Sou uma instituição de ensino</label>
+                    </div>
+                    <div class="cad-form-group-checkbox">
+                        <input type="checkbox" id="empresa-doadora" name="tipo_empresa_pj">
+                        <label for="empresa-doadora">Sou uma empresa doadora</label>
+                    </div>
+                </div>
+
+                <!-- Campo para o Código INEP (adicionado) -->
+                <div class="cad-form-group cad-codigo-inep-field">
+                    <label for="codigo-inep" class="required-label">Código INEP</label>
+                    <input type="text" id="codigo-inep" name="codigo-inep" placeholder="Código INEP (8 dígitos)" maxlength="8">
+                </div>
+
+                <button type="submit" class="create-profile-btn">Criar Perfil</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
