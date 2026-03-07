@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Console de Diagnóstico - Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Courier New', monospace; background: #1a1a1a; color: #00ff00; padding: 20px; }
+        .terminal { background: #000; border: 1px solid #333; padding: 20px; border-radius: 5px; box-shadow: 0 0 20px rgba(0,255,0,0.1); }
+        .status-line { margin: 10px 0; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .pending { color: #ffff00; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        button:hover { background: #00cc00; }
+    </style>
+</head>
+<body>
+
+<div class="terminal">
+    <h2>> SUPABASE_DIAGNOSTIC_TOOL</h2>
+    <div id="log">
+        <div class="status-line" id="step1">Iniciando sistema...</div>
+    </div>
+    <button onclick="executarTestes()">EXECUTAR TESTE DE CONEXÃO</button>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
+
+    function log(msg, classe = '') {
+        const div = document.createElement('div');
+        div.className = 'status-line ' + classe;
+        div.innerHTML = `> ${msg}`;
+        document.getElementById('log').appendChild(div);
+    }
+
+    async function executarTestes() {
+        document.getElementById('log').innerHTML = '';
+        log("Iniciando bateria de testes...");
+
+        // TESTE 1: Biblioteca
+        if (typeof supabase !== 'undefined') {
+            log("SDK Supabase carregado com sucesso.", "success");
+        } else {
+            log("FALHA: SDK não carregado. Verifique sua conexão com a internet.", "error");
+            return;
+        }
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // TESTE 2: Conexão de Rede / Ping na API
+        log("Pingando servidor Supabase...");
+        try {
+            const inicio = performance.now();
+            const { error } = await _supabase.from('Usuarios').select('*').limit(1);
+            const fim = performance.now();
+            
+            // Se o erro for de 'tabela não encontrada', o servidor RESPONDEU, então a conexão existe.
+            if (error && error.code === 'PGRST116' || error.message.includes('not found') || !error) {
+                log(`Conexão estabelecida! Latência: ${(fim - inicio).toFixed(2)}ms`, "success");
+            } else {
+                throw error;
+            }
+        } catch (e) {
+            log(`ERRO DE CONEXÃO: ${e.message}`, "error");
+            log("DICA: Verifique se o projeto não está PAUSADO no painel do Supabase.", "pending");
+        }
+
+        // TESTE 3: Verificação de Auth
+        log("Testando serviço de Autenticação...");
+        const { data: authData, error: authError } = await _supabase.auth.getSession();
+        if (!authError) {
+            log("Serviço de Autenticação: ONLINE", "success");
+        } else {
+            log("Serviço de Autenticação: ERRO", "error");
+        }
+        
+        log("Fim dos testes.");
+    }
+</script>
+
+</body>
+</html>

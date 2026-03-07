@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Final</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="font-family:sans-serif; text-align:center; padding-top:50px;">
+    <h2>Verificando Banco de Dados...</h2>
+    <h1 id="status">⏳ Carregando...</h1>
+    <p id="detalhes"></p>
+
+    <script>
+        const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function verificar() {
+            const status = document.getElementById('status');
+            const detalhes = document.getElementById('detalhes');
+
+            try {
+                // Tentativa real de ler o banco
+                const { error } = await _supabase.from('qualquer_tabela').select('count');
+                
+                // Se o erro for "404" ou "PGRST116", a conexão EXISTE (o banco respondeu que a tabela não existe)
+                if (!error || error.code === 'PGRST116' || error.status === 404) {
+                    status.innerText = "✅ CONECTADO!";
+                    status.style.color = "green";
+                    detalhes.innerText = "O servidor Supabase está online e respondendo.";
+                } else {
+                    throw error;
+                }
+            } catch (err) {
+                status.innerText = "❌ ERRO DE CONEXÃO";
+                status.style.color = "red";
+                detalhes.innerText = "O banco ainda não respondeu. Tente o Restart no painel.";
+                console.error(err);
+            }
+        }
+        verificar();
+    </script>
+</body>
+</html>

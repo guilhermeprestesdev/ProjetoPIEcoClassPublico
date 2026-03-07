@@ -81,6 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
                 if (pointsPopup) pointsPopup.style.display = 'none';
             });
+
+            
             if (loginForm) {
                 const cpfInput = document.getElementById('login-username');
                 const senhaInput = document.getElementById('login-password');
@@ -130,6 +132,84 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // --- LÓGICA DE LOGIN E SESSÃO ---
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     const loginForm = document.getElementById('loginForm');
+//     const loginError = document.getElementById('loginError');
+    
+//     // 1. VERIFICAR SE JÁ EXISTE USUÁRIO LOGADO AO CARREGAR A PÁGINA
+//     verificarSessaoAtiva();
+
+//     if (loginForm) {
+//         loginForm.addEventListener('submit', async (e) => {
+//             e.preventDefault();
+            
+//             const identificador = document.getElementById('login-username').value; // CPF ou CNPJ
+//             const senhaDigitada = document.getElementById('login-password').value;
+
+//             try {
+//                 // 2. CONSULTAR TABELA USUARIOS NO SUPABASE
+//                 const { data, error } = await _supabase
+//                     .from('Usuarios')
+//                     .select('*')
+//                     .eq('cpf', identificador) // ou .or(`cpf.eq.${identificador},cnpj.eq.${identificador}`) se tiver PJ
+//                     .eq('senha', senhaDigitada)
+//                     .single();
+
+//                 if (error || !data) {
+//                     loginError.style.display = 'block';
+//                     return;
+//                 }
+
+//                 // 3. SUCESSO: SALVAR NA SESSÃO (localStorage)
+//                 localStorage.setItem('usuarioLogado', JSON.stringify(data));
+                
+//                 // 4. ATUALIZAR HEADER E FECHAR POPUP
+//                 atualizarInterfaceUsuario(data);
+//                 document.getElementById('loginPopup').classList.remove('show');
+//                 alert(`Bem-vindo, ${data.nome}!`);
+
+//             } catch (err) {
+//                 console.error("Erro no login:", err.message);
+//                 loginError.textContent = "Erro ao conectar ao servidor.";
+//                 loginError.style.display = 'block';
+//             }
+//         });
+//     }
+// });
+
+// // FUNÇÃO PARA MANTER O NOME NO HEADER ENTRE PÁGINAS
+// function verificarSessaoAtiva() {
+//     const usuarioSalvo = localStorage.getItem('usuarioLogado');
+//     if (usuarioSalvo) {
+//         const usuario = JSON.parse(usuarioSalvo);
+//         atualizarInterfaceUsuario(usuario);
+//     }
+// }
+
+// // FUNÇÃO PARA ATUALIZAR O HTML DO HEADER
+// function atualizarInterfaceUsuario(usuario) {
+//     const nameDisplay = document.getElementById('userNameDisplay');
+//     const pointsDisplay = document.getElementById('userPointsDisplay');
+//     const popupPoints = document.getElementById('popupPointsValue');
+
+//     if (nameDisplay) nameDisplay.textContent = usuario.nome.split(' ')[0].toUpperCase();
+//     if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos || 0}`;
+//     if (popupPoints) popupPoints.textContent = usuario.qtd_pontos || 0;
+    
+//     // Alterar o link de login para "Sair" ou ocultar o popup de login
+//     const signupLink = document.querySelector('.signup-link');
+//     if (signupLink) signupLink.innerHTML = `<a href="#" onclick="logout()">SAIR DA CONTA</a>`;
+// }
+
+// // FUNÇÃO DE LOGOUT
+// function logout() {
+//     localStorage.removeItem('usuarioLogado');
+//     window.location.reload(); // Recarrega para voltar ao estado de "Usuário" deslogado
+// }
+
 
     // Configura os links do rodapé para abrir os popups
     function setupFooterLinks() {
@@ -772,17 +852,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-    // Lógica para as páginas de cadastro PF com integração ao Supabase
-
+// 2. LÓGICA DE CADASTRO
 document.addEventListener('DOMContentLoaded', () => {
     const formPF = document.getElementById('formPessoaFisica');
-
 
     if (formPF) {
         formPF.addEventListener('submit', async (e) => {
             e.preventDefault();
-
 
             // Pegando os valores do formulário
             const nome = document.getElementById('nome').value;
@@ -792,23 +868,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
             const souEstudante = document.getElementById('sou-estudante').checked;
-           
-            // Dados de Endereço
+            
             const cep = document.getElementById('cep').value;
             const logradouro = document.getElementById('logradouro').value;
             const bairro = document.getElementById('bairro').value;
             const cidade = document.getElementById('cidade').value;
             const uf = document.getElementById('uf').value;
 
+            const btn = formPF.querySelector('.create-profile-btn');
 
             try {
-                const btn = formPF.querySelector('.create-profile-btn');
                 btn.innerText = "Cadastrando...";
                 btn.disabled = true;
 
-
-                // --- PASSO 1: Inserir na tabela 'Usuarios' ---
-                // Usamos aspas no nome da tabela para bater com seu SQL
+                // PASSO 1: Inserir na tabela 'Usuarios'
                 const { data: userRecord, error: userError } = await _supabase
                     .from('Usuarios')
                     .insert([
@@ -817,22 +890,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             cpf: cpf,
                             dt_nscto: nascimento,
                             contato: contato,
-                            "e-mail": email,
+                            "e-mail": email, // Certifique-se que o nome na tabela está com aspas e hífen
                             senha: senha,
                             estudante: souEstudante,
-                            qtd_pontos: 0 // Inicia com zero
+                            qtd_pontos: 0 
                         }
                     ])
-                    .select(); // O .select() é crucial para pegarmos o ID gerado
-
+                    .select();
 
                 if (userError) throw userError;
 
-
                 const novoUsuarioId = userRecord[0].id;
 
-
-                // --- PASSO 2: Inserir na tabela 'Enderecos' ---
+                // PASSO 2: Inserir na tabela 'Enderecos'
                 const { error: endError } = await _supabase
                     .from('Enderecos')
                     .insert([
@@ -846,28 +916,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     ]);
 
-
                 if (endError) throw endError;
 
-
-                // --- SUCESSO ---
+                // SUCESSO
                 alert('Conta criada com sucesso!');
-               
-                // Disparar confetes (opcional, mas legal para o feedback)
+                
                 if (typeof confetti === 'function') {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 }
 
-
-                // Redirecionar após sucesso
                 setTimeout(() => { window.location.href = 'EcoClass.html'; }, 2000);
-
 
             } catch (error) {
                 console.error('Erro no cadastro:', error.message);
                 alert('Erro ao cadastrar: ' + error.message);
             } finally {
-                const btn = formPF.querySelector('.create-profile-btn');
                 btn.innerText = "Criar Perfil";
                 btn.disabled = false;
             }
@@ -875,7 +938,101 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// 3. VERIFICAÇÃO DE CONEXÃO (Direto no Supabase)
+async function verificarConexao() {
+    try {
+        const { data, error } = await _supabase.from('Usuarios').select('count', { count: 'exact', head: true });
+        if (error) throw error;
+        console.log("✅ Conexão com Supabase estabelecida.");
+    } catch (err) {
+        console.error("❌ Erro ao conectar ao Supabase:", err.message);
+    }
+}
+
+window.addEventListener('load', verificarConexao);
 
 
+// 4. Lógica para a página de doação (EcoClassQueroDOar.html)
 
-    // Lógica para as páginas de cadastro PJ com integração ao Supabase
+// const MAPA_CATEGORIAS = {
+//     "Escrita": 1,
+//     "Cadernos e Papel": 2,
+//     "Desenho e Pintura": 3,
+//     "Mochilas": 4,
+//     "Organização": 5,
+//     "Corte e Colagem": 6,
+//     "Outros": 7
+// };
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     const btnCadastrar = document.querySelector('.doar-submit-btn');
+    
+//     if (btnCadastrar) {
+//         btnCadastrar.addEventListener('click', async (e) => {
+//             e.preventDefault();
+
+//             // 1. Capturar valores dos campos
+//             const categoriaTexto = document.getElementById('categoria').value;
+//             const nomeItem = document.getElementById('nome').value;
+//             const descricao = document.getElementById('descricao').value;
+//             const pontoEntrega = document.getElementById('ponto').value;
+            
+//             // Capturar o valor das estrelas (estado)
+//             const estrelasAtivas = document.querySelectorAll('.doar-star.active').length;
+//             const estadoTexto = estrelasAtivas <= 2 ? "Regular" : estrelasAtivas <= 4 ? "Bom" : "Excelente";
+
+//             // 2. Validações básicas
+//             if (categoriaTexto === "Selecionar Opção" || !nomeItem || pontoEntrega === "Selecionar Opção") {
+//                 alert("Por favor, preencha todos os campos obrigatórios.");
+//                 return;
+//             }
+
+//             try {
+//                 btnCadastrar.innerText = "Enviando...";
+//                 btnCadastrar.disabled = true;
+
+//                 // 3. Obter ID do Usuário (Simulando o usuário logado ID 4 como no seu INSERT de exemplo)
+//                 // Se você tiver sistema de login, use: (await _supabase.auth.getUser()).data.user.id
+//                 const usuarioId = 4; 
+
+//                 // 4. Inserir no Supabase
+//                 const { data, error } = await _supabase
+//                     .from('Doacao')
+//                     .insert([
+//                         {
+//                             item: nomeItem,
+//                             descricao: descricao,
+//                             x_id_categoria: MAPA_CATEGORIAS[categoriaTexto] || 7,
+//                             estado: estadoTexto,
+//                             ponto_entrega: pontoEntrega,
+//                             x_id_usuario: usuarioId,
+//                             disponivel: true, // Por padrão, entra como disponível
+//                             imagem: null      // Caso implemente upload de imagem depois
+//                         }
+//                     ]);
+
+//                 if (error) throw error;
+
+//                 // 5. Sucesso
+//                 alert("Material cadastrado com sucesso!");
+//                 window.location.href = "EcoClass.html"; // Redireciona após sucesso
+
+//             } catch (error) {
+//                 console.error("Erro ao doar:", error.message);
+//                 alert("Erro ao cadastrar doação: " + error.message);
+//             } finally {
+//                 btnCadastrar.innerText = "Cadastrar";
+//                 btnCadastrar.disabled = false;
+//             }
+//         });
+//     }
+// });
+
+// document.querySelectorAll('.doar-star').forEach(star => {
+//     star.addEventListener('click', function() {
+//         let val = this.getAttribute('data-value');
+//         document.querySelectorAll('.doar-star').forEach(s => {
+//             s.classList.toggle('active', s.getAttribute('data-value') <= val);
+//         });
+//     });
+// });
