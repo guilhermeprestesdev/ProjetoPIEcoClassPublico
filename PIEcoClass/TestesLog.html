@@ -29,56 +29,86 @@
     const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
 
-    function log(msg, classe = '') {
-        const div = document.createElement('div');
-        div.className = 'status-line ' + classe;
-        div.innerHTML = `> ${msg}`;
-        document.getElementById('log').appendChild(div);
-    }
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function executarTestes() {
-        document.getElementById('log').innerHTML = '';
-        log("Iniciando bateria de testes...");
-
-        // TESTE 1: Biblioteca
-        if (typeof supabase !== 'undefined') {
-            log("SDK Supabase carregado com sucesso.", "success");
-        } else {
-            log("FALHA: SDK não carregado. Verifique sua conexão com a internet.", "error");
-            return;
-        }
-
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // TESTE 2: Conexão de Rede / Ping na API
-        log("Pingando servidor Supabase...");
-        try {
-            const inicio = performance.now();
-            const { error } = await _supabase.from('Usuarios').select('*').limit(1);
-            const fim = performance.now();
-            
-            // Se o erro for de 'tabela não encontrada', o servidor RESPONDEU, então a conexão existe.
-            if (error && error.code === 'PGRST116' || error.message.includes('not found') || !error) {
-                log(`Conexão estabelecida! Latência: ${(fim - inicio).toFixed(2)}ms`, "success");
-            } else {
-                throw error;
-            }
-        } catch (e) {
-            log(`ERRO DE CONEXÃO: ${e.message}`, "error");
-            log("DICA: Verifique se o projeto não está PAUSADO no painel do Supabase.", "pending");
-        }
-
-        // TESTE 3: Verificação de Auth
-        log("Testando serviço de Autenticação...");
-        const { data: authData, error: authError } = await _supabase.auth.getSession();
-        if (!authError) {
-            log("Serviço de Autenticação: ONLINE", "success");
-        } else {
-            log("Serviço de Autenticação: ERRO", "error");
-        }
+    function setupHeaderPopups() {
+    // 1. PRIMEIRO: Verifica se há alguém logado e atualiza o HEADER
+    const dadosSalvos = localStorage.getItem('usuarioEcoClass');
+    if (dadosSalvos) {
+        const usuario = JSON.parse(dadosSalvos);
         
-        log("Fim dos testes.");
+        const nameDisplay = document.getElementById('userNameDisplay');
+        const pointsDisplay = document.getElementById('userPointsDisplay');
+        const popupPointsValue = document.getElementById('popupPointsValue');
+        const popupDonationsValue = document.getElementById('popupDonationsValue');
+
+        // Atualiza o que aparece no topo da página (Header)
+        if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.pontos}`;
+        
+        // Atualiza o que aparece dentro do popup de pontuação
+        if (popupPointsValue) popupPointsValue.textContent = usuario.pontos;
+        if (popupDonationsValue) popupDonationsValue.textContent = usuario.doacoes || 0;
     }
+
+    // 2. DEPOIS: Configura os eventos de clique e formulário
+    const loginInfo = document.getElementById('loginInfo');
+    const loginPopup = document.getElementById('loginPopup');
+    const loginForm = document.getElementById('loginForm');
+    const pontuacaoNavLink = document.getElementById('pontuacaoNavLink');
+    const pointsPopup = document.getElementById('pointsPopup');
+
+    if (loginInfo && loginPopup) {
+        loginInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
+            if (pointsPopup) pointsPopup.style.display = 'none';
+        });
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const cpf = document.getElementById('login-username').value;
+                const senha = document.getElementById('login-password').value;
+                const loginErrorMsg = document.getElementById('loginError');
+
+                try {
+                    // Agora a variável _supabase existe!
+                    const { data: usuario, error } = await _supabase
+                        .from('Usuarios') // Verifique se no Supabase o 'U' é maiúsculo
+                        .select('*')
+                        .eq('cpf', cpf)
+                        .eq('senha', senha)
+                        .single();
+
+                    if (error || !usuario) {
+                        loginErrorMsg.textContent = 'CPF ou senha incorretos.';
+                        loginErrorMsg.style.display = 'block';
+                        return;
+                    }
+
+                    // Salva os dados reais do banco
+                    const dadosParaPersistir = {
+                        nome: usuario.nome,
+                        pontos: usuario.pontos,
+                        doacoes: usuario.doacoes || 0,
+                        id: usuario.id
+                    };
+
+                    localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
+                    window.location.reload(); // Recarrega para aplicar ao Header
+
+                } catch (err) {
+                    console.error('Erro:', err);
+                    loginErrorMsg.textContent = 'Erro ao conectar com o banco de dados.';
+                    loginErrorMsg.style.display = 'block';
+                }
+            });
+        }
+    }
+    
+    // ... manter o restante da lógica de fechar popups clicando fora ...
+}
 </script>
 
 </body>

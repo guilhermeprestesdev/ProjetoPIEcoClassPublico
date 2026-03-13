@@ -1,5 +1,11 @@
 // script.js - Arquivo de script consolidado e otimizado para o site
 
+// // 1. Configuração do Supabase (Substitua pelos seus dados reais)
+const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA GERAL PARA CARREGAR CABEÇALHO E RODAPÉ (compartilhada) ---
 
@@ -67,71 +73,106 @@ document.addEventListener('DOMContentLoaded', function() {
         animateScroll();
     }
 
-    // --- LÓGICA PARA POPUPS DO CABEÇALHO E RODAPÉ ---
-    function setupHeaderPopups() {
-        const loginInfo = document.getElementById('loginInfo');
-        const loginPopup = document.getElementById('loginPopup');
-        const loginForm = document.getElementById('loginForm');
-        const pontuacaoNavLink = document.getElementById('pontuacaoNavLink');
-        const pointsPopup = document.getElementById('pointsPopup');
+function setupHeaderPopups() {
+    // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
+    const dadosSalvos = localStorage.getItem('usuarioEcoClass');
+    if (dadosSalvos) {
+        const usuario = JSON.parse(dadosSalvos);
+        
+        const nameDisplay = document.getElementById('userNameDisplay');
+        const pointsDisplay = document.getElementById('userPointsDisplay');
+        const popupPoints = document.getElementById('popupPointsValue');
+        const popupDonations = document.getElementById('popupDonationsValue');
 
-        if (loginInfo && loginPopup) {
-            loginInfo.addEventListener('click', function(event) {
-                event.stopPropagation();
-                loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
-                if (pointsPopup) pointsPopup.style.display = 'none';
-            });
+        if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.pontos}`;
+        if (popupPoints) popupPoints.textContent = usuario.pontos;
+        if (popupDonations) popupDonations.textContent = usuario.doacoes || 0;
+    }
 
-            
-            if (loginForm) {
-                const cpfInput = document.getElementById('login-username');
-                const senhaInput = document.getElementById('login-password');
+    // --- 2. SELEÇÃO DE ELEMENTOS ---
+    const loginInfo = document.getElementById('loginInfo');
+    const loginPopup = document.getElementById('loginPopup');
+    const loginForm = document.getElementById('loginForm');
+    const pontuacaoNavLink = document.getElementById('pontuacaoNavLink');
+    const pointsPopup = document.getElementById('pointsPopup');
+
+    // --- 3. LÓGICA DE LOGIN ---
+    if (loginInfo && loginPopup) {
+        loginInfo.addEventListener('click', function(event) {
+            event.stopPropagation();
+            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
+            if (pointsPopup) pointsPopup.style.display = 'none';
+        });
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                const cpf = document.getElementById('login-username').value;
+                const senha = document.getElementById('login-password').value;
                 const loginErrorMsg = document.getElementById('loginError');
 
-                loginForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    
-                    const cpf = cpfInput.value;
-                    const senha = senhaInput.value;
-                    const cpfValido = '01234567890';
-                    const senhaValida = '123456';
+                try {
+                    // Chamada à API do Supabase
+                    const { data: usuario, error } = await _supabase
+                        .from('Usuarios')
+                        .select('*')
+                        .eq('cpf', cpf)
+                        .eq('senha', senha)
+                        .single();
 
-                    if (cpf === cpfValido && senha === senhaValida) {
-                        document.getElementById('userNameDisplay').textContent = 'Tibúrcio';
-                        document.getElementById('userPointsDisplay').textContent = 'PONTOS: 75';
-                        if (pointsPopup) {
-                            document.getElementById('popupPointsValue').textContent = '75';
-                            document.getElementById('popupDonationsValue').textContent = '4';
-                        }
-                        
-                        console.log('Login realizado com sucesso!');
-                        loginPopup.style.display = 'none';
-                        loginForm.reset();
-                        loginErrorMsg.style.display = 'none';
-                    } else {
+                    if (error || !usuario) {
                         loginErrorMsg.textContent = 'CPF ou senha incorretos.';
                         loginErrorMsg.style.display = 'block';
+                        return;
                     }
-                });
-            }
-        }
-        if (pontuacaoNavLink && pointsPopup) {
-            pontuacaoNavLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                pointsPopup.style.display = pointsPopup.style.display === 'block' ? 'none' : 'block';
-                if (loginPopup) loginPopup.style.display = 'none';
+
+                    // Prepara os dados para salvar
+                    const dadosParaPersistir = {
+                        nome: usuario.nome,
+                        pontos: usuario.pontos,
+                        doacoes: usuario.doacoes || 0,
+                        id: usuario.id
+                    };
+
+                    // Salva no navegador para persistir entre páginas
+                    localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
+
+                    console.log('Login realizado com sucesso!');
+                    loginPopup.style.display = 'none';
+                    
+                    // Recarrega para aplicar os dados no header
+                    window.location.reload(); 
+
+                } catch (err) {
+                    console.error('Erro na requisição:', err);
+                    loginErrorMsg.textContent = 'Erro ao conectar com o servidor.';
+                    loginErrorMsg.style.display = 'block';
+                }
             });
         }
-        document.addEventListener('click', function(event) {
-            if (loginPopup && loginPopup.style.display === 'block' && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
-                loginPopup.style.display = 'none';
-            }
-            if (pointsPopup && pointsPopup.style.display === 'block' && !pontuacaoNavLink.contains(event.target) && !pointsPopup.contains(event.target)) {
-                pointsPopup.style.display = 'none';
-            }
+    }
+
+    // --- 4. POPUP DE PONTUAÇÃO E FECHAMENTO CLICANDO FORA ---
+    if (pontuacaoNavLink && pointsPopup) {
+        pontuacaoNavLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            pointsPopup.style.display = pointsPopup.style.display === 'block' ? 'none' : 'block';
+            if (loginPopup) loginPopup.style.display = 'none';
         });
     }
+
+    document.addEventListener('click', function(event) {
+        if (loginPopup && loginPopup.style.display === 'block' && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
+            loginPopup.style.display = 'none';
+        }
+        if (pointsPopup && pointsPopup.style.display === 'block' && !pontuacaoNavLink.contains(event.target) && !pointsPopup.contains(event.target)) {
+            pointsPopup.style.display = 'none';
+        }
+    });
+}
 
     // --- LÓGICA DE LOGIN E SESSÃO ---
 
@@ -774,9 +815,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 1. Configuração do Supabase (Substitua pelos seus dados reais)
-const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
+// // // 1. Configuração do Supabase (Substitua pelos seus dados reais)
+// const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
+// const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
 
 
 const { createClient } = supabase;
@@ -1036,3 +1077,4 @@ window.addEventListener('load', verificarConexao);
 //         });
 //     });
 // });
+
