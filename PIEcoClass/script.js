@@ -85,8 +85,8 @@ function setupHeaderPopups() {
         const popupDonations = document.getElementById('popupDonationsValue');
 
         if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
-        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.pontos}`;
-        if (popupPoints) popupPoints.textContent = usuario.pontos;
+        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
+        if (popupPoints) popupPoints.textContent = usuario.qtd_pontos;
         if (popupDonations) popupDonations.textContent = usuario.doacoes || 0;
     }
 
@@ -128,10 +128,11 @@ function setupHeaderPopups() {
                         return;
                     }
 
+
                     // Prepara os dados para salvar
                     const dadosParaPersistir = {
                         nome: usuario.nome,
-                        pontos: usuario.pontos,
+                        qtd_pontos: usuario.qtd_pontos,
                         doacoes: usuario.doacoes || 0,
                         id: usuario.id
                     };
@@ -173,84 +174,6 @@ function setupHeaderPopups() {
         }
     });
 }
-
-    // --- LÓGICA DE LOGIN E SESSÃO ---
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const loginForm = document.getElementById('loginForm');
-//     const loginError = document.getElementById('loginError');
-    
-//     // 1. VERIFICAR SE JÁ EXISTE USUÁRIO LOGADO AO CARREGAR A PÁGINA
-//     verificarSessaoAtiva();
-
-//     if (loginForm) {
-//         loginForm.addEventListener('submit', async (e) => {
-//             e.preventDefault();
-            
-//             const identificador = document.getElementById('login-username').value; // CPF ou CNPJ
-//             const senhaDigitada = document.getElementById('login-password').value;
-
-//             try {
-//                 // 2. CONSULTAR TABELA USUARIOS NO SUPABASE
-//                 const { data, error } = await _supabase
-//                     .from('Usuarios')
-//                     .select('*')
-//                     .eq('cpf', identificador) // ou .or(`cpf.eq.${identificador},cnpj.eq.${identificador}`) se tiver PJ
-//                     .eq('senha', senhaDigitada)
-//                     .single();
-
-//                 if (error || !data) {
-//                     loginError.style.display = 'block';
-//                     return;
-//                 }
-
-//                 // 3. SUCESSO: SALVAR NA SESSÃO (localStorage)
-//                 localStorage.setItem('usuarioLogado', JSON.stringify(data));
-                
-//                 // 4. ATUALIZAR HEADER E FECHAR POPUP
-//                 atualizarInterfaceUsuario(data);
-//                 document.getElementById('loginPopup').classList.remove('show');
-//                 alert(`Bem-vindo, ${data.nome}!`);
-
-//             } catch (err) {
-//                 console.error("Erro no login:", err.message);
-//                 loginError.textContent = "Erro ao conectar ao servidor.";
-//                 loginError.style.display = 'block';
-//             }
-//         });
-//     }
-// });
-
-// // FUNÇÃO PARA MANTER O NOME NO HEADER ENTRE PÁGINAS
-// function verificarSessaoAtiva() {
-//     const usuarioSalvo = localStorage.getItem('usuarioLogado');
-//     if (usuarioSalvo) {
-//         const usuario = JSON.parse(usuarioSalvo);
-//         atualizarInterfaceUsuario(usuario);
-//     }
-// }
-
-// // FUNÇÃO PARA ATUALIZAR O HTML DO HEADER
-// function atualizarInterfaceUsuario(usuario) {
-//     const nameDisplay = document.getElementById('userNameDisplay');
-//     const pointsDisplay = document.getElementById('userPointsDisplay');
-//     const popupPoints = document.getElementById('popupPointsValue');
-
-//     if (nameDisplay) nameDisplay.textContent = usuario.nome.split(' ')[0].toUpperCase();
-//     if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos || 0}`;
-//     if (popupPoints) popupPoints.textContent = usuario.qtd_pontos || 0;
-    
-//     // Alterar o link de login para "Sair" ou ocultar o popup de login
-//     const signupLink = document.querySelector('.signup-link');
-//     if (signupLink) signupLink.innerHTML = `<a href="#" onclick="logout()">SAIR DA CONTA</a>`;
-// }
-
-// // FUNÇÃO DE LOGOUT
-// function logout() {
-//     localStorage.removeItem('usuarioLogado');
-//     window.location.reload(); // Recarrega para voltar ao estado de "Usuário" deslogado
-// }
-
 
     // Configura os links do rodapé para abrir os popups
     function setupFooterLinks() {
@@ -991,90 +914,3 @@ async function verificarConexao() {
 }
 
 window.addEventListener('load', verificarConexao);
-
-
-// 4. Lógica para a página de doação (EcoClassQueroDOar.html)
-
-// const MAPA_CATEGORIAS = {
-//     "Escrita": 1,
-//     "Cadernos e Papel": 2,
-//     "Desenho e Pintura": 3,
-//     "Mochilas": 4,
-//     "Organização": 5,
-//     "Corte e Colagem": 6,
-//     "Outros": 7
-// };
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const btnCadastrar = document.querySelector('.doar-submit-btn');
-    
-//     if (btnCadastrar) {
-//         btnCadastrar.addEventListener('click', async (e) => {
-//             e.preventDefault();
-
-//             // 1. Capturar valores dos campos
-//             const categoriaTexto = document.getElementById('categoria').value;
-//             const nomeItem = document.getElementById('nome').value;
-//             const descricao = document.getElementById('descricao').value;
-//             const pontoEntrega = document.getElementById('ponto').value;
-            
-//             // Capturar o valor das estrelas (estado)
-//             const estrelasAtivas = document.querySelectorAll('.doar-star.active').length;
-//             const estadoTexto = estrelasAtivas <= 2 ? "Regular" : estrelasAtivas <= 4 ? "Bom" : "Excelente";
-
-//             // 2. Validações básicas
-//             if (categoriaTexto === "Selecionar Opção" || !nomeItem || pontoEntrega === "Selecionar Opção") {
-//                 alert("Por favor, preencha todos os campos obrigatórios.");
-//                 return;
-//             }
-
-//             try {
-//                 btnCadastrar.innerText = "Enviando...";
-//                 btnCadastrar.disabled = true;
-
-//                 // 3. Obter ID do Usuário (Simulando o usuário logado ID 4 como no seu INSERT de exemplo)
-//                 // Se você tiver sistema de login, use: (await _supabase.auth.getUser()).data.user.id
-//                 const usuarioId = 4; 
-
-//                 // 4. Inserir no Supabase
-//                 const { data, error } = await _supabase
-//                     .from('Doacao')
-//                     .insert([
-//                         {
-//                             item: nomeItem,
-//                             descricao: descricao,
-//                             x_id_categoria: MAPA_CATEGORIAS[categoriaTexto] || 7,
-//                             estado: estadoTexto,
-//                             ponto_entrega: pontoEntrega,
-//                             x_id_usuario: usuarioId,
-//                             disponivel: true, // Por padrão, entra como disponível
-//                             imagem: null      // Caso implemente upload de imagem depois
-//                         }
-//                     ]);
-
-//                 if (error) throw error;
-
-//                 // 5. Sucesso
-//                 alert("Material cadastrado com sucesso!");
-//                 window.location.href = "EcoClass.html"; // Redireciona após sucesso
-
-//             } catch (error) {
-//                 console.error("Erro ao doar:", error.message);
-//                 alert("Erro ao cadastrar doação: " + error.message);
-//             } finally {
-//                 btnCadastrar.innerText = "Cadastrar";
-//                 btnCadastrar.disabled = false;
-//             }
-//         });
-//     }
-// });
-
-// document.querySelectorAll('.doar-star').forEach(star => {
-//     star.addEventListener('click', function() {
-//         let val = this.getAttribute('data-value');
-//         document.querySelectorAll('.doar-star').forEach(s => {
-//             s.classList.toggle('active', s.getAttribute('data-value') <= val);
-//         });
-//     });
-// });
-
