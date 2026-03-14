@@ -133,7 +133,7 @@ function setupHeaderPopups() {
                     const dadosParaPersistir = {
                         nome: usuario.nome,
                         qtd_pontos: usuario.qtd_pontos,
-                        doacoes: usuario.doacoes || 0,
+                        doacoes: usuario.qtd_doacoes || 0,
                         id: usuario.id
                     };
 
