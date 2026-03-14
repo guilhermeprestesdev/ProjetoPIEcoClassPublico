@@ -118,12 +118,12 @@ function setupHeaderPopups() {
                     const { data: usuario, error } = await _supabase
                         .from('Usuarios')
                         .select('*')
-                        .eq('cpf', cpf)
+                        .eq('cpf', cpf || 'cnpj', cpf) // Permite login tanto por CPF quanto por CNPJ
                         .eq('senha', senha)
                         .single();
 
                     if (error || !usuario) {
-                        loginErrorMsg.textContent = 'CPF ou senha incorretos.';
+                        loginErrorMsg.textContent = 'CPF/CNPJ ou senha incorretos.';
                         loginErrorMsg.style.display = 'block';
                         return;
                     }
@@ -738,18 +738,11 @@ function setupHeaderPopups() {
     }
 });
 
-// // // 1. Configuração do Supabase (Substitua pelos seus dados reais)
-// const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
-// const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
-
-
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-
-// IDs para teste (conforme seu banco)
+const ID_USUARIO_LOGADO = JSON.parse(localStorage.getItem('usuarioEcoClass'))?.id;
 const ID_DOACAO_ATUAL = 1;
-const ID_USUARIO_LOGADO = 1;
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
