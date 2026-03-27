@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação de Material</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+
+    <script src="script.js"></script>
+
+    <div id="header-placeholder"></div>
+
+    <div class="receber-main-content">
+        <div class="receber-container">
+            <button type="button" class="receber-back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i> </button>
+
+            <form id="solicitacaoForm" novalidate>
+                <label for="categoria">Categoria</label>
+                <select id="categoria" name="categoria" required disabled>
+                    <option value="">Selecionar Opção</option>
+                    <option value="escrita" selected>Escrita</option> <option value="cadernos-e-papel">Cadernos e Papel</option>
+                    <option value="desenho-e-pintura">Desenho e Pintura</option>
+                    <option value="mochilas">Mochilas</option>
+                    <option value="organizacao">Organização</option>
+                    <option value="corte-e-colagem">Corte e Colagem</option>
+                    <option value="outros">Outros</option>
+                </select>
+
+                <label for="material">Material</label>
+                <select id="material" name="material" required disabled>
+                    <option value="">Selecionar Opção</option>
+                    <option value="lapis" selected>Lápis</option> <option value="caneta">Caneta</option>
+                </select>
+
+                <div class="receber-image-upload">
+                    <img src="https://images.hellomagazine.com/horizon/original_aspect_ratio/e54e307f9f98-crayons-a.jpg?tx=c_limit,w_960" class="receber-image-upload">
+                </div>
+
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao"
+                    placeholder="o material está em bom estado, porém falta algumas cores. "
+                    readonly>o material está em bom estado, porém falta algumas cores.</textarea>
+
+                <label for="estado">Estado do Material</label>
+                <div class="receber-stars" id="receber-stars">
+                    <span class="receber-star filled" data-value="1">★</span>
+                    <span class="receber-star filled" data-value="2">★</span>
+                    <span class="receber-star filled" data-value="3">★</span>
+                    <span class="receber-star filled" data-value="4">★</span>
+                    <span class="receber-star" data-value="5">★</span>
+                </div>
+                <input type="hidden" id="ratingValue" name="ratingValue" value="4"> <button type="submit" class="receber-submit-btn">Solicitar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

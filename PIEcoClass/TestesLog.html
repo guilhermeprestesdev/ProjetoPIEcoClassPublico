@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Console de Diagnóstico - Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Courier New', monospace; background: #1a1a1a; color: #00ff00; padding: 20px; }
+        .terminal { background: #000; border: 1px solid #333; padding: 20px; border-radius: 5px; box-shadow: 0 0 20px rgba(0,255,0,0.1); }
+        .status-line { margin: 10px 0; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .pending { color: #ffff00; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        button:hover { background: #00cc00; }
+    </style>
+</head>
+<body>
+
+<div class="terminal">
+    <h2>> SUPABASE_DIAGNOSTIC_TOOL</h2>
+    <div id="log">
+        <div class="status-line" id="step1">Iniciando sistema...</div>
+    </div>
+    <button onclick="executarTestes()">EXECUTAR TESTE DE CONEXÃO</button>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
+
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function setupHeaderPopups() {
+    // 1. PRIMEIRO: Verifica se há alguém logado e atualiza o HEADER
+    const dadosSalvos = localStorage.getItem('usuarioEcoClass');
+    if (dadosSalvos) {
+        const usuario = JSON.parse(dadosSalvos);
+        
+        const nameDisplay = document.getElementById('userNameDisplay');
+        const pointsDisplay = document.getElementById('userPointsDisplay');
+        const popupPointsValue = document.getElementById('popupPointsValue');
+        const popupDonationsValue = document.getElementById('popupDonationsValue');
+
+        // Atualiza o que aparece no topo da página (Header)
+        if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.pontos}`;
+        
+        // Atualiza o que aparece dentro do popup de pontuação
+        if (popupPointsValue) popupPointsValue.textContent = usuario.pontos;
+        if (popupDonationsValue) popupDonationsValue.textContent = usuario.doacoes || 0;
+    }
+
+    // 2. DEPOIS: Configura os eventos de clique e formulário
+    const loginInfo = document.getElementById('loginInfo');
+    const loginPopup = document.getElementById('loginPopup');
+    const loginForm = document.getElementById('loginForm');
+    const pontuacaoNavLink = document.getElementById('pontuacaoNavLink');
+    const pointsPopup = document.getElementById('pointsPopup');
+
+    if (loginInfo && loginPopup) {
+        loginInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
+            if (pointsPopup) pointsPopup.style.display = 'none';
+        });
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const cpf = document.getElementById('login-username').value;
+                const senha = document.getElementById('login-password').value;
+                const loginErrorMsg = document.getElementById('loginError');
+
+                try {
+                    // Agora a variável _supabase existe!
+                    const { data: usuario, error } = await _supabase
+                        .from('Usuarios') // Verifique se no Supabase o 'U' é maiúsculo
+                        .select('*')
+                        .eq('cpf', cpf)
+                        .eq('senha', senha)
+                        .single();
+
+                    if (error || !usuario) {
+                        loginErrorMsg.textContent = 'CPF ou senha incorretos.';
+                        loginErrorMsg.style.display = 'block';
+                        return;
+                    }
+
+                    // Salva os dados reais do banco
+                    const dadosParaPersistir = {
+                        nome: usuario.nome,
+                        pontos: usuario.pontos,
+                        doacoes: usuario.doacoes || 0,
+                        id: usuario.id
+                    };
+
+                    localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
+                    window.location.reload(); // Recarrega para aplicar ao Header
+
+                } catch (err) {
+                    console.error('Erro:', err);
+                    loginErrorMsg.textContent = 'Erro ao conectar com o banco de dados.';
+                    loginErrorMsg.style.display = 'block';
+                }
+            });
+        }
+    }
+    
+    // ... manter o restante da lógica de fechar popups clicando fora ...
+}
+</script>
+
+</body>
+</html>
