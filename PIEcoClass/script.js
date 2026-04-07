@@ -263,163 +263,85 @@ function setupHeaderPopups() {
 
     // --- LÓGICA ESPECÍFICA PARA AS PÁGINAS DE CADASTRO (DOAR) E SOLICITAÇÃO (RECEBER) ---
 
-    // Lógica de validação e funcionalidade do formulário de doação
-        if (submitBtn) {
-            // Transformamos a função em async para poder usar o await do Supabase
-            submitBtn.addEventListener('click', async function(event) {
-                event.preventDefault();
+    const mapCategorias = {
+    "Escrita": 1,
+    "Cadernos e Papel": 2,
+    "Desenho e Pintura": 3,
+    "Mochilas": 4,
+    "Organização": 5,
+    "Corte e Colagem": 6,
+    "Outros": 7
+};
 
-                const fileInput = document.getElementById('imagem');
-                const categoriaSelect = document.getElementById('categoria');
-                const nomeInput = document.getElementById('nome');
-                const descricaoTextarea = document.getElementById('descricao');
-                const pontoSelect = document.getElementById('ponto');
-                const starsContainer = document.getElementById('doar-stars');
-                const ratingInput = starsContainer.querySelector('input[type="hidden"]');
-                
-                // Limpa mensagens de erro antigas
-                const oldMessages = materialFormContainer.querySelectorAll('.validation-message');
-                oldMessages.forEach(msg => msg.remove());
 
-                let formIsValid = true;
-                const fieldsToValidate = [
-                    { element: fileInput, condition: fileInput.files.length === 0, message: 'Por favor, adicione uma imagem para o material.' },
-                    { element: categoriaSelect, condition: categoriaSelect.value === 'Selecionar Opção' || categoriaSelect.value === '', message: 'Por favor, selecione uma categoria.' },
-                    { element: nomeInput, condition: nomeInput.value.trim() === '', message: 'Por favor, preencha o nome do material.' },
-                    { element: descricaoTextarea, condition: descricaoTextarea.value.trim() === '', message: 'Por favor, preencha a descrição do material.' },
-                    { element: ratingInput, condition: ratingInput.value === '0', message: 'Por favor, selecione o estado do material (estrelas).' },
-                    { element: pontoSelect, condition: pontoSelect.value === 'Selecionar Opção' || pontoSelect.value === '', message: 'Por favor, selecione um ponto de entrega.' }
-                ];
+    // Lógica para a página de Cadastro de Material (querodoar.html)
+    const materialFormContainer = document.querySelector('.doar-form-container');
+    if (materialFormContainer) {
+        const materialForm = document.getElementById('materialForm');
+        const submitBtn = materialFormContainer.querySelector('.doar-submit-btn');
 
-                fieldsToValidate.forEach(field => {
-                    const targetElement = field.element;
-                    if (field.condition) {
-                        showValidationMessage(targetElement, field.message);
-                        formIsValid = false;
-                    } else {
-                        targetElement.classList.remove('is-invalid');
+        // Lógica de validação e funcionalidade do formulário de doação
+        // Dentro de: if (materialFormContainer) { ...
+if (submitBtn) {
+    submitBtn.addEventListener('click', async function(event) {
+        event.preventDefault();
+
+        // Referências dos campos
+        const categoriaSelect = document.getElementById('categoria');
+        const nomeInput = document.getElementById('nome');
+        const descricaoTextarea = document.getElementById('descricao');
+        const pontoSelect = document.getElementById('ponto');
+        const ratingInput = document.getElementById('doarRatingValue');
+
+        // Validação básica (opcional, mas recomendada)
+        if (categoriaSelect.value === 'Selecionar Opção' || nomeInput.value.trim() === '') {
+            alert("Por favor, preencha os campos obrigatórios.");
+            return;
+        }
+
+        if (!ID_USUARIO_LOGADO) {
+            alert("Você precisa estar logado para doar!");
+            return;
+        }
+
+        try {
+            submitBtn.innerText = "Cadastrando...";
+            submitBtn.disabled = true;
+
+            // Envio para o Supabase
+            const { data, error } = await _supabase
+                .from('Doacao')
+                .insert([
+                    {
+                        item: nomeInput.value,
+                        descricao: descricaoTextarea.value,
+                        x_id_categoria: mapCategorias[categoriaSelect.value] || 7,
+                        estado: ratingInput.value + " estrelas", // Ou apenas o número
+                        ponto_entrega: pontoSelect.value,
+                        x_id_usuario: ID_USUARIO_LOGADO,
+                        imagem: null, // Ignorado conforme solicitado
+                        disponivel: true
                     }
-                });
+                ]);
 
-                if (formIsValid) {
-                    // Feedback visual de carregamento
-                    const textoOriginalBotao = submitBtn.innerText;
-                    submitBtn.innerText = "Cadastrando...";
-                    submitBtn.disabled = true;
+            if (error) throw error;
 
-                    try {
-                        // 1. Pega o ID do usuário logado no localStorage
-                        const dadosSalvos = localStorage.getItem('usuarioEcoClass');
-                        if (!dadosSalvos) throw new Error("Usuário não está logado. Faça o login para doar.");
-                        const usuario = JSON.parse(dadosSalvos);
-                        const idUsuario = usuario.id;
+            // Sucesso: Confetes e Redirecionamento
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+            }
 
-                        // 2. Converte a nota em estrelas para o texto de estado
-                        const nota = parseInt(ratingInput.value);
-                        let estadoMaterial = "Marcas de uso"; // Padrão
-                        if (nota === 5) estadoMaterial = "Excelente / Nunca usado";
-                        if (nota === 4) estadoMaterial = "Bom";
-                        if (nota === 3) estadoMaterial = "Marcas de uso leve";
-                        if (nota <= 2) estadoMaterial = "Muito usado";
+            showSuccessMessage('Doação cadastrada com sucesso!', 'EcoClass.html');
 
-                        // 3. Insere os dados no Supabase
-                        const { data, error } = await _supabase
-                            .from('Doacao')
-                            .insert([
-                                {
-                                    imagem: null, // Por enquanto enviando null (Requer Supabase Storage para imagem real)
-                                    x_id_categoria: parseInt(categoriaSelect.value), // Cuidado: O 'value' do seu <select> no HTML precisa ser o número do ID da categoria!
-                                    item: nomeInput.value.trim(),
-                                    descricao: descricaoTextarea.value.trim(),
-                                    estado: estadoMaterial, 
-                                    ponto_entrega: pontoSelect.value.trim(), 
-                                    x_id_usuario: idUsuario,
-                                    disponivel: true // Material entra como disponível por padrão
-                                }
-                            ]);
-
-                        if (error) throw error;
-
-                        console.log("Doação salva no banco:", data);
-
-                        // 4. Animação e redirecionamento de sucesso
-                        if (typeof confetti === 'function') {
-                            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-                        }
-                        showSuccessMessage('Doação cadastrada com sucesso! Redirecionando...', 'EcoClass.html');
-
-                    } catch (err) {
-                        console.error('Erro na inserção do Supabase:', err);
-                        showValidationMessage(submitBtn, err.message || 'Erro ao comunicar com o servidor.');
-                    } finally {
-                        // Restaura o botão caso dê erro
-                        submitBtn.innerText = textoOriginalBotao;
-                        submitBtn.disabled = false;
-                    }
-                }
-            });
-        // }
-
-        //validar deste trecho até o final da função de clique do submitBtn como um todo, pois é a parte que lida com a validação e envio dos dados da doação, que é uma funcionalidade crítica e específica da página de doação (querodoar.html). O restante do código, embora relacionado, inclui funcionalidades mais gerais (como o sistema de estrelas e upload de imagem) que podem ser consideradas separadamente.
-
-    // // Lógica para a página de Cadastro de Material (querodoar.html)
-    // const materialFormContainer = document.querySelector('.doar-form-container');
-    // if (materialFormContainer) {
-    //     const materialForm = document.getElementById('materialForm');
-    //     const submitBtn = materialFormContainer.querySelector('.doar-submit-btn');
-
-    //     // Lógica de validação e funcionalidade do formulário de doação
-    //     if (submitBtn) {
-    //         submitBtn.addEventListener('click', function(event) {
-    //             event.preventDefault();
-
-    //             const fileInput = document.getElementById('imagem');
-    //             const categoriaSelect = document.getElementById('categoria');
-    //             const nomeInput = document.getElementById('nome');
-    //             const descricaoTextarea = document.getElementById('descricao');
-    //             const pontoSelect = document.getElementById('ponto');
-    //             const starsContainer = document.getElementById('doar-stars');
-    //             const ratingInput = starsContainer.querySelector('input[type="hidden"]');  // O input hidden que armazena a avaliação em estrelas
-                
-    //             // Clear existing validation messages
-    //             const oldMessages = materialFormContainer.querySelectorAll('.validation-message');
-    //             oldMessages.forEach(msg => msg.remove());
-
-    //             let formIsValid = true;
-    //             const fieldsToValidate = [
-    //                 { element: fileInput, condition: fileInput.files.length === 0, message: 'Por favor, adicione uma imagem para o material.' },
-    //                 { element: categoriaSelect, condition: categoriaSelect.value === 'Selecionar Opção', message: 'Por favor, selecione uma categoria.' },
-    //                 { element: nomeInput, condition: nomeInput.value.trim() === '', message: 'Por favor, preencha o nome do material.' },
-    //                 { element: descricaoTextarea, condition: descricaoTextarea.value.trim() === '', message: 'Por favor, preencha a descrição do material.' },
-    //                 { element: ratingInput, condition: ratingInput.value === '0', message: 'Por favor, selecione o estado do material (estrelas).' },
-    //                 { element: pontoSelect, condition: pontoSelect.value === 'Selecionar Opção', message: 'Por favor, selecione um ponto de entrega.' }
-    //             ];
-
-    //             fieldsToValidate.forEach(field => { 
-    //                 const targetElement = field.element;
-    //                 if (field.condition) {
-    //                     showValidationMessage(targetElement, field.message); 
-    //                     formIsValid = false;
-    //                 } else {
-    //                     targetElement.classList.remove('is-invalid');
-    //                 }
-    //             });
-
-    //             if (formIsValid) {
-    //                 // Start confetti animation
-    //                 if (typeof confetti === 'function') {
-    //                     confetti({
-    //                         particleCount: 150,
-    //                         spread: 90,
-    //                         origin: { y: 0.6 }
-    //                     });
-    //                 }
-
-    //                 // Show success message and redirect
-    //                 showSuccessMessage('Doação cadastrada com sucesso! Redirecionando...', 'EcoClass.html');
-    //             }
-    //         });
-    //     }
+        } catch (error) {
+            console.error('Erro ao inserir:', error.message);
+            alert('Erro ao salvar no banco: ' + error.message);
+        } finally {
+            submitBtn.innerText = "Cadastrar";
+            submitBtn.disabled = false;
+        }
+    });
+}
         
         // Lógica do sistema de estrelas para a página de doação
         const starsContainer = document.getElementById('doar-stars');
