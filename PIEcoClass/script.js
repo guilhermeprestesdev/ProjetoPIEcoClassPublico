@@ -273,6 +273,9 @@ function setupHeaderPopups() {
     "Outros": 7
 };
 
+// 1. Mapeamento de pontos base por categoria
+const basePointsMap = { 1: 10, 2: 15, 3: 20, 4: 35, 5: 15, 6: 15, 7: 20 };
+
 
     // Lógica para a página de Cadastro de Material (querodoar.html)
     const materialFormContainer = document.querySelector('.doar-form-container');
@@ -285,6 +288,7 @@ function setupHeaderPopups() {
 if (submitBtn) {
     submitBtn.addEventListener('click', async function(event) {
         event.preventDefault();
+
 
         // Referências dos campos
         const categoriaSelect = document.getElementById('categoria');
@@ -305,42 +309,74 @@ if (submitBtn) {
         }
 
         try {
-            submitBtn.innerText = "Cadastrando...";
-            submitBtn.disabled = true;
+        submitBtn.innerText = "Processando...";
+        submitBtn.disabled = true;
 
-            // Envio para o Supabase
-            const { data, error } = await _supabase
-                .from('Doacao')
-                .insert([
-                    {
-                        item: nomeInput.value,
-                        descricao: descricaoTextarea.value,
-                        x_id_categoria: mapCategorias[categoriaSelect.value] || 7,
-                        estado: ratingInput.value + " estrelas", // Ou apenas o número
-                        ponto_entrega: pontoSelect.value,
-                        x_id_usuario: ID_USUARIO_LOGADO,
-                        imagem: null, // Ignorado conforme solicitado
-                        disponivel: true
-                    }
-                ]);
+        const catId = mapCategorias[categoriaSelect.value] || 7;
+        const estrelas = parseInt(ratingInput.value) || 0;
 
-            if (error) throw error;
+        // PASSO 1: Inserir a Doação
+        const { error: errorDoacao } = await _supabase
+            .from('Doacao')
+            .insert([{
+                item: nomeInput.value,
+                descricao: descricaoTextarea.value,
+                x_id_categoria: catId,
+                estado: estrelas + " estrelas",
+                ponto_entrega: pontoSelect.value,
+                x_id_usuario: ID_USUARIO_LOGADO,
+                imagem: null,
+                disponivel: true
+            }]);
 
-            // Sucesso: Confetes e Redirecionamento
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-            }
+        if (errorDoacao) throw errorDoacao;
 
-            showSuccessMessage('Doação cadastrada com sucesso!', 'EcoClass.html');
+        // PASSO 2: Buscar dados atuais do usuário para somar
+        const { data: usuario, error: errorUser } = await _supabase
+            .from('Usuarios')
+            .select('qtd_pontos, qtd_doacoes')
+            .eq('id', ID_USUARIO_LOGADO)
+            .single();
 
-        } catch (error) {
-            console.error('Erro ao inserir:', error.message);
-            alert('Erro ao salvar no banco: ' + error.message);
-        } finally {
-            submitBtn.innerText = "Cadastrar";
-            submitBtn.disabled = false;
+        if (errorUser) throw errorUser;
+
+        // PASSO 3: Calcular novos valores
+        const novosPontos = (usuario.qtd_pontos || 0) + (basePointsMap[catId] || 0) + estrelas;
+        const novasDoacoes = (usuario.qtd_doacoes || 0) + 1;
+
+        // PASSO 4: Atualizar tabela Usuarios
+        const { error: errorUpdate } = await _supabase
+            .from('Usuarios')
+            .update({ 
+                qtd_pontos: novosPontos, 
+                qtd_doacoes: novasDoacoes 
+            })
+            .eq('id', ID_USUARIO_LOGADO);
+
+        if (errorUpdate) throw errorUpdate;
+
+        // PASSO 5: Atualizar LocalStorage (para o header atualizar sem refresh)
+        const usuarioLocal = JSON.parse(localStorage.getItem('usuarioEcoClass'));
+        if (usuarioLocal) {
+            usuarioLocal.qtd_pontos = novosPontos;
+            usuarioLocal.doacoes = novasDoacoes;
+            localStorage.setItem('usuarioEcoClass', JSON.stringify(usuarioLocal));
         }
-    });
+
+        // Sucesso
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+        }
+        showSuccessMessage('Doação e pontos registrados!', 'EcoClass.html');
+
+    } catch (error) {
+        console.error('Erro:', error.message);
+        alert('Erro na operação: ' + error.message);
+    } finally {
+        submitBtn.innerText = "Cadastrar";
+        submitBtn.disabled = false;
+    }
+});
 }
         
         // Lógica do sistema de estrelas para a página de doação
