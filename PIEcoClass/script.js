@@ -343,7 +343,7 @@ if (arquivo) {
                     item: nomeInput.value,
                     descricao: descricaoTextarea.value,
                     x_id_categoria: catId,
-                    estado: estrelas + " estrelas",
+                    estado: estrelas,
                     ponto_entrega: pontoSelect.value,
                     x_id_usuario: ID_USUARIO_LOGADO,
                     imagem: urlPublica, // Link do Storage salvo aqui
@@ -394,102 +394,6 @@ if (arquivo) {
         }
     });
 }
-
-
-
-// if (submitBtn) {
-//     submitBtn.addEventListener('click', async function(event) {
-//         event.preventDefault();
-
-
-//         // Referências dos campos
-//         const categoriaSelect = document.getElementById('categoria');
-//         const nomeInput = document.getElementById('nome');
-//         const descricaoTextarea = document.getElementById('descricao');
-//         const pontoSelect = document.getElementById('ponto');
-//         const ratingInput = document.getElementById('doarRatingValue');
-
-//         // Validação básica (opcional, mas recomendada)
-//         if (categoriaSelect.value === 'Selecionar Opção' || nomeInput.value.trim() === '') {
-//             alert("Por favor, preencha os campos obrigatórios.");
-//             return;
-//         }
-
-//         if (!ID_USUARIO_LOGADO) {
-//             alert("Você precisa estar logado para doar!");
-//             return;
-//         }
-
-//         try {
-//         submitBtn.innerText = "Processando...";
-//         submitBtn.disabled = true;
-
-//         const catId = mapCategorias[categoriaSelect.value] || 7;
-//         const estrelas = parseInt(ratingInput.value) || 0;
-
-//         // PASSO 1: Inserir a Doação
-//         const { error: errorDoacao } = await _supabase
-//             .from('Doacao')
-//             .insert([{
-//                 item: nomeInput.value,
-//                 descricao: descricaoTextarea.value,
-//                 x_id_categoria: catId,
-//                 estado: estrelas,
-//                 ponto_entrega: pontoSelect.value,
-//                 x_id_usuario: ID_USUARIO_LOGADO,
-//                 imagem: null,
-//                 disponivel: true
-//             }]);
-
-//         if (errorDoacao) throw errorDoacao;
-
-//         // PASSO 2: Buscar dados atuais do usuário para somar
-//         const { data: usuario, error: errorUser } = await _supabase
-//             .from('Usuarios')
-//             .select('qtd_pontos, qtd_doacoes')
-//             .eq('id', ID_USUARIO_LOGADO)
-//             .single();
-
-//         if (errorUser) throw errorUser;
-
-//         // PASSO 3: Calcular novos valores
-//         const novosPontos = (usuario.qtd_pontos || 0) + (basePointsMap[catId] || 0) + estrelas;
-//         const novasDoacoes = (usuario.qtd_doacoes || 0) + 1;
-
-//         // PASSO 4: Atualizar tabela Usuarios
-//         const { error: errorUpdate } = await _supabase
-//             .from('Usuarios')
-//             .update({ 
-//                 qtd_pontos: novosPontos, 
-//                 qtd_doacoes: novasDoacoes 
-//             })
-//             .eq('id', ID_USUARIO_LOGADO);
-
-//         if (errorUpdate) throw errorUpdate;
-
-//         // PASSO 5: Atualizar LocalStorage (para o header atualizar sem refresh)
-//         const usuarioLocal = JSON.parse(localStorage.getItem('usuarioEcoClass'));
-//         if (usuarioLocal) {
-//             usuarioLocal.qtd_pontos = novosPontos;
-//             usuarioLocal.doacoes = novasDoacoes;
-//             localStorage.setItem('usuarioEcoClass', JSON.stringify(usuarioLocal));
-//         }
-
-//         // Sucesso
-//         if (typeof confetti === 'function') {
-//             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-//         }
-//         showSuccessMessage('Doação e pontos registrados!', 'EcoClass.html');
-
-//     } catch (error) {
-//         console.error('Erro:', error.message);
-//         alert('Erro na operação: ' + error.message);
-//     } finally {
-//         submitBtn.innerText = "Cadastrar";
-//         submitBtn.disabled = false;
-//     }
-// });
-// }
         
         // Lógica do sistema de estrelas para a página de doação
         const starsContainer = document.getElementById('doar-stars');
@@ -1104,3 +1008,60 @@ async function verificarConexao() {
 }
 
 window.addEventListener('load', verificarConexao);
+
+async function carregarListaDeDoacoes() {
+    const container = document.getElementById('cards-container');
+    if (!container) return;
+
+    try {
+        // Busca apenas itens marcados como disponíveis no banco
+        const { data: doacoes, error } = await _supabase
+            .from('Doacao')
+            .select('*')
+            .eq('disponivel', true);
+
+        if (error) throw error;
+
+        // Limpa o conteúdo estático do container
+        container.innerHTML = '';
+
+        doacoes.forEach(doacao => {
+            // Lógica das estrelas: extrai o número da string "4 estrelas"
+            const nivelEstado = parseInt(doacao.estado) || 0;
+            let estrelasStr = "";
+            for (let i = 1; i <= 5; i++) {
+                estrelasStr += i <= nivelEstado ? "★ " : "☆ ";
+            }
+
+            // Fallback para imagem nula
+            const imgPath = doacao.imagem || 'https://via.placeholder.com/210x110?text=Sem+Imagem';
+
+            // Gera o HTML do card
+            const cardHTML = `
+                <a href="precisoreceber.html?id=${doacao.id}" class="card-link">
+                    <div class="card">
+                        <div class="foto-material">
+                            <img src="${imgPath}" alt="${doacao.item}" width="210" height="110">
+                        </div>
+                        <div class="card-content">
+                            <h3>${doacao.item}</h3>
+                            <p>${doacao.descricao}</p>
+                            <div class="stars-visual" style="color: #FFD700;">
+                                ${estrelasStr}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `;
+
+            container.innerHTML += cardHTML;
+        });
+
+    } catch (err) {
+        console.error("Erro ao carregar doações:", err.message);
+        container.innerHTML = "<p>Não foi possível carregar os materiais no momento.</p>";
+    }
+}
+
+// Inicializa a listagem quando o documento estiver pronto
+document.addEventListener('DOMContentLoaded', carregarListaDeDoacoes);
