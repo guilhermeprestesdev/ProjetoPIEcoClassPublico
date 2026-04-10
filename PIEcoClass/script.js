@@ -1009,58 +1009,181 @@ async function verificarConexao() {
 
 window.addEventListener('load', verificarConexao);
 
+// async function carregarListaDeDoacoes() {
+//     const container = document.getElementById('cards-container');
+//     if (!container) return;
+
+//     try {
+//         // Busca apenas itens marcados como disponíveis no banco
+//         const { data: doacoes, error } = await _supabase
+//             .from('Doacao')
+//             .select('*')
+//             .eq('disponivel', true);
+
+//         if (error) throw error;
+
+//         // Limpa o conteúdo estático do container
+//         container.innerHTML = '';
+
+//         doacoes.forEach(doacao => {
+//             // Lógica das estrelas: extrai o número da string "4 estrelas"
+//             const nivelEstado = parseInt(doacao.estado) || 0;
+//             let estrelasStr = "";
+//             for (let i = 1; i <= 5; i++) {
+//                 estrelasStr += i <= nivelEstado ? "★ " : "☆ ";
+//             }
+
+//             // Fallback para imagem nula
+//             const imgPath = doacao.imagem || 'https://via.placeholder.com/210x110?text=Sem+Imagem';
+
+//             // Gera o HTML do card
+//             const cardHTML = `
+//                 <a href="precisoreceber.html?id=${doacao.id}" class="card-link">
+//                     <div class="card">
+//                         <div class="foto-material">
+//                             <img src="${imgPath}" alt="${doacao.item}" width="210" height="110">
+//                         </div>
+//                         <div class="card-content">
+//                             <h3>${doacao.item}</h3>
+//                             <p>${doacao.descricao}</p>
+//                             <div class="stars-visual" style="color: #FFD700;">
+//                                 ${estrelasStr}
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </a>
+//             `;
+
+//             container.innerHTML += cardHTML;
+//         });
+
+//     } catch (err) {
+//         console.error("Erro ao carregar doações:", err.message);
+//         container.innerHTML = "<p>Não foi possível carregar os materiais no momento.</p>";
+//     }
+// }
+
+let idMaterialSelecionado = null; // Variável global para saber o que está sendo solicitado
+
 async function carregarListaDeDoacoes() {
     const container = document.getElementById('cards-container');
     if (!container) return;
 
     try {
-        // Busca apenas itens marcados como disponíveis no banco
         const { data: doacoes, error } = await _supabase
             .from('Doacao')
             .select('*')
             .eq('disponivel', true);
 
         if (error) throw error;
-
-        // Limpa o conteúdo estático do container
         container.innerHTML = '';
 
         doacoes.forEach(doacao => {
-            // Lógica das estrelas: extrai o número da string "4 estrelas"
             const nivelEstado = parseInt(doacao.estado) || 0;
             let estrelasStr = "";
             for (let i = 1; i <= 5; i++) {
                 estrelasStr += i <= nivelEstado ? "★ " : "☆ ";
             }
 
-            // Fallback para imagem nula
             const imgPath = doacao.imagem || 'https://via.placeholder.com/210x110?text=Sem+Imagem';
 
-            // Gera o HTML do card
+            // MUDANÇA: Agora o card chama a função abrirModal em vez de mudar de página
             const cardHTML = `
-                <a href="precisoreceber.html?id=${doacao.id}" class="card-link">
-                    <div class="card">
-                        <div class="foto-material">
-                            <img src="${imgPath}" alt="${doacao.item}" width="210" height="110">
-                        </div>
-                        <div class="card-content">
-                            <h3>${doacao.item}</h3>
-                            <p>${doacao.descricao}</p>
-                            <div class="stars-visual" style="color: #FFD700;">
-                                ${estrelasStr}
-                            </div>
+                <div class="card" onclick="abrirModalSolicitacao(${JSON.stringify(doacao).replace(/"/g, '&quot;')})">
+                    <div class="foto-material">
+                        <img src="${imgPath}" alt="${doacao.item}" width="210" height="110">
+                    </div>
+                    <div class="card-content">
+                        <h3>${doacao.item}</h3>
+                        <p>${doacao.descricao}</p>
+                        <div class="stars-visual" style="color: #FFD700;">
+                            ${estrelasStr}
                         </div>
                     </div>
-                </a>
+                </div>
             `;
-
             container.innerHTML += cardHTML;
         });
-
     } catch (err) {
-        console.error("Erro ao carregar doações:", err.message);
-        container.innerHTML = "<p>Não foi possível carregar os materiais no momento.</p>";
+        console.error("Erro:", err.message);
     }
+}
+
+// Função para abrir e preencher o Popup
+function abrirModalSolicitacao(doacao) {
+    idMaterialSelecionado = doacao.id; // Guarda o ID para o momento do clique no botão
+    
+    document.getElementById('modal-categoria').value = "Categoria " + (doacao.x_id_categoria || "");
+    document.getElementById('modal-nome').value = doacao.item;
+    document.getElementById('modal-img').src = doacao.imagem || 'https://via.placeholder.com/210x110?text=Sem+Imagem';
+    document.getElementById('modal-descricao').value = doacao.descricao;
+    
+    // Gera as estrelas do estado
+    const starsContainer = document.getElementById('modal-stars');
+    const nivel = parseInt(doacao.estado) || 0;
+    starsContainer.innerHTML = "";
+    for(let i=1; i<=5; i++) {
+        starsContainer.innerHTML += `<span class="receber-star ${i <= nivel ? 'filled' : ''}">★</span>`;
+    }
+
+    document.getElementById('modalSolicitacao').style.display = "block";
+}
+
+// Lógica de fechamento do Modal
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('close-modal') || e.target.id === 'modalSolicitacao') {
+        document.getElementById('modalSolicitacao').style.display = "none";
+    }
+});
+
+// Lógica do botão SOLICITAR (Integrada ao Supabase)
+const formModal = document.getElementById('solicitacaoFormModal');
+if (formModal) {
+    formModal.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!ID_USUARIO_LOGADO) {
+            alert("Você precisa estar logado para solicitar!");
+            return;
+        }
+
+        const btn = formModal.querySelector('.receber-submit-btn');
+        btn.innerText = "Processando...";
+        btn.disabled = true;
+
+        try {
+            // 1. Grava na tabela 'Receber'
+            const { error: errorReceber } = await _supabase
+                .from('Receber')
+                .insert([{
+                    x_id_usuario_rec: ID_USUARIO_LOGADO,
+                    x_id_doacao_item: idMaterialSelecionado
+                }]);
+
+            if (errorReceber) throw errorReceber;
+
+            // 2. Atualiza Doacao para disponivel = false
+            const { error: errorDoacao } = await _supabase
+                .from('Doacao')
+                .update({ disponivel: false })
+                .eq('id', idMaterialSelecionado);
+
+            if (errorDoacao) throw errorDoacao;
+
+            // Efeito de sucesso e fechamento
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            alert('Solicitação realizada com sucesso!');
+            
+            document.getElementById('modalSolicitacao').style.display = "none";
+            carregarListaDeDoacoes(); // Atualiza a lista na tela para sumir o item
+
+        } catch (err) {
+            alert("Erro: " + err.message);
+        } finally {
+            btn.innerText = "Solicitar";
+            btn.disabled = false;
+        }
+    });
 }
 
 // Inicializa a listagem quando o documento estiver pronto
