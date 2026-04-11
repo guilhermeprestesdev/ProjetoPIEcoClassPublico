@@ -45,11 +45,43 @@ a {
 
 
 
+.main-nav-div {
+    display: flex;
+    flex: 1;               /* Faz esta div ocupar o espaço central disponível */
+    justify-content: center; /* Centraliza os links horizontalmente */
+    align-items: center;     /* Garante que fiquem na mesma altura dos outros itens */
+}
+
+.main-nav {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;             /* Use um valor fixo em pixels para evitar sobreposição */
+    margin: 0 20px;        /* Margem lateral simples para respiro */
+}
+
+.nav-item {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 5px 10px;     /* Padding fixo ajuda a manter o alinhamento */
+    white-space: nowrap;    /* Impede que o texto quebre em duas linhas */
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Garante que o container do usuário não "atropele" os links */
+.header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: fit-content; /* Garante que as infos do usuário não encolham */
+    flex-shrink: 0;         /* Impede que o bloco do usuário seja esmagado */
+}
 /* --- Navegação Central do Cabeçalho --- */
 .nav-item-with-popup {
     position: relative;
 }
-
+/*
 .main-nav-div {
     display: flex;
     width: 100%;
@@ -60,17 +92,23 @@ a {
 
 .main-nav {
     display: flex;
-    gap: 50%; /* Espaçamento entre os itens da navegação */
+    flex-direction: row;
+    margin-left: 20px;
+    margin-right: 100px + 10%;
+    gap: 50%;
 }
 
 .nav-item {
-    color: white;/* Cor do texto dos links */
-    text-decoration: none;/* Remove o sublinhado padrão */
-    font-size: 1.1em;/* Tamanho da fonte */
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
     font-weight: bold;
-    padding: 5px 0;/* Espaçamento para o hover */
-    transition: color 0.3s ease, transform 0.2s ease;/* Transição suave para hover */
+    padding: 5px auto;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
+*/
+
+
 
 .nav-item:hover {
     color: #a8e6ee;/* Cor ao passar o mouse (azul claro/ciano) */
@@ -289,7 +327,6 @@ a {
     /* Remove o espaço horizontal, pois os itens agora estão empilhados */
     gap: 0;
     line-height: 1.2;
-    width: 100px;
     margin-right: 25px;
 }
 
