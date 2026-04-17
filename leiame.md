@@ -54,10 +54,10 @@ git clone https://github.com/GuilhermeP54/PiSenacEcoclass.git
 Navegar para o diretório do projeto:
 
 cd PiSenacEcoclass.git
-Abrir o arquivo Ecoclass.html no seu navegador:
+Abrir o arquivo index.html no seu navegador:
 
 
-Abrir o arquivo `Ecoclass.html`
+Abrir o arquivo `index.html`
 Você também pode acessá-lo da seguinte forma:
 
 Acesse o seguinte endereço: https://github.com/GuilhermeP54/PiSenacEcoclass.git
@@ -68,7 +68,7 @@ Clique em "Download ZIP".
 
 Após a conclusão do download, abra o arquivo .rar na sua máquina local e clique em "Extract All" (Extrair Tudo).
 
-Depois disso, abra o arquivo HTML chamado "Ecoclass.html" no seu navegador, e pronto! Você já pode acessar as funcionalidades do site.
+Depois disso, abra o arquivo HTML chamado "index.html" no seu navegador, e pronto! Você já pode acessar as funcionalidades do site.
 
 Licença
 A licença pode ser encontrada no arquivo README.md. Distribuído sob a Licença MIT. Veja o arquivo LICENSE para mais informações.
@@ -134,10 +134,10 @@ git clone https://github.com/GuilhermeP54/PiSenacEcoclass.git
 Navegar para o diretório do projeto:
 
 cd PiSenacEcoclass.git
-Abrir o arquivo Ecoclass.html no seu navegador:
+Abrir o arquivo index.html no seu navegador:
 
 
-Abrir o arquivo `Ecoclass.html`
+Abrir o arquivo `index.html`
 Você também pode acessá-lo da seguinte forma:
 
 Acesse o seguinte endereço: https://github.com/GuilhermeP54/PiSenacEcoclass.git
@@ -148,7 +148,7 @@ Clique em "Download ZIP".
 
 Após a conclusão do download, abra o arquivo .rar na sua máquina local e clique em "Extract All" (Extrair Tudo).
 
-Depois disso, abra o arquivo HTML chamado "Ecoclass.html" no seu navegador, e pronto! Você já pode acessar as funcionalidades do site.
+Depois disso, abra o arquivo HTML chamado "index.html" no seu navegador, e pronto! Você já pode acessar as funcionalidades do site.
 
 Licença
 A licença pode ser encontrada no arquivo README.md. Distribuído sob a Licença MIT. Veja o arquivo LICENSE para mais informações.

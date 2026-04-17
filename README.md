@@ -42,9 +42,9 @@ git clone https://github.com/GuilhermeP54/PiSenacEcoclass.git
 2.   Navigate to the project directory:
 Bash
 cd PiSenacEcoclass.git
-3.   Open the Ecoclass.html file in your browser:
+3.   Open the index.html file in your browser:
 Bash
-Open `Ecoclass.html` file
+Open `index.html` file
 
  You can also access it in the following way:
  
@@ -52,7 +52,7 @@ Access the following address: https://github.com/GuilhermeP54/PiSenacEcoclass.gi
 1.Click on "< > Code" on the left side of the screen.
 2.Click on "Download ZIP".
 3.Once the download is complete, open the .rar file on your local machine and click "Extract All".
-4.After that, open the HTML file named "Ecoclass.html" in your browser, and you're all set! You can now access the site's features.
+4.After that, open the HTML file named "index.html" in your browser, and you're all set! You can now access the site's features.
 
 License
 The license can be found in the README.md file.

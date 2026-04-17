@@ -383,7 +383,7 @@ if (arquivo) {
             if (typeof confetti === 'function') {
                 confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
             }
-            showSuccessMessage('Sucesso! Material cadastrado e pontos recebidos.', 'EcoClass.html');
+            showSuccessMessage('Sucesso! Material cadastrado e pontos recebidos.', 'index.html');
 
         } catch (error) {
             console.error('Erro geral:', error.message);
@@ -677,7 +677,7 @@ if (arquivo) {
                 console.log('Cadastro finalizado! Faça login para acessar.');
                 formPessoaFisica.reset();
                 gerenciarCamposEstudante();
-                showSuccessMessage('Cadastro realizado com sucesso!', 'EcoClass.html');
+                showSuccessMessage('Cadastro realizado com sucesso!', 'index.html');
             }
         });
     }
@@ -833,7 +833,7 @@ if (arquivo) {
                 console.log('Cadastro finalizado! Faça login para acessar.');
                 formPessoaJuridica.reset();
                 gerenciarTipoEntidade();
-                showSuccessMessage('Cadastro realizado com sucesso!', 'EcoClass.html');
+                showSuccessMessage('Cadastro realizado com sucesso!', 'index.html');
             }
         });
     }
@@ -983,7 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 }
 
-                setTimeout(() => { window.location.href = 'EcoClass.html'; }, 2000);
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
 
             } catch (error) {
                 console.error('Erro no cadastro:', error.message);
