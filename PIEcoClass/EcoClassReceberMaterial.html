@@ -18,7 +18,7 @@
         <div class="filter-panel">
             <label for="categoria">Categoria</label>
             <select id="categoria">
-                <option>Selecionar Opção</option>
+                <option value="">Selecionar Opção</option>
                 <option>Escrita</option>
                 <option>Cadernos e Papel</option>
                 <option>Desenho e Pintura</option>
@@ -28,22 +28,20 @@
                 <option>Outros</option>
             </select>
 
-            <label for="material">Material</label>
-            <select id="material">
-                <option>Selecionar Opção</option>
-                <option>Lápis</option>
-                <option>Caneta</option>
-                <option>Tesoura</option>
-                <option>Cola</option>
-                <option>Apontador</option>
-                <option>Papel</option>
-                <option>Pincel</option>
-                <option>Calculadora</option>
-                <option>Mochila</option>
-                <option>Caderno</option>
-                <option>Livros</option>
-                <option>Outros</option>  
-            </select>
+            <label for="tipo-material">Material</label>
+            <input type="text" id="tipo-material" name="tipo-material" placeholder="Digite o tipo de material">
+
+            <label>Qualidade Minima</label>
+            <div class="doar-stars" id="filter-stars" style="justify-content: flex-start; gap: 5px;">
+                <span class="filter-star" data-value="1">★</span>
+                <span class="filter-star" data-value="2">★</span>
+                <span class="filter-star" data-value="3">★</span>
+                <span class="filter-star" data-value="4">★</span>
+                <span class="filter-star" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="filter-rating-value" value="0">
+
+            <button type="button" class="receber-submit-btn" id="btn-pesquisar" style="margin-top: 15px;">Pesquisar</button>
         </div>
 
         <div id="cards-container" class="cards-container">
@@ -76,6 +74,7 @@
                     <label>Estado do Material</label>
                     <div class="receber-stars" id="modal-stars">
                         </div>
+                    
                     
                     <button type="submit" class="receber-submit-btn">Solicitar</button>
                 </form>

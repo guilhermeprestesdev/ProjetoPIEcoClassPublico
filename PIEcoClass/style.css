@@ -1397,6 +1397,17 @@ a {
     font-size: 14px;/* Tamanho da fonte do label */
 }
 
+.filter-panel input {
+    width: 100%;
+    padding: 8px;
+    /* Mais padding para inputs */
+    border-radius: 8px;
+    /* Bordas arredondadas para inputs */
+    box-sizing: border-box;
+    font-size: 1em;
+    border: 1px solid #385536;
+}
+
 .filter-panel select {
     padding: 8px;
     border-radius: 8px;
@@ -2234,3 +2245,20 @@ a {
 
 .card { cursor: pointer; transition: transform 0.2s; }
 .card:hover { transform: scale(1.02); }
+
+
+/* Estilo para as estrelas dentro do painel de filtro */
+.filter-star {
+    font-size: 25px;
+    color: #ccc; /* Cor cinza quando vazia */
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.filter-star.filled {
+    color: gold; /* Cor dourada quando selecionada */
+}
+
+.filter-star:hover {
+    color: #ffd700;
+}
