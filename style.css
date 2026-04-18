@@ -1393,7 +1393,7 @@ a {
 
 .filter-panel label {
     font-weight: bold;
-    margin-top: 10px;/* Espaçamento acima do label */
+    margin-top: 15px;/* Espaçamento acima do label */
     font-size: 14px;/* Tamanho da fonte do label */
 }
 
@@ -1665,7 +1665,7 @@ a {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 10px 0 20px;
+    margin: -10px 19% 20px;
 }
 
 .doar-star {
@@ -2154,7 +2154,7 @@ a {
     padding: 12px;
     background-color: #FAFFF3;
     color: #385536;
-    border: none;
+    border: 1px solid #385536;
     border-radius: 20px;
     font-weight: bold;
     cursor: pointer;

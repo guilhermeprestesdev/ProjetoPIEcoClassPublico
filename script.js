@@ -6,6 +6,33 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 
 
+
+
+// Validação e Formatação Híbrida (CPF/CNPJ) para o Header
+const loginUsernameInput = document.getElementById('login-username');
+
+if (loginUsernameInput) {
+    loginUsernameInput.addEventListener('input', function (event) {
+        let value = event.target.value.replace(/\D/g, ""); // Remove tudo que não é dígito
+
+        if (value.length <= 11) {
+            // Máscara CPF: 000.000.000-00
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d)/, "$1.$2");
+            value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        } else {
+            // Máscara CNPJ: 00.000.000/0000-00
+            value = value.substring(0, 14); // Limita a 14 dígitos
+            value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+            value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+            value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+            value = value.replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+        }
+
+        event.target.value = value;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA GERAL PARA CARREGAR CABEÇALHO E RODAPÉ (compartilhada) ---
 
@@ -581,6 +608,7 @@ if (arquivo) {
             else if (valor.length >= 1) valor = valor.replace(/^(\d{3}).*/, '$1');
             event.target.value = valor;
         });
+
         
         if (contatoInput) contatoInput.addEventListener('input', function (event) {
             let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
@@ -1186,3 +1214,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
