@@ -210,6 +210,9 @@ function setupHeaderPopups() {
         }
     }
 
+
+
+
     // --- 4. POPUP DE PONTUAÇÃO E FECHAMENTO CLICANDO FORA ---
     if (pontuacaoNavLink && pointsPopup) {
         pontuacaoNavLink.addEventListener('click', function(event) {
@@ -1039,11 +1042,6 @@ window.addEventListener('load', verificarConexao);
 
 let idMaterialSelecionado = null; // Variável global para saber o que está sendo solicitado
 
-// 1. Constantes e Variáveis Globais (Sempre no topo)
-const mapCategorias = {
-    "Escrita": 1, "Cadernos e Papel": 2, "Desenho e Pintura": 3, 
-    "Mochilas": 4, "Organização": 5, "Corte e Colagem": 6, "Outros": 7
-};
 
 // let idMaterialSelecionado = null; 
 
@@ -1055,7 +1053,7 @@ async function carregarListaDeDoacoes(filtroCategoria = "", filtroMaterial = "",
     try {
         let query = _supabase
             .from('Doacao')
-            .select('*')
+            .select('*, Pontuacao(categoria)')
             .eq('disponivel', true);
 
         // Aplicação dos Filtros
@@ -1116,10 +1114,13 @@ async function carregarListaDeDoacoes(filtroCategoria = "", filtroMaterial = "",
 function abrirModalSolicitacao(doacao) {
     idMaterialSelecionado = doacao.id; 
     
-    document.getElementById('modal-categoria').value = "Categoria " + (doacao.x_id_categoria || "");
-    document.getElementById('modal-nome').value = doacao.item;
+    // IMPORTANTE: Como fizemos o join, o nome da categoria está dentro do objeto Pontuacao
+    const nomeCategoria = doacao.Pontuacao ? doacao.Pontuacao.categoria : "Sem Categoria";
+
+    document.getElementById('modal-categoria').value = nomeCategoria;
+    document.getElementById('modal-item').value = doacao.item || '';
     document.getElementById('modal-img').src = doacao.imagem || 'https://via.placeholder.com/210x110?text=Sem+Imagem';
-    document.getElementById('modal-descricao').value = doacao.descricao;
+    document.getElementById('modal-descricao').value = doacao.descricao || '';
     
     const starsContainer = document.getElementById('modal-stars');
     const nivel = parseInt(doacao.estado) || 0;
