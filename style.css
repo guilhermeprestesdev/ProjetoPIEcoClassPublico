@@ -63,7 +63,7 @@ a {
     color: white;
     text-decoration: none;
     font-size: 1.1em;
-    font-weight: bold;
+    /* font-weight: bold; */
     padding: 5px 10px;     /* Padding fixo ajuda a manter o alinhamento */
     white-space: nowrap;    /* Impede que o texto quebre em duas linhas */
     transition: color 0.3s ease, transform 0.2s ease;
@@ -81,34 +81,6 @@ a {
 .nav-item-with-popup {
     position: relative;
 }
-/*
-.main-nav-div {
-    display: flex;
-    width: 100%;
-    background-color: transparent;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.main-nav {
-    display: flex;
-    flex-direction: row;
-    margin-left: 20px;
-    margin-right: 100px + 10%;
-    gap: 50%;
-}
-
-.nav-item {
-    color: white;
-    text-decoration: none;
-    font-size: 1.1em;
-    font-weight: bold;
-    padding: 5px auto;
-    transition: color 0.3s ease, transform 0.2s ease;
-}
-*/
-
-
 
 .nav-item:hover {
     color: #a8e6ee;/* Cor ao passar o mouse (azul claro/ciano) */
@@ -232,6 +204,57 @@ a {
     background-color: #314E33;
     font-weight: bold;
     text-transform: uppercase;
+}
+/* --- Estilo do Ícone Hambúrguer (Escondido por padrão) --- */
+.mobile-menu-icon {
+    display: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.mobile-menu-icon div {
+    width: 32px;
+    height: 2px;
+    background-color: white;
+    margin: 8px;
+    transition: 0.3s;
+}
+
+/* --- Responsividade (Telas até 768px) --- */
+@media (max-width: 768px) {
+    .mobile-menu-icon {
+        display: block; /* Mostra o ícone no celular */
+    }
+
+    .main-nav {
+        display: none; /* Esconde os links por padrão no celular */
+        flex-direction: column;
+        position: absolute;
+        top: 80px; /* Altura do seu header */
+        right: 0;
+        width: 100%;
+        background-color: #385536; /* Mesmo verde do header */
+        gap: 0; /* Remove o gap para usar bordas se quiser */
+        box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        z-index: 99;
+    }
+
+    /* Quando o menu estiver ativo via JS */
+    .main-nav.active {
+        display: flex;
+    }
+
+    .nav-item {
+        padding: 20px;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* Ajuste para alinhar o ícone à direita ou centro conforme sua preferência */
+    .main-nav-div {
+        justify-content: flex-end; 
+    }
 }
 
 /* Responsividade para a Tabela (ajustado para caber no popup menor) */
@@ -1831,13 +1854,13 @@ a {
   /* Estilos para o asterisco de campo obrigatório */
         .required-label::after {
             content: ' *';
-            color: red;
+            color: #E3E64D;
             font-weight: bold;
         }
 
         /* Estilos para mensagens de validação */
         .validation-message {
-            color: red;
+            color: #E3E64D;
             font-size: 0.8em;
             margin-top: 5px;
             margin-bottom: 5px;
@@ -1846,7 +1869,7 @@ a {
 
         /* Estilo para campos inválidos */
         .is-invalid {
-            border: 2px solid red !important;
+            border: 2px solid #E3E64D !important;
         }
 
         /* Estilos para a animação de expansão */

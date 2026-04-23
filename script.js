@@ -36,6 +36,7 @@ if (loginUsernameInput) {
 document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA GERAL PARA CARREGAR CABEÇALHO E RODAPÉ (compartilhada) ---
 
+
     // Carrega o conteúdo HTML de um arquivo e o insere em um elemento
     function loadHTML(url, elementId) {
         fetch(url)
@@ -100,7 +101,28 @@ document.addEventListener('DOMContentLoaded', function() {
         animateScroll();
     }
 
+    
+
 function setupHeaderPopups() {
+
+    // --- LÓGICA DO MENU MOBILE (Adicione aqui) ---
+    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+    const mainNav = document.getElementById('mainNav');
+
+    if (mobileMenuIcon && mainNav) {
+        mobileMenuIcon.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            mobileMenuIcon.classList.toggle('toggle');
+        });
+
+        // Fecha o menu ao clicar em um link
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', () => {
+                mainNav.classList.remove('active');
+                mobileMenuIcon.classList.remove('toggle');
+            });
+        });
+    }
     // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
     const dadosSalvos = localStorage.getItem('usuarioEcoClass');
     if (dadosSalvos) {
