@@ -134,6 +134,8 @@ function setupHeaderPopups() {
             });
         });
     }
+
+    
     // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
     const dadosSalvos = localStorage.getItem('usuarioEcoClass');
     if (dadosSalvos) {
