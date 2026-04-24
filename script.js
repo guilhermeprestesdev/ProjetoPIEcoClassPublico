@@ -146,8 +146,8 @@ function setupHeaderPopups() {
 
         if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
         if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
-        if (popupPoints) popupPoints.textContent = usuario.qtd_pontos;
-        if (popupDonations) popupDonations.textContent = usuario.doacoes || 0;
+        if (pagePointsValue) pagePointsValue.textContent = usuario.qtd_pontos
+        if (pageDonationsValue) pageDonationsValue.textContent = usuario.doacoes || 0;
     }
 
     // --- 2. SELEÇÃO DE ELEMENTOS ---
