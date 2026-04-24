@@ -9,29 +9,40 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 
 // Validação e Formatação Híbrida (CPF/CNPJ) para o Header
-const loginUsernameInput = document.getElementById('login-username');
+// Adiciona o ouvinte de eventos no documento inteiro
+document.addEventListener('input', function (event) {
+    
+    // Verifica se a digitação aconteceu no campo específico do popup
+    if (event.target && event.target.id === 'login-username') {
+        
+        // 1. Remove tudo que não é número
+        let value = event.target.value.replace(/\D/g, "");
 
-if (loginUsernameInput) {
-    loginUsernameInput.addEventListener('input', function (event) {
-        let value = event.target.value.replace(/\D/g, ""); // Remove tudo que não é dígito
+        // 2. Trava o tamanho máximo em 14 números
+        if (value.length > 14) {
+            value = value.substring(0, 14);
+        }
 
+        // 3. Aplica a formatação
         if (value.length <= 11) {
-            // Máscara CPF: 000.000.000-00
+            // CPF: 000.000.000-00
             value = value.replace(/(\d{3})(\d)/, "$1.$2");
             value = value.replace(/(\d{3})(\d)/, "$1.$2");
             value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
         } else {
-            // Máscara CNPJ: 00.000.000/0000-00
-            value = value.substring(0, 14); // Limita a 14 dígitos
+            // CNPJ: 00.000.000/0000-00
             value = value.replace(/^(\d{2})(\d)/, "$1.$2");
             value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
             value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
             value = value.replace(/(\d{4})(\d{1,2})$/, "$1-$2");
         }
 
+        // 4. Atualiza o input
         event.target.value = value;
-    });
-}
+    }
+});
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- LÓGICA GERAL PARA CARREGAR CABEÇALHO E RODAPÉ (compartilhada) ---
