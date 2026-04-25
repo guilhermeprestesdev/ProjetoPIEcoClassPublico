@@ -564,8 +564,6 @@ a {
     background-color: #385536;
     /* Verde escuro principal do rodapé */
     color: white;
-    padding: 50px 50px 20px 50px;
-    /* Top, Right, Bottom, Left (ajustado para espaço do botão) */
     position: relative;
     /* Para posicionar o botão "Voltar ao topo" e o mascote */
     display: flex;
@@ -630,8 +628,6 @@ a {
     /* Largura máxima para centralizar conteúdo */
     margin-bottom: 30px;
     /* Espaço antes da barra inferior */
-    flex-wrap: wrap;
-    /* Permite que as colunas quebrem a linha em telas menores */
     padding-left: 20px;
     /* Um pouco de padding para alinhar com a logo na esquerda */
 }
@@ -826,94 +822,136 @@ a {
 
 /* --- Responsividade do Rodapé --- */
 @media (max-width: 992px) {
+    .main-footer {
+        overflow-x: hidden; /* Garante que nada passe dos limites da tela */
+    }
+
     .footer-top-content {
-        flex-direction: column;
-        /* Empilha as colunas */
-        align-items: center;
-        /* Centraliza tudo */
-        text-align: center;
-        padding-left: 0;
+        display: grid !important; 
+        grid-template-columns: 1fr 1fr; /* 2 colunas iguais (50% cada) */
+        row-gap: 30px; /* Espaço vertical entre imagens e textos */
+        column-gap: 10px; /* Espaço fixo e seguro entre as colunas */
+        width: 100%;
+        box-sizing: border-box; /* Garante que o padding não expanda a tela */
+        padding: 0 15px; /* Respiro lateral */
     }
 
     .footer-col {
-        flex-basis: 100%;
-        /* Cada coluna ocupa a largura total */
-        min-width: auto;
-        margin-bottom: 30px;
+        width: 100% !important;
+        margin-bottom: 0 !important;
     }
 
-    .footer-logo-col,
+    /* 1. Imagem: Logo (Linha 1, Coluna 1) */
+    .footer-logo-col {
+        grid-row: 1;
+        grid-column: 1;
+        text-align: center; 
+        padding-right: 0; /* Limpa o padding do desktop */
+        margin-bottom: 0; /* Limpa a margem negativa do desktop */
+    }
+
+    /* 2. Imagem: Mascote (Linha 1, Coluna 2) */
     .footer-mascot-col {
+        grid-row: 1;
+        grid-column: 2;
+        text-align: center;
         padding: 0;
-        margin-bottom: 30px;
+        margin-bottom: 0; /* Limpa a margem negativa do desktop */
+        transform: translateY(0); /* Remove o deslocamento do desktop */
     }
 
-    .footer-mascot {
-        transform: translateY(0);
-        /* Remove o ajuste fino em mobile */
+    /* 3. Texto: EcoClass (Linha 2, Coluna 1) */
+    .footer-top-content .footer-col:nth-child(2) {
+        grid-row: 2;
+        grid-column: 1;
+        justify-self: center; /* Centraliza a "caixa" de texto na sua metade da tela */
+        text-align: left; /* Mantém os links alinhados à esquerda */
+        margin-left: 0; /* Removido o 40% que estava quebrando a tela */
     }
 
+    /* 4. Texto: Conta (Linha 2, Coluna 2) */
+    .footer-top-content .footer-col:nth-child(3) {
+        grid-row: 2;
+        grid-column: 2;
+        justify-self: center; /* Centraliza a "caixa" de texto na sua metade da tela */
+        text-align: left;
+    }
+
+    /* --- Comportamento das Imagens --- */
+    .footer-logo, .footer-mascot {
+        width: 80%; 
+        max-width: 140px; 
+        height: auto;
+        margin: 0 auto;
+        display: block;
+    }
+
+    /* --- Resto do Rodapé --- */
     .back-to-top-btn {
         right: 20px;
         top: -40px;
-        /* Ajusta a posição em telas menores */
     }
 
     .footer-bottom-bar {
+        display: flex;
         flex-direction: column;
-        /* Empilha os itens da barra inferior */
         text-align: center;
         gap: 15px;
+        margin-top: 30px;
+        box-sizing: border-box;
+        padding-left: 0; /* Limpa o padding-left do desktop */
     }
 
-    .footer-copyright,
-    .footer-policy-links,
-    .footer-social-icons {
-        flex-basis: 100%;
+    .footer-bottom-main-row {
         justify-content: center;
-        /* Centraliza tudo */
+    }
+
+    .footer-policy-links {
+        justify-content: center;
+    }
+
+    .footer-social-icons {
+        justify-content: center;
+        margin-left: 0;
     }
 }
 
+/* --- Ajustes Finos para Telas Muito Pequenas (Celulares) --- */
 @media (max-width: 600px) {
     .main-footer {
-        padding: 40px 15px 15px 15px;
-        /* Menor padding em telas muito pequenas */
-    }
-
-    .back-to-top-btn {
-        width: 150px;
-        /* Botão um pouco menor */
-        font-size: 0.9em;
-        padding: 8px 15px;
-        top: -30px;
-    }
-
-    .footer-logo {
-        width: 100px;
-        /* Logo menor */
-    }
-
-    .footer-mascot {
-        width: 120px;
-        /* Mascote menor */
+        padding: 40px 0 15px 0; /* Remove padding lateral do container principal */
     }
 
     .footer-col h3 {
-        font-size: 1.15em;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+
+    .footer-col ul li {
+        margin-bottom: 8px;
     }
 
     .footer-col ul li a {
         font-size: 0.85em;
     }
 
+    .footer-logo, .footer-mascot {
+        width: 90%; 
+        max-width: 110px;
+    }
+
+    .back-to-top-btn {
+        width: 140px;
+        font-size: 0.85em;
+        padding: 8px 10px;
+        top: -30px;
+        right: 15px;
+    }
+
     .footer-bottom-bar {
         font-size: 0.75em;
     }
 }
-
-
-
 
 
 
