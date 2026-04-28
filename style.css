@@ -738,10 +738,7 @@ a {
 
 /* --- Responsividade do Rodapé --- */
 @media (max-width: 992px) {
-    .main-footer {
-        overflow-x: hidden; /* Garante que nada passe dos limites da tela */
-    }
-
+    
     .footer-top-content {
         display: grid !important; 
         grid-template-columns: 1fr 1fr; /* 2 colunas iguais (50% cada) */
