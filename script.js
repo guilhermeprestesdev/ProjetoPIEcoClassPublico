@@ -137,162 +137,116 @@ function setupHeaderPopups() {
 
     
     // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
-    const dadosSalvos = localStorage.getItem('usuarioEcoClass');
-    if (dadosSalvos) {
-        const usuario = JSON.parse(dadosSalvos);
-        
-        const nameDisplay = document.getElementById('userNameDisplay');
-        const pointsDisplay = document.getElementById('userPointsDisplay');
-        const popupPoints = document.getElementById('popupPointsValue');
-        const popupDonations = document.getElementById('popupDonationsValue');
+        const dadosSalvos = localStorage.getItem('usuarioEcoClass');
+        if (dadosSalvos) {
+            const usuario = JSON.parse(dadosSalvos);
+            
+            const nameDisplay = document.getElementById('userNameDisplay');
+            const pointsDisplay = document.getElementById('userPointsDisplay');
+            const pagePointsValue = document.getElementById('pagePointsValue');
+            const pageDonationsValue = document.getElementById('pageDonationsValue');
 
-        if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
-        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
-        if (pagePointsValue) pagePointsValue.textContent = usuario.qtd_pontos
-        if (pageDonationsValue) pageDonationsValue.textContent = usuario.doacoes || 0;
-    }
-
-    // --- 2. SELEÇÃO DE ELEMENTOS ---
-    const loginInfo = document.getElementById('loginInfo');
-    const loginPopup = document.getElementById('loginPopup');
-    const loginForm = document.getElementById('loginForm');
-    const pontuacaoNavLink = document.getElementById('pontuacaoNavLink');
-    const pointsPopup = document.getElementById('pointsPopup');
-
-    // --- 3. LÓGICA DE LOGIN ---
-    if (loginInfo && loginPopup) {
-        loginInfo.addEventListener('click', function(event) {
-            event.stopPropagation();
-            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
-            if (pointsPopup) pointsPopup.style.display = 'none';
-        });
-
-        
-        if (loginForm) {
-            loginForm.addEventListener('submit', async function(event) {
-                event.preventDefault();
-                
-                const input_login = document.getElementById('login-username'); // Pode ser CPF ou CNPJ
-                const mensagem = document.getElementById('loginError'); // Elemento para exibir mensagens de erro
-
-                // 1. Criamos as variáveis fora do 'if' usando 'let'
-                let cpf = null;
-                let cnpj = null;
-
-                const tamanhoInput = input_login.value.length; // Verifica o tamanho do input para determinar se é CPF ou CNPJ
-                if (tamanhoInput === 14) {
-                    cpf = input_login.value;
-                } 
-                else if (tamanhoInput === 18) {
-                    cnpj = input_login.value;
-                }
-                else {
-                    mensagem.textContent = 'Por favor, insira o CPF (14 caracteres) ou CNPJ (18 caracteres) com a pontuação.';
-                    mensagem.style.display = 'block';
-                    return;
-                }
-
-                // const cpf = document.getElementById('login-username').value;
-                const senha = document.getElementById('login-password').value;
-                const loginErrorMsg = document.getElementById('loginError');
-
-
-                try {
-                // 2. Montamos a consulta de forma dinâmica
-                let query = _supabase
-                    .from('Usuarios')
-                    .select('*');
-
-                if (cpf) {
-                    query = query.eq('cpf', cpf);
-                } else if (cnpj) {
-                    query = query.eq('cnpj', cnpj);
-                }
-
-                const { data: usuario, error } = await query
-                    .eq('senha', senha)
-                    .single();
-
-                if (error || !usuario) {
-                    loginErrorMsg.textContent = 'CPF/CNPJ ou senha incorretos.';
-                    loginErrorMsg.style.display = 'block';
-                    return;
-                }
-
-                    // Prepara os dados para salvar
-                    const dadosParaPersistir = {
-                        nome: usuario.nome,
-                        qtd_pontos: usuario.qtd_pontos,
-                        doacoes: usuario.qtd_doacoes || 0,
-                        id: usuario.id
-                    };
-
-                    // Salva no navegador para persistir entre páginas
-                    localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
-
-                    console.log('Login realizado com sucesso!');
-                    loginPopup.style.display = 'none';
-                    
-                    // Recarrega para aplicar os dados no header
-                    window.location.reload(); 
-
-                } catch (err) {
-                    console.error('Erro na requisição:', err);
-                    loginErrorMsg.textContent = 'Erro ao conectar com o servidor.';
-                    loginErrorMsg.style.display = 'block';
-                }
-            });
+            if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+            if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
+            
+            // Alimenta os dados na página de pontuação, se o usuário estiver nela
+            if (pagePointsValue) pagePointsValue.textContent = usuario.qtd_pontos;
+            if (pageDonationsValue) pageDonationsValue.textContent = usuario.doacoes || 0;
         }
-    }
 
-
-
-
-    // --- 4. POPUP DE PONTUAÇÃO E FECHAMENTO CLICANDO FORA ---
-    if (pontuacaoNavLink && pointsPopup) {
-        pontuacaoNavLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            pointsPopup.style.display = pointsPopup.style.display === 'block' ? 'none' : 'block';
-            if (loginPopup) loginPopup.style.display = 'none';
-        });
-    }
-
-    document.addEventListener('click', function(event) {
-        if (loginPopup && loginPopup.style.display === 'block' && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
-            loginPopup.style.display = 'none';
-        }
-        if (pointsPopup && pointsPopup.style.display === 'block' && !pontuacaoNavLink.contains(event.target) && !pointsPopup.contains(event.target)) {
-            pointsPopup.style.display = 'none';
-        }
-    });
-}
-
-    // Configura os links do rodapé para abrir os popups
-    function setupFooterLinks() {
-        const footerLoginLink = document.getElementById('footerLoginLink');
-        const loginPopup = document.getElementById('loginPopup');
+        // --- 2. SELEÇÃO DE ELEMENTOS ---
         const loginInfo = document.getElementById('loginInfo');
-        const footerPontuacaoLink = document.getElementById('footerPontuacaoLink');
-        const pointsPopup = document.getElementById('pointsPopup');
+        const loginPopup = document.getElementById('loginPopup');
+        const loginForm = document.getElementById('loginForm');
 
-        if (footerLoginLink && loginPopup && loginInfo) {
-            footerLoginLink.addEventListener('click', function(event) {
-                event.preventDefault();
+        // --- 3. LÓGICA DE LOGIN ---
+        if (loginInfo && loginPopup) {
+            loginInfo.addEventListener('click', function(event) {
                 event.stopPropagation();
-                loginPopup.style.display = 'block';
-                if (pointsPopup) pointsPopup.style.display = 'none';
+                loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
             });
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    
+                    const input_login = document.getElementById('login-username');
+                    const mensagem = document.getElementById('loginError');
+
+                    let cpf = null;
+                    let cnpj = null;
+
+                    const tamanhoInput = input_login.value.length;
+                    if (tamanhoInput === 14) {
+                        cpf = input_login.value;
+                    } 
+                    else if (tamanhoInput === 18) {
+                        cnpj = input_login.value;
+                    }
+                    else {
+                        mensagem.textContent = 'Por favor, insira o CPF ou CNPJ formatado.';
+                        mensagem.style.display = 'block';
+                        return;
+                    }
+
+                    const senha = document.getElementById('login-password').value;
+
+                    try {
+                        let query = _supabase.from('Usuarios').select('*');
+
+                        if (cpf) query = query.eq('cpf', cpf);
+                        else if (cnpj) query = query.eq('cnpj', cnpj);
+
+                        const { data: usuario, error } = await query.eq('senha', senha).single();
+
+                        if (error || !usuario) {
+                            mensagem.textContent = 'CPF/CNPJ ou senha incorretos.';
+                            mensagem.style.display = 'block';
+                            return;
+                        }
+
+                        const dadosParaPersistir = {
+                            nome: usuario.nome,
+                            qtd_pontos: usuario.qtd_pontos,
+                            doacoes: usuario.qtd_doacoes || 0,
+                            id: usuario.id
+                        };
+
+                        localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
+                        window.location.reload(); 
+
+                    } catch (err) {
+                        console.error('Erro:', err);
+                        mensagem.textContent = 'Erro ao conectar com o servidor.';
+                        mensagem.style.display = 'block';
+                    }
+                });
+            }
         }
-        if (footerPontuacaoLink && pointsPopup && loginInfo) {
-            footerPontuacaoLink.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                pointsPopup.style.display = 'block';
-                if (loginPopup) loginPopup.style.display = 'none';
-            });
-        }
-    }
+
+        // --- 4. FECHAMENTO DO LOGIN CLICANDO FORA ---
+        document.addEventListener('click', function(event) {
+            if (loginPopup && loginPopup.style.display === 'block') {
+                // Se o clique não foi no botão de login nem dentro do popup, fecha ele
+                if (loginInfo && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
+                    loginPopup.style.display = 'none';
+                }
+            }
+        });
+
+        // Configura os links do rodapé (Apenas para o Login agora)
+        function setupFooterLinks() {
+            const footerLoginLink = document.getElementById('footerLoginLink');
+            const loginPopup = document.getElementById('loginPopup');
+
+            if (footerLoginLink && loginPopup) {
+                footerLoginLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    loginPopup.style.display = 'block';
+                });
+            }
+        }}
 
     // Função auxiliar para exibir mensagens de validação
     function showValidationMessage(element, message) {
