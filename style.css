@@ -91,6 +91,15 @@ a {
 
 
 
+
+
+
+
+
+
+
+
+
 /* --- Estilo da Página de Pontuação --- */
 
 .points-page-container {
@@ -150,16 +159,24 @@ a {
     margin-bottom: 10px;
 }
 
+/* --- Protetor da Tabela (Impede vazamento) --- */
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Cria rolagem horizontal SÓ na tabela se a tela for minúscula */
+    margin-top: 15px;
+    border-radius: 8px; /* Mantém os cantos arredondados */
+}
+
 /* --- Tabela de Pontos --- */
 .points-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
     font-size: 0.9em;
     color: white;
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     overflow: hidden; /* Garante as bordas arredondadas na tabela */
+    min-width: 300px; /* Garante que a tabela não esmague demais o texto */
 }
 
 .points-table th,
@@ -172,7 +189,7 @@ a {
 }
 
 .points-table th {
-    background-color: #314E33; /* Verde do cabeçalho da tabela vindo do antigo popup */
+    background-color: #314E33; /* Verde do cabeçalho da tabela */
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -181,6 +198,27 @@ a {
 .points-table tbody tr:last-child td {
     border-bottom: none;
 }
+
+/* --- Ajuste da Tabela para Celulares --- */
+@media (max-width: 600px) {
+    .points-table {
+        font-size: 0.8em; /* Diminui um pouco a fonte para caber mais texto */
+    }
+    
+    .points-table th,
+    .points-table td {
+        padding: 8px 5px; /* Reduz o espaço livre entre o texto e a borda */
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 /* --- Estilo do Ícone Hambúrguer (Escondido por padrão) --- */
@@ -738,9 +776,7 @@ a {
 
 /* --- Responsividade do Rodapé --- */
 @media (max-width: 992px) {
-    .main-footer {
-        overflow-x: hidden; /* Garante que nada passe dos limites da tela */
-    }
+    
 
     .footer-top-content {
         display: grid !important; 
@@ -809,6 +845,7 @@ a {
     }
 
     .footer-bottom-bar {
+        z-index: 200;
         display: flex;
         flex-direction: column;
         text-align: center;
