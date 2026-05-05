@@ -11,10 +11,10 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Validação e Formatação Híbrida (CPF/CNPJ) para o Header
 // Adiciona o ouvinte de eventos no documento inteiro
 document.addEventListener('input', function (event) {
-    
+
     // Verifica se a digitação aconteceu no campo específico do popup
     if (event.target && event.target.id === 'login-username') {
-        
+
         // 1. Remove tudo que não é número
         let value = event.target.value.replace(/\D/g, "");
 
@@ -44,7 +44,7 @@ document.addEventListener('input', function (event) {
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // --- LÓGICA GERAL PARA CARREGAR CABEÇALHO E RODAPÉ (compartilhada) ---
 
 
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const targetElement = document.getElementById(elementId);
                 if (targetElement) {
                     targetElement.innerHTML = html;
-                    
+
                     if (elementId === 'header-placeholder') {
                         setupHeaderPopups();
                     }
@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupFooterButton() {
         const backToTopButton = document.getElementById('backToTopBtn');
         if (backToTopButton) {
-            backToTopButton.addEventListener('click', function() {
-                scrollToTop(1500); 
+            backToTopButton.addEventListener('click', function () {
+                scrollToTop(1500);
             });
         }
     }
@@ -112,35 +112,35 @@ document.addEventListener('DOMContentLoaded', function() {
         animateScroll();
     }
 
-    
 
-function setupHeaderPopups() {
 
-    // --- LÓGICA DO MENU MOBILE (Adicione aqui) ---
-    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
-    const mainNav = document.getElementById('mainNav');
+    function setupHeaderPopups() {
 
-    if (mobileMenuIcon && mainNav) {
-        mobileMenuIcon.addEventListener('click', () => {
-            mainNav.classList.toggle('active');
-            mobileMenuIcon.classList.toggle('toggle');
-        });
+        // --- LÓGICA DO MENU MOBILE (Adicione aqui) ---
+        const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+        const mainNav = document.getElementById('mainNav');
 
-        // Fecha o menu ao clicar em um link
-        document.querySelectorAll('.nav-item').forEach(link => {
-            link.addEventListener('click', () => {
-                mainNav.classList.remove('active');
-                mobileMenuIcon.classList.remove('toggle');
+        if (mobileMenuIcon && mainNav) {
+            mobileMenuIcon.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+                mobileMenuIcon.classList.toggle('toggle');
             });
-        });
-    }
 
-    
-    // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
+            // Fecha o menu ao clicar em um link
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    mainNav.classList.remove('active');
+                    mobileMenuIcon.classList.remove('toggle');
+                });
+            });
+        }
+
+
+        // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
         const dadosSalvos = localStorage.getItem('usuarioEcoClass');
         if (dadosSalvos) {
             const usuario = JSON.parse(dadosSalvos);
-            
+
             const nameDisplay = document.getElementById('userNameDisplay');
             const pointsDisplay = document.getElementById('userPointsDisplay');
             const pagePointsValue = document.getElementById('pagePointsValue');
@@ -148,7 +148,7 @@ function setupHeaderPopups() {
 
             if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
             if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
-            
+
             // Alimenta os dados na página de pontuação, se o usuário estiver nela
             if (pagePointsValue) pagePointsValue.textContent = usuario.qtd_pontos;
             if (pageDonationsValue) pageDonationsValue.textContent = usuario.doacoes || 0;
@@ -161,15 +161,15 @@ function setupHeaderPopups() {
 
         // --- 3. LÓGICA DE LOGIN ---
         if (loginInfo && loginPopup) {
-            loginInfo.addEventListener('click', function(event) {
+            loginInfo.addEventListener('click', function (event) {
                 event.stopPropagation();
                 loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
             });
 
             if (loginForm) {
-                loginForm.addEventListener('submit', async function(event) {
+                loginForm.addEventListener('submit', async function (event) {
                     event.preventDefault();
-                    
+
                     const input_login = document.getElementById('login-username');
                     const mensagem = document.getElementById('loginError');
 
@@ -179,7 +179,7 @@ function setupHeaderPopups() {
                     const tamanhoInput = input_login.value.length;
                     if (tamanhoInput === 14) {
                         cpf = input_login.value;
-                    } 
+                    }
                     else if (tamanhoInput === 18) {
                         cnpj = input_login.value;
                     }
@@ -213,7 +213,7 @@ function setupHeaderPopups() {
                         };
 
                         localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
-                        window.location.reload(); 
+                        window.location.reload();
 
                     } catch (err) {
                         console.error('Erro:', err);
@@ -225,7 +225,7 @@ function setupHeaderPopups() {
         }
 
         // --- 4. FECHAMENTO DO LOGIN CLICANDO FORA ---
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (loginPopup && loginPopup.style.display === 'block') {
                 // Se o clique não foi no botão de login nem dentro do popup, fecha ele
                 if (loginInfo && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
@@ -240,13 +240,14 @@ function setupHeaderPopups() {
             const loginPopup = document.getElementById('loginPopup');
 
             if (footerLoginLink && loginPopup) {
-                footerLoginLink.addEventListener('click', function(event) {
+                footerLoginLink.addEventListener('click', function (event) {
                     event.preventDefault();
                     event.stopPropagation();
                     loginPopup.style.display = 'block';
                 });
             }
-        }}
+        }
+    }
 
     // Função auxiliar para exibir mensagens de validação
     function showValidationMessage(element, message) {
@@ -266,7 +267,7 @@ function setupHeaderPopups() {
             element.classList.remove('is-invalid');
         }, 4000);
     }
-    
+
     // Funçao auxiliar para exibir mensagens de sucesso COM redirecionamento
     function showSuccessMessage(message, redirectUrl) {
         const successMessage = document.createElement('div');
@@ -281,19 +282,39 @@ function setupHeaderPopups() {
     }
 
     // --- LÓGICA ESPECÍFICA PARA AS PÁGINAS DE CADASTRO (DOAR) E SOLICITAÇÃO (RECEBER) ---
+    let mapCategorias = {}; // Criamos o objeto vazio primeiro
 
-    const mapCategorias = {
-    "Escrita": 1,
-    "Cadernos e Papel": 2,
-    "Desenho e Pintura": 3,
-    "Mochilas": 4,
-    "Organização": 5,
-    "Corte e Colagem": 6,
-    "Outros": 7
-};
+    async function carregarMapaDeCategorias() {
+        try {
+            // 1. Faz a busca no banco de dados
+            const { data: categorias, error } = await _supabase
+                .from('Pontuacao')
+                .select('id, categoria')
+                .eq('status', true);
+            // Obs: Removi o .eq('disponivel', true) pois normalmente categorias não têm essa coluna, mas se a sua tabela tiver, pode colocar de volta!
 
-// 1. Mapeamento de pontos base por categoria
-const basePointsMap = { 1: 10, 2: 15, 3: 20, 4: 35, 5: 15, 6: 15, 7: 20 };
+            if (error) throw error;
+
+            // 2. Preenche o objeto mapCategorias com os resultados
+            if (categorias) {
+                categorias.forEach(item => {
+                    // Adiciona a categoria exata que vem do banco
+                    mapCategorias[item.categoria] = item.id;
+
+                    // DICA: Adiciona também a versão em minúsculo para evitar bugs caso o HTML envie diferente
+                    mapCategorias[item.categoria.toLowerCase()] = item.id;
+                });
+            }
+
+            console.log("Mapa de Categorias carregado com sucesso:", mapCategorias);
+
+        } catch (err) {
+            console.error("Erro ao carregar as categorias do banco:", err.message);
+        }
+    }
+
+    // 1. Mapeamento de pontos base por categoria
+    const basePointsMap = { 1: 10, 2: 15, 3: 20, 4: 35, 5: 15, 6: 15, 7: 20 };
 
 
     // Lógica para a página de Cadastro de Material (querodoar.html)
@@ -307,113 +328,113 @@ const basePointsMap = { 1: 10, 2: 15, 3: 20, 4: 35, 5: 15, 6: 15, 7: 20 };
 
 
 
-if (submitBtn) {
-    submitBtn.addEventListener('click', async function(event) {
-        event.preventDefault();
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async function (event) {
+                event.preventDefault();
 
-        // 1. Referências dos Elementos
-        const fileInput = document.getElementById('imagem');
-        const categoriaSelect = document.getElementById('categoria');
-        const nomeInput = document.getElementById('nome');
-        const descricaoTextarea = document.getElementById('descricao');
-        const pontoSelect = document.getElementById('ponto');
-        const ratingInput = document.getElementById('doarRatingValue');
+                // 1. Referências dos Elementos
+                const fileInput = document.getElementById('imagem');
+                const categoriaSelect = document.getElementById('categoria');
+                const nomeInput = document.getElementById('nome');
+                const descricaoTextarea = document.getElementById('descricao');
+                const pontoSelect = document.getElementById('ponto');
+                const ratingInput = document.getElementById('doarRatingValue');
 
-        // Validação de Login
-        if (!ID_USUARIO_LOGADO) {
-            alert("Você precisa estar logado para cadastrar um material!");
-            return;
+                // Validação de Login
+                if (!ID_USUARIO_LOGADO) {
+                    alert("Você precisa estar logado para cadastrar um material!");
+                    return;
+                }
+
+                try {
+                    submitBtn.innerText = "Enviando...";
+                    submitBtn.disabled = true;
+
+                    // --- PASSO 1: UPLOAD DA IMAGEM PARA O STORAGE ---
+                    let urlPublica = null;
+                    const arquivo = fileInput.files[0];
+
+                    // --- DENTRO DO PASSO 1: UPLOAD DA IMAGEM ---
+                    if (arquivo) {
+                        const nomeArquivo = `${Date.now()}_${arquivo.name}`;
+
+                        // Adicionamos 'img/' antes do nome do arquivo
+                        const { data: uploadData, error: uploadError } = await _supabase.storage
+                            .from('imagens')
+                            .upload('img/' + nomeArquivo, arquivo); // Caminho ajustado aqui
+
+                        if (uploadError) throw uploadError;
+
+                        // Também ajustamos aqui para pegar o link correto
+                        const { data: urlData } = _supabase.storage
+                            .from('imagens')
+                            .getPublicUrl('img/' + nomeArquivo); // Caminho ajustado aqui
+
+                        urlPublica = urlData.publicUrl;
+                    }
+
+                    // --- PASSO 2: INSERIR NA TABELA DOACAO ---
+                    const catId = mapCategorias[categoriaSelect.value] || 7;
+                    const estrelas = parseInt(ratingInput.value) || 0;
+
+                    const { error: errorDoacao } = await _supabase
+                        .from('Doacao')
+                        .insert([{
+                            item: nomeInput.value,
+                            descricao: descricaoTextarea.value,
+                            x_id_categoria: catId,
+                            estado: estrelas,
+                            ponto_entrega: pontoSelect.value,
+                            x_id_usuario: ID_USUARIO_LOGADO,
+                            imagem: urlPublica, // Link do Storage salvo aqui
+                            disponivel: true
+                        }]);
+
+                    if (errorDoacao) throw errorDoacao;
+
+                    // --- PASSO 3: ATUALIZAR PONTOS E DOAÇÕES DO USUÁRIO ---
+                    const { data: usuario, error: errorUser } = await _supabase
+                        .from('Usuarios')
+                        .select('qtd_pontos, qtd_doacoes')
+                        .eq('id', ID_USUARIO_LOGADO)
+                        .single();
+
+                    if (errorUser) throw errorUser;
+
+                    const novosPontos = (usuario.qtd_pontos || 0) + (basePointsMap[catId] || 0) + estrelas;
+                    const novasDoacoes = (usuario.qtd_doacoes || 0) + 1;
+
+                    const { error: errorUpdate } = await _supabase
+                        .from('Usuarios')
+                        .update({ qtd_pontos: novosPontos, qtd_doacoes: novasDoacoes })
+                        .eq('id', ID_USUARIO_LOGADO);
+
+                    if (errorUpdate) throw errorUpdate;
+
+                    // --- PASSO 4: ATUALIZAR LOCALSTORAGE PARA O HEADER MUDAR NA HORA ---
+                    const usuarioLocal = JSON.parse(localStorage.getItem('usuarioEcoClass'));
+                    if (usuarioLocal) {
+                        usuarioLocal.qtd_pontos = novosPontos;
+                        usuarioLocal.doacoes = novasDoacoes;
+                        localStorage.setItem('usuarioEcoClass', JSON.stringify(usuarioLocal));
+                    }
+
+                    // SUCESSO FINAL
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                    }
+                    showSuccessMessage('Sucesso! Material cadastrado e pontos recebidos.', 'index.html');
+
+                } catch (error) {
+                    console.error('Erro geral:', error.message);
+                    alert('Erro ao processar cadastro: ' + error.message);
+                } finally {
+                    submitBtn.innerText = "Cadastrar";
+                    submitBtn.disabled = false;
+                }
+            });
         }
 
-        try {
-            submitBtn.innerText = "Enviando...";
-            submitBtn.disabled = true;
-
-            // --- PASSO 1: UPLOAD DA IMAGEM PARA O STORAGE ---
-            let urlPublica = null;
-            const arquivo = fileInput.files[0];
-
-            // --- DENTRO DO PASSO 1: UPLOAD DA IMAGEM ---
-if (arquivo) {
-    const nomeArquivo = `${Date.now()}_${arquivo.name}`;
-    
-    // Adicionamos 'img/' antes do nome do arquivo
-    const { data: uploadData, error: uploadError } = await _supabase.storage
-        .from('imagens')
-        .upload('img/' + nomeArquivo, arquivo); // Caminho ajustado aqui
-
-    if (uploadError) throw uploadError;
-
-    // Também ajustamos aqui para pegar o link correto
-    const { data: urlData } = _supabase.storage
-        .from('imagens')
-        .getPublicUrl('img/' + nomeArquivo); // Caminho ajustado aqui
-    
-    urlPublica = urlData.publicUrl;
-}
-
-            // --- PASSO 2: INSERIR NA TABELA DOACAO ---
-            const catId = mapCategorias[categoriaSelect.value] || 7;
-            const estrelas = parseInt(ratingInput.value) || 0;
-
-            const { error: errorDoacao } = await _supabase
-                .from('Doacao')
-                .insert([{
-                    item: nomeInput.value,
-                    descricao: descricaoTextarea.value,
-                    x_id_categoria: catId,
-                    estado: estrelas,
-                    ponto_entrega: pontoSelect.value,
-                    x_id_usuario: ID_USUARIO_LOGADO,
-                    imagem: urlPublica, // Link do Storage salvo aqui
-                    disponivel: true
-                }]);
-
-            if (errorDoacao) throw errorDoacao;
-
-            // --- PASSO 3: ATUALIZAR PONTOS E DOAÇÕES DO USUÁRIO ---
-            const { data: usuario, error: errorUser } = await _supabase
-                .from('Usuarios')
-                .select('qtd_pontos, qtd_doacoes')
-                .eq('id', ID_USUARIO_LOGADO)
-                .single();
-
-            if (errorUser) throw errorUser;
-
-            const novosPontos = (usuario.qtd_pontos || 0) + (basePointsMap[catId] || 0) + estrelas;
-            const novasDoacoes = (usuario.qtd_doacoes || 0) + 1;
-
-            const { error: errorUpdate } = await _supabase
-                .from('Usuarios')
-                .update({ qtd_pontos: novosPontos, qtd_doacoes: novasDoacoes })
-                .eq('id', ID_USUARIO_LOGADO);
-
-            if (errorUpdate) throw errorUpdate;
-
-            // --- PASSO 4: ATUALIZAR LOCALSTORAGE PARA O HEADER MUDAR NA HORA ---
-            const usuarioLocal = JSON.parse(localStorage.getItem('usuarioEcoClass'));
-            if (usuarioLocal) {
-                usuarioLocal.qtd_pontos = novosPontos;
-                usuarioLocal.doacoes = novasDoacoes;
-                localStorage.setItem('usuarioEcoClass', JSON.stringify(usuarioLocal));
-            }
-
-            // SUCESSO FINAL
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-            }
-            showSuccessMessage('Sucesso! Material cadastrado e pontos recebidos.', 'index.html');
-
-        } catch (error) {
-            console.error('Erro geral:', error.message);
-            alert('Erro ao processar cadastro: ' + error.message);
-        } finally {
-            submitBtn.innerText = "Cadastrar";
-            submitBtn.disabled = false;
-        }
-    });
-}
-        
         // Lógica do sistema de estrelas para a página de doação
         const starsContainer = document.getElementById('doar-stars');
         if (starsContainer) {
@@ -427,7 +448,7 @@ if (arquivo) {
                 ratingInput.value = '0';
                 starsContainer.appendChild(ratingInput);
             }
-            
+
             stars.forEach(star => {
                 star.addEventListener('click', () => {
                     const value = parseInt(star.getAttribute('data-value'));
@@ -483,11 +504,11 @@ if (arquivo) {
             imageUploadContainer.addEventListener('click', () => {
                 fileInput.click();
             });
-            fileInput.addEventListener('change', function() {
+            fileInput.addEventListener('change', function () {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
                         imagePreview.src = e.target.result;
                         imagePreview.style.display = 'block';
                         if (cameraIcon) cameraIcon.style.display = 'none';
@@ -523,9 +544,6 @@ if (arquivo) {
         }
     }
 
-
-    // ... (código existente) ...
-
     // Lógica para a página "Preciso Receber" (precisoreceber.html)
     const solicitacaoForm = document.getElementById('solicitacaoForm');
     if (solicitacaoForm) {
@@ -545,9 +563,9 @@ if (arquivo) {
         }
 
         // Simulação do formulário de solicitação
-        solicitacaoForm.addEventListener('submit', function(event) {
+        solicitacaoForm.addEventListener('submit', function (event) {
             event.preventDefault();
-            
+
             // Cria um modal ou um elemento de mensagem para exibir o sucesso
             const successMessage = document.createElement('div');
             successMessage.className = 'solicitacao-sucesso';
@@ -566,7 +584,7 @@ if (arquivo) {
             }
 
             // Redireciona após 3 segundos
-            setTimeout(function() {
+            setTimeout(function () {
                 window.location.href = 'EcoClassReceberMaterial.html';
             }, 3000); // 3 seconds
         });
@@ -601,7 +619,7 @@ if (arquivo) {
             event.target.value = valor;
         });
 
-        
+
         if (contatoInput) contatoInput.addEventListener('input', function (event) {
             let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
             if (valor.length > 10) valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
@@ -610,7 +628,7 @@ if (arquivo) {
             else if (valor.length > 0) valor = valor.replace(/^(\d*)/, '($1');
             event.target.value = valor;
         });
-        
+
         if (cepInput) cepInput.addEventListener('input', function (event) {
             let valor = event.target.value.replace(/\D/g, "").substring(0, 8);
             if (valor.length > 5) valor = valor.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
@@ -946,7 +964,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
             const souEstudante = document.getElementById('sou-estudante').checked;
-            
+
             const cep = document.getElementById('cep').value;
             const logradouro = document.getElementById('logradouro').value;
             const bairro = document.getElementById('bairro').value;
@@ -971,7 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             "e-mail": email, // Certifique-se que o nome na tabela está com aspas e hífen
                             senha: senha,
                             estudante: souEstudante,
-                            qtd_pontos: 0 
+                            qtd_pontos: 0
                         }
                     ])
                     .select();
@@ -998,7 +1016,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // SUCESSO
                 alert('Conta criada com sucesso!');
-                
+
                 if (typeof confetti === 'function') {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 }
@@ -1032,10 +1050,8 @@ window.addEventListener('load', verificarConexao);
 let idMaterialSelecionado = null; // Variável global para saber o que está sendo solicitado
 
 
-// let idMaterialSelecionado = null; 
-
 // 2. Função Principal de Listagem
-async function carregarListaDeDoacoes(filtroCategoria = "", filtroMaterial = "", filtroQualidade = "0") {
+async function carregarListaDeDoacoes(idCategoria = "", filtroMaterial = "", filtroQualidade = "0") {
     const container = document.getElementById('cards-container');
     if (!container) return;
 
@@ -1046,26 +1062,30 @@ async function carregarListaDeDoacoes(filtroCategoria = "", filtroMaterial = "",
             .eq('disponivel', true);
 
         // Aplicação dos Filtros
-        if (filtroCategoria && filtroCategoria !== "Selecionar Opção") {
-            query = query.eq('x_id_categoria', mapCategorias[filtroCategoria]);
+        if (idCategoria && idCategoria !== "Selecionar Opção") {
+            console.log("Aplicando filtro de categoria ID:", idCategoria);
+            // Como o idCategoria já é o número (ex: 2), passamos ele direto para a query!
+            query = query.eq('x_id_categoria', idCategoria);
         }
 
         if (filtroMaterial && filtroMaterial.trim() !== "") {
+            console.log("Aplicando filtro de material:", filtroMaterial);
             query = query.ilike('item', `%${filtroMaterial}%`);
         }
 
         if (filtroQualidade && filtroQualidade !== "0") {
-            query = query.gte('estado', filtroQualidade); 
+            console.log("Aplicando filtro de qualidade:", filtroQualidade);
+            query = query.gte('estado', filtroQualidade);
         }
 
         const { data: doacoes, error } = await query;
 
         if (error) throw error;
-        
+
         container.innerHTML = ''; // Limpa uma única vez
 
         if (doacoes.length === 0) {
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 20px;">Nenhum material encontrado com esses filtros.</p>';
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 20px; color: white;">Nenhum material encontrado com esses filtros.</p>';
             return;
         }
 
@@ -1081,7 +1101,7 @@ async function carregarListaDeDoacoes(filtroCategoria = "", filtroMaterial = "",
             const cardHTML = `
                 <div class="card" onclick="abrirModalSolicitacao(${JSON.stringify(doacao).replace(/"/g, '&quot;')})">
                     <div class="foto-material">
-                        <img src="${imgPath}" alt="${doacao.item}" width="210" height="110">
+                        <img src="${imgPath}" alt="${doacao.item}" width="210" height="110" style="object-fit: cover;">
                     </div>
                     <div class="card-content">
                         <h3>${doacao.item}</h3>
@@ -1101,8 +1121,8 @@ async function carregarListaDeDoacoes(filtroCategoria = "", filtroMaterial = "",
 
 // 3. Funções do Modal (Independente do DOMContentLoaded)
 function abrirModalSolicitacao(doacao) {
-    idMaterialSelecionado = doacao.id; 
-    
+    idMaterialSelecionado = doacao.id;
+
     // IMPORTANTE: Como fizemos o join, o nome da categoria está dentro do objeto Pontuacao
     const nomeCategoria = doacao.Pontuacao ? doacao.Pontuacao.categoria : "Sem Categoria";
 
@@ -1110,22 +1130,57 @@ function abrirModalSolicitacao(doacao) {
     document.getElementById('modal-item').value = doacao.item || '';
     document.getElementById('modal-img').src = doacao.imagem || 'https://via.placeholder.com/210x110?text=Sem+Imagem';
     document.getElementById('modal-descricao').value = doacao.descricao || '';
-    
+
     const starsContainer = document.getElementById('modal-stars');
     const nivel = parseInt(doacao.estado) || 0;
     starsContainer.innerHTML = "";
-    for(let i=1; i<=5; i++) {
+    for (let i = 1; i <= 5; i++) {
         starsContainer.innerHTML += `<span class="receber-star ${i <= nivel ? 'filled' : ''}">★</span>`;
     }
 
     document.getElementById('modalSolicitacao').style.display = "block";
 }
 
+async function carregarCategoriasDropdown() {
+    const selectCategoria = document.getElementById('categoria');
+    if (!selectCategoria) return;
+
+    try {
+        // 1. Busca as categorias no banco de dados
+        const { data: categorias, error } = await _supabase
+            .from('Pontuacao')
+            .select('id, categoria')
+            .eq('status', true)
+            .order('id', { ascending: true }); // Ordena do ID 1 ao 7 para ficar organizado
+
+        if (error) throw error;
+
+        // 2. Limpa o select e insere a opção padrão (Placeholder)
+        selectCategoria.innerHTML = '<option value="" selected>Selecionar Opção</option>';
+
+        // 3. Cria as tags <option> para cada categoria encontrada
+        if (categorias) {
+            categorias.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id; // O value será o número (1, 2, 3...)
+                option.textContent = item.categoria; // O texto será o nome (Escrita, Mochilas...)
+                selectCategoria.appendChild(option);
+            });
+        }
+
+        console.log("Categorias carregadas com sucesso no select!");
+
+    } catch (err) {
+        console.error("Erro ao preencher o select de categorias:", err.message);
+    }
+}
+
 // 4. Inicialização de Eventos (Tudo dentro de UM único DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // Carregamento Inicial
     carregarListaDeDoacoes();
+    carregarCategoriasDropdown();
 
     // Fechamento do Modal ao clicar fora
     document.addEventListener('click', (e) => {
@@ -1193,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 alert('Solicitação realizada com sucesso!');
                 document.getElementById('modalSolicitacao').style.display = "none";
-                carregarListaDeDoacoes(); 
+                carregarListaDeDoacoes();
 
             } catch (err) {
                 alert("Erro: " + err.message);
@@ -1205,3 +1260,92 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
+
+
+// Função para buscar e preencher a tabela de pontuação
+async function carregarTabelaPontuacao() {
+    alert("Carregando categorias ativas...");
+    const tbody = document.getElementById('tabela-pontuacao-body');
+    if (!tbody) return; // Se a tabela não existir na página, a função para aqui
+
+    try {
+        // 1. Busca os dados no Supabase
+        const { data: categorias, error } = await _supabase
+            .from('Pontuacao')
+            .select('*')
+            .eq('status', true)
+            .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        // 2. Limpa o corpo da tabela
+        tbody.innerHTML = '';
+
+        // 3. Verifica se tem dados
+        if (categorias.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Nenhuma categoria ativa encontrada.</td></tr>';
+            return;
+        }
+
+        // 4. Preenche as linhas da tabela dinamicamente
+        categorias.forEach(item => {
+            const tr = document.createElement('tr');
+            
+            // Adiciona a classe de borda que você já usa no seu CSS
+            tr.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)"; 
+
+            tr.innerHTML = `
+                <td style="padding: 12px 10px;">${item.id}</td>
+                <td style="padding: 12px 10px;">${item.categoria}</td>
+                <td style="padding: 12px 10px;">${item.descricao}</td>
+                <td style="padding: 12px 10px;">${item.pont_min} - ${item.pont_max} pts</td>
+                <td style="padding: 12px 10px; text-align: center;">
+                    <button onclick="inativarCategoria(${item.id})" 
+                            style="background: none; border: none; cursor: pointer; font-size: 1.2em; transition: transform 0.2s;" 
+                            title="Inativar Categoria"
+                            onmouseover="this.style.transform='scale(1.2)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                        🗑️
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (err) {
+        console.error("Erro ao preencher tabela de pontuação:", err.message);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ffcccc;">Erro ao carregar as categorias.</td></tr>';
+    }
+}
+
+// Função para inativar a categoria (Mudar status para false)
+async function inativarCategoria(idCategoria) {
+    // Pede uma confirmação antes de excluir
+    const confirmacao = confirm("Tem certeza que deseja inativar esta categoria?");
+    if (!confirmacao) return;
+
+    try {
+        const { error } = await _supabase
+            .from('Pontuacao')
+            .update({ status: false }) // Altera o status para inativo
+            .eq('id', idCategoria);
+
+        if (error) throw error;
+
+        // Avisa que deu certo
+        alert("Categoria inativada com sucesso!");
+
+        // Recarrega a tabela para que o item inativado suma da tela
+        carregarTabelaPontuacao(); 
+
+        // Opcional: Se você estiver usando aquela função do Dropdown na mesma página, recarregue-a também:
+        if (typeof carregarCategoriasDropdown === 'function') {
+            carregarCategoriasDropdown();
+        }
+
+    } catch (err) {
+        console.error("Erro ao inativar categoria:", err.message);
+        alert("Erro ao inativar: " + err.message);
+    }
+}

@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <link rel="icon" type="image/svg+xml" href="imagens/logo 3.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Pontuação - EcoClass</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
     <div id="header-placeholder"></div>
 
     <div class="main-content-form">
-        <div class="doar-form-container points-page-container"> 
-            
+        <div class="doar-form-container points-page-container">
+
             <h1 class="points-page-title">MINHA PONTUAÇÃO</h1>
-            
+
             <div class="points-summary">
                 <p>Meus pontos: <span class="points-value" id="pagePointsValue">0</span></p>
                 <p>Doações realizadas: <span class="donations-value" id="pageDonationsValue">0</span></p>
             </div>
 
             <div class="info-texto">
-                <p class="points-info-text">Seus pontos podem ser trocados por cupons de desconto de até 100% nas lojas parceiras do EcoClass.</p>
-                <p class="points-info-text">O sistema de pontos segue a tabela abaixo, variando de acordo com a qualidade do produto doado.</p>
-                <p class="points-info-text-example">EX: doando uma caneta com uma estrela de qualidade recebe 10 pontos, com 5 estrelas recebe 15 pontos.</p>
+                <p class="points-info-text">Seus pontos podem ser trocados por cupons de desconto de até 100% nas lojas
+                    parceiras do EcoClass.</p>
+                <p class="points-info-text">O sistema de pontos segue a tabela abaixo, variando de acordo com a
+                    qualidade do produto doado.</p>
+                <p class="points-info-text-example">EX: doando uma caneta com uma estrela de qualidade recebe 10 pontos,
+                    com 5 estrelas recebe 15 pontos.</p>
             </div>
 
             <h3 class="points-table-title">Tabela de Pontos</h3>
@@ -31,17 +37,14 @@
                 <table class="points-table">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>CATEGORIA</th>
                             <th>DESCRIÇÃO</th>
                             <th>PONTUAÇÃO</th>
+                            <th style="text-align: center;">AÇÃO</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td>Escrita</td><td>lápis, canetas, borrachas...</td><td>10 - 15 pts</td></tr>
-                        <tr><td>Papel</td><td>cadernos e papéis soltos</td><td>15 - 20 pts</td></tr>
-                        <tr><td>Pintura</td><td>lápis de cor, tintas, pincéis</td><td>20 - 25 pts</td></tr>
-                        <tr><td>Mochilas</td><td>mochilas, bolsas</td><td>35 - 40 pts</td></tr>
-                        <tr><td>Outros</td><td>demais produtos</td><td>20 - 25 pts</td></tr>
+                    <tbody id="tabela-pontuacao-body">
                     </tbody>
                 </table>
             </div>
@@ -53,5 +56,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
+    <script src="pontuacao.js"></script>
 </body>
+
 </html>

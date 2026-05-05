@@ -2276,3 +2276,64 @@ a {
 .filter-star:hover {
     color: #ffd700;
 }
+
+
+
+
+
+
+
+
+/* --- Grid de Materiais --- */
+.materiais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Estilo dos Controles de Paginação --- */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 40px 0;
+}
+
+.pagination-controls button {
+    background-color: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #a8e6ee;
+    color: #385536;
+}
+
+.pagination-controls button.active {
+    background-color: #FAFFF3;
+    color: #385536;
+    font-weight: bold;
+    border-color: #FAFFF3;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-dots {
+    color: white;
+    font-weight: bold;
+    padding: 0 5px;
+}
