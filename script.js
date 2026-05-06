@@ -315,6 +315,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 1. Mapeamento de pontos base por categoria
     const basePointsMap = { 1: 10, 2: 15, 3: 20, 4: 35, 5: 15, 6: 15, 7: 20 };
+// finalizar quarta
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // Lógica para a página de Cadastro de Material (querodoar.html)

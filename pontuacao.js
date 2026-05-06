@@ -30,9 +30,9 @@ async function carregarTabelaPontuacao() {
         // 4. Preenche as linhas da tabela dinamicamente
         categorias.forEach(item => {
             const tr = document.createElement('tr');
-            
+
             // Adiciona a classe de borda que você já usa no seu CSS
-            tr.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)"; 
+            tr.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
 
             tr.innerHTML = `
                 <td style="padding: 12px 10px;">${item.id}</td>
@@ -94,7 +94,7 @@ async function inativarCategoria(idCategoria) {
         alert("Categoria inativada com sucesso!");
 
         // Recarrega a tabela para que o item inativado suma da tela
-        carregarTabelaPontuacao(); 
+        carregarTabelaPontuacao();
 
         // Atualiza o Dropdown se a função existir
         if (typeof carregarCategoriasDropdown === 'function') {
@@ -106,3 +106,90 @@ async function inativarCategoria(idCategoria) {
         alert("Erro no processo: " + err.message);
     }
 }
+
+
+
+// --- LÓGICA PARA ADICIONAR NOVA CATEGORIA ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnAdd = document.getElementById('btn-add-categoria');
+    const modal = document.getElementById('modalAddCategoria');
+    const btnClose = document.getElementById('closeAddCategoria');
+    const form = document.getElementById('formNovaCategoria');
+
+    // 1. Abrir o Modal
+    if (btnAdd) {
+        btnAdd.addEventListener('click', () => {
+            modal.style.display = 'block';
+        });
+    }
+
+    // 2. Fechar o Modal
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            modal.style.display = 'none';
+            form.reset();
+        });
+    }
+
+    // 3. Enviar para o Supabase (Através do clique no botão)
+    const btnSalvar = document.querySelector('.cad-category-submit-btn');
+
+    if (btnSalvar) {
+        btnSalvar.addEventListener('click', async (e) => {
+            e.preventDefault(); // Impede que o type="submit" recarregue a página
+
+            // Captura os valores dos campos
+            const nome = document.getElementById('new-cat-nome').value.trim();
+            const desc = document.getElementById('new-cat-desc').value.trim();
+            const min = document.getElementById('new-cat-min').value;
+            const max = document.getElementById('new-cat-max').value;
+
+            // Validação manual: Checa se tem algum campo vazio
+            if (!nome || !desc || !min || !max) {
+                alert("Por favor, preencha todos os campos antes de salvar a categoria.");
+                return; // Para a execução aqui se faltar algo
+            }
+
+            // Muda o visual do botão
+            btnSalvar.innerText = "Salvando...";
+            btnSalvar.disabled = true;
+
+            const novaCategoria = {
+                categoria: nome,
+                descricao: desc,
+                pont_min: parseInt(min),
+                pont_max: parseInt(max),
+                status: true // Define como ativa por padrão
+            };
+
+            try {
+                const { error } = await _supabase
+                    .from('Pontuacao')
+                    .insert([novaCategoria]);
+
+                if (error) throw error;
+
+                alert("Sucesso! Categoria adicionada.");
+
+                // Limpa e fecha o modal
+                if (modal) modal.style.display = 'none';
+                if (form) form.reset();
+
+                // Recarrega a tabela para exibir a nova categoria
+                if (typeof carregarTabelaPontuacao === 'function') carregarTabelaPontuacao();
+
+                // Se tiver dropdown na página, atualiza também
+                if (typeof carregarCategoriasDropdown === 'function') carregarCategoriasDropdown();
+
+            } catch (err) {
+                console.error("Erro ao inserir categoria:", err.message);
+                alert("Erro ao salvar: " + err.message);
+            } finally {
+                // Restaura o botão
+                btnSalvar.innerText = "Salvar Categoria";
+                btnSalvar.disabled = false;
+            }
+        });
+    }
+});
