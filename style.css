@@ -108,6 +108,24 @@ a {
     margin-top: -1px; /* Encaixa logo abaixo da borda da tabela */
 }
 
+.cad-category-submit-btn {width: 100%;
+    padding: 12px;
+    background-color: #fff;
+    color: #385536;
+    border: solid 1px #FAFFF3;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 30px
+}
+
+.cad-category-submit-btn:hover {
+    color: #FAFFF3;
+    cursor: pointer;
+    transition: background 0.3s;
+    background-color: #385536;
+}
+
 #btn-add-categoria {
     width: 100%;
     background-color: rgba(0, 0, 0, 0.2);
@@ -142,6 +160,15 @@ a {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(5px);
+}
+
+.modal_pont_min_max {
+    width: 100%; 
+    box-sizing: border-box; 
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    padding-left: 10px;
 }
 
 
@@ -560,6 +587,7 @@ a {
 /* RODAPÉ */
 .main-footer {
     margin-top: 60px;
+    padding-top: 60px;
     background-color: #385536;
     /* Verde escuro principal do rodapé */
     color: white;

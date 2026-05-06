@@ -47,12 +47,14 @@
                     <tbody id="tabela-pontuacao-body">
                     </tbody>
                 </table>
-                <div class="add-category-button">
-                    <button id="btn-add-categoria">
-                        <i class="fas fa-plus"></i> Adicionar Categoria
-                    </button>
-                </div>
             </div>
+            <div class="add-category-button">
+                <button id="btn-add-categoria">
+                    <i class="fas fa-plus"></i> Adicionar Categoria
+                </button>
+            </div>
+
+            <!-- Modal para Adicionar Categoria -->
             <div id="modalAddCategoria" class="modal-pontuacao" style="display: none;">
                 <div class="doar-form-container" style="max-width: 500px; margin: 50px auto; position: relative;">
                     <span class="close-modal" id="closeAddCategoria"
@@ -67,19 +69,18 @@
                         <label for="new-cat-desc">Descrição</label>
                         <textarea id="new-cat-desc" placeholder="Ex: Cabos, mouses, teclados..." required></textarea>
 
-                        <div style="display: flex; gap: 15px;">
-                            <div style="flex: 1;">
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 120px;">
                                 <label for="new-cat-min">Pontos Min.</label>
-                                <input type="number" id="new-cat-min" placeholder="10" required>
+                                <input type="number" id="new-cat-min" placeholder="10" class="modal_pont_min_max">
                             </div>
-                            <div style="flex: 1;">
+                            <div style="flex: 1; min-width: 120px;">
                                 <label for="new-cat-max">Pontos Max.</label>
-                                <input type="number" id="new-cat-max" placeholder="20" required>
+                                <input type="number" id="new-cat-max" placeholder="20" class="modal_pont_min_max">
                             </div>
                         </div>
 
-                        <button type="submit" class="cad-category-submit-btn" style="margin-top: 20px; width: 100%;">Salvar
-                            Categoria</button>
+                        <button type="submit" class="cad-category-submit-btn">Salvar Categoria</button>
                     </form>
                 </div>
             </div>
