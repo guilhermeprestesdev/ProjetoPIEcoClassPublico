@@ -1465,7 +1465,7 @@ a {
 
 /* Pagina seleção de material */
 .page-container {
-    margin-top: 80px;
+    margin-top: 100px;
     display: flex;
     padding: 20px;
 }
@@ -1571,22 +1571,26 @@ a {
     .page-container {
         flex-direction: column;/* Empilha o painel de filtro e os cards */
         padding: 15px;
+        margin-top: 120px;
     }
 
     .filter-panel {
         width: 100%;/* Ocupa a largura total */
         margin-right: 0;
         margin-bottom: 20px;/* Espaço abaixo do painel de filtro */
-        flex-direction: row;/* Coloca labels e selects lado a lado no filtro */
-        justify-content: space-around;
-        flex-wrap: wrap;
+        align-items: flex-start;
         gap: 15px;
+    }
+
+    .doar-stars{
+        align-items: flex-start;
+        justify-content: flex-start;
     }
 
     .filter-panel label {
         margin-top: 0;
         flex-basis: 45%;/* Para alinhar labels em duas colunas */
-        text-align: center;
+        text-align: left;
     }
 
     .filter-panel select {
@@ -1619,6 +1623,7 @@ a {
 @media (max-width: 480px) {
     .page-container {
         padding: 10px;
+        margin-top: 80px;
     }
 
     .filter-panel {
@@ -1752,7 +1757,6 @@ a {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: -10px 19% 20px;
 }
 
 .doar-star {
@@ -1783,6 +1787,7 @@ a {
     transition: background 0.3s;
     background-color: #385536;
 }
+
 
 
 
