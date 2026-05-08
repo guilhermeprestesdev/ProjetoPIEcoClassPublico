@@ -63,5 +63,6 @@ Here is the contact information for the student developers of the project:
 -Alana de Oliveira - alanaleticiadeoliveira@gmail.com 
 -Guilherme Prestes - guilhermeprestes54@gmail.com
 -Julia Schenkel - juliaschenkelf@gmail.com 
+-Daniel Pilatti - daniel_pilatti@yahoo.com.br
  
 

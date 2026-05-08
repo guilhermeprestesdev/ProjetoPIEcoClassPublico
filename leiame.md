@@ -50,7 +50,7 @@ Para visualizar o projeto, você pode acessá-lo no GitHub seguindo estas etapas
 
 Clonar o repositório:
 
-git clone https://github.com/GuilhermeP54/PiSenacEcoclass.git
+git clone https://github.com/guilhermeprestesdev/ProjetoPIEcoClassPublico.git
 Navegar para o diretório do projeto:
 
 cd PiSenacEcoclass.git
@@ -60,7 +60,7 @@ Abrir o arquivo index.html no seu navegador:
 Abrir o arquivo `index.html`
 Você também pode acessá-lo da seguinte forma:
 
-Acesse o seguinte endereço: https://github.com/GuilhermeP54/PiSenacEcoclass.git
+Acesse o seguinte endereço: https://github.com/guilhermeprestesdev/ProjetoPIEcoClassPublico.git
 
 Clique em "< > Code" (Código) no lado esquerdo da tela.
 
@@ -78,6 +78,8 @@ Aqui estão as informações de contato dos estudantes desenvolvedores do projet
 
 Alana de Oliveira - alanaleticiadeoliveira@gmail.com
 Guilherme Prestes - guilhermeprestes54@gmail.com
+-Julia Schenkel - juliaschenkelf@gmail.com 
+-Daniel Pilatti - daniel_pilatti@yahoo.com.br
 =======
 Eco Class
 O Eco Class transforma material escolar esquecido em oportunidades de aprendizado, conectando doadores a estudantes necessitados. Este projeto resolve a questão da escassez de recursos e promove a solidariedade, garantindo que nenhum aluno seja deixado para trás por não ter materiais escolares básicos.
@@ -130,7 +132,7 @@ Para visualizar o projeto, você pode acessá-lo no GitHub seguindo estas etapas
 
 Clonar o repositório:
 
-git clone https://github.com/GuilhermeP54/PiSenacEcoclass.git
+git clone https://github.com/guilhermeprestesdev/ProjetoPIEcoClassPublico.git
 Navegar para o diretório do projeto:
 
 cd PiSenacEcoclass.git
@@ -140,7 +142,7 @@ Abrir o arquivo index.html no seu navegador:
 Abrir o arquivo `index.html`
 Você também pode acessá-lo da seguinte forma:
 
-Acesse o seguinte endereço: https://github.com/GuilhermeP54/PiSenacEcoclass.git
+Acesse o seguinte endereço: https://github.com/guilhermeprestesdev/ProjetoPIEcoClassPublico.git
 
 Clique em "< > Code" (Código) no lado esquerdo da tela.
 
@@ -159,4 +161,5 @@ Aqui estão as informações de contato dos estudantes desenvolvedores do projet
 Alana de Oliveira - alanaleticiadeoliveira@gmail.com
 Guilherme Prestes - guilhermeprestes54@gmail.com
 >>>>>>> d28c207d8cbfdb6b80d7907a76df1a84628429e4
-Julia Schenkel - juliaschenkelf@gmail.com
+-Julia Schenkel - juliaschenkelf@gmail.com 
+-Daniel Pilatti - daniel_pilatti@yahoo.com.br

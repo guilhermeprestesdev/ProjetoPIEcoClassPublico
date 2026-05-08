@@ -281,84 +281,52 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
     }
 
-    // --- LÓGICA ESPECÍFICA PARA AS PÁGINAS DE CADASTRO (DOAR) E SOLICITAÇÃO (RECEBER) ---
-    let mapCategorias = {}; // Criamos o objeto vazio primeiro
+    // --- LÓGICA DE CATEGORIAS E PONTUAÇÃO DINÂMICA ---
+    let mapCategorias = {};
+    let basePointsMap = {};
 
-    async function carregarMapaDeCategorias() {
+    async function carregarConfiguracoesPontuacao() {
         try {
-            // 1. Faz a busca no banco de dados
-            const { data: categorias, error } = await _supabase
+            const { data: dadosPontuacao, error } = await _supabase
                 .from('Pontuacao')
-                .select('id, categoria')
+                .select('id, categoria, pont_min')
                 .eq('status', true);
-            // Obs: Removi o .eq('disponivel', true) pois normalmente categorias não têm essa coluna, mas se a sua tabela tiver, pode colocar de volta!
 
             if (error) throw error;
 
-            // 2. Preenche o objeto mapCategorias com os resultados
-            if (categorias) {
-                categorias.forEach(item => {
-                    // Adiciona a categoria exata que vem do banco
-                    mapCategorias[item.categoria] = item.id;
+            if (dadosPontuacao) {
+                const categoriaSelect = document.getElementById('categoria');
+                if (categoriaSelect) categoriaSelect.innerHTML = '<option value="">Selecione uma categoria</option>';
 
-                    // DICA: Adiciona também a versão em minúsculo para evitar bugs caso o HTML envie diferente
-                    mapCategorias[item.categoria.toLowerCase()] = item.id;
+                dadosPontuacao.forEach(item => {
+                    mapCategorias[item.id] = item.categoria;
+                    basePointsMap[item.id] = Number(item.pont_min);
+
+                    if (categoriaSelect) {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.categoria;
+                        categoriaSelect.appendChild(option);
+                    }
                 });
             }
-
-            console.log("Mapa de Categorias carregado com sucesso:", mapCategorias);
-
+            console.log("Configurações de pontuação carregadas com sucesso.");
         } catch (err) {
-            console.error("Erro ao carregar as categorias do banco:", err.message);
+            console.error("Erro ao carregar dados de pontuação:", err.message);
         }
     }
 
-    // 1. Mapeamento de pontos base por categoria
-    const basePointsMap = { 1: 10, 2: 15, 3: 20, 4: 35, 5: 15, 6: 15, 7: 20 };
-// finalizar quarta
+    carregarConfiguracoesPontuacao();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Lógica para a página de Cadastro de Material (querodoar.html)
+    // --- LÓGICA DO FORMULÁRIO DE DOAÇÃO (QUERODOAR.HTML) ---
     const materialFormContainer = document.querySelector('.doar-form-container');
     if (materialFormContainer) {
-        const materialForm = document.getElementById('materialForm');
         const submitBtn = materialFormContainer.querySelector('.doar-submit-btn');
-
-        // Lógica de validação e funcionalidade do formulário de doação
-        // Dentro de: if (materialFormContainer) { ...
-
-
 
         if (submitBtn) {
             submitBtn.addEventListener('click', async function (event) {
                 event.preventDefault();
 
-                // 1. Referências dos Elementos
                 const fileInput = document.getElementById('imagem');
                 const categoriaSelect = document.getElementById('categoria');
                 const nomeInput = document.getElementById('nome');
@@ -366,7 +334,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const pontoSelect = document.getElementById('ponto');
                 const ratingInput = document.getElementById('doarRatingValue');
 
-                // Validação de Login
                 if (!ID_USUARIO_LOGADO) {
                     alert("Você precisa estar logado para cadastrar um material!");
                     return;
@@ -376,31 +343,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     submitBtn.innerText = "Enviando...";
                     submitBtn.disabled = true;
 
-                    // --- PASSO 1: UPLOAD DA IMAGEM PARA O STORAGE ---
+                    // 1. Upload da Imagem
                     let urlPublica = null;
                     const arquivo = fileInput.files[0];
-
-                    // --- DENTRO DO PASSO 1: UPLOAD DA IMAGEM ---
                     if (arquivo) {
                         const nomeArquivo = `${Date.now()}_${arquivo.name}`;
-
-                        // Adicionamos 'img/' antes do nome do arquivo
                         const { data: uploadData, error: uploadError } = await _supabase.storage
                             .from('imagens')
-                            .upload('img/' + nomeArquivo, arquivo); // Caminho ajustado aqui
+                            .upload('img/' + nomeArquivo, arquivo);
 
                         if (uploadError) throw uploadError;
 
-                        // Também ajustamos aqui para pegar o link correto
                         const { data: urlData } = _supabase.storage
                             .from('imagens')
-                            .getPublicUrl('img/' + nomeArquivo); // Caminho ajustado aqui
-
+                            .getPublicUrl('img/' + nomeArquivo);
                         urlPublica = urlData.publicUrl;
                     }
 
-                    // --- PASSO 2: INSERIR NA TABELA DOACAO ---
-                    const catId = mapCategorias[categoriaSelect.value] || 7;
+                    // 2. Inserção na Tabela Doacao
+                    const catId = parseInt(categoriaSelect.value);
+                    if (!catId) throw new Error("Selecione uma categoria válida.");
+
                     const estrelas = parseInt(ratingInput.value) || 0;
 
                     const { error: errorDoacao } = await _supabase
@@ -412,13 +375,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             estado: estrelas,
                             ponto_entrega: pontoSelect.value,
                             x_id_usuario: ID_USUARIO_LOGADO,
-                            imagem: urlPublica, // Link do Storage salvo aqui
+                            imagem: urlPublica,
                             disponivel: true
                         }]);
 
                     if (errorDoacao) throw errorDoacao;
 
-                    // --- PASSO 3: ATUALIZAR PONTOS E DOAÇÕES DO USUÁRIO ---
+                    // 3. Atualização de Pontos do Usuário
                     const { data: usuario, error: errorUser } = await _supabase
                         .from('Usuarios')
                         .select('qtd_pontos, qtd_doacoes')
@@ -427,7 +390,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (errorUser) throw errorUser;
 
-                    const novosPontos = (usuario.qtd_pontos || 0) + (basePointsMap[catId] || 0) + estrelas;
+                    const pontosDaCategoria = basePointsMap[catId] || 0;
+                    const novosPontos = (usuario.qtd_pontos || 0) + pontosDaCategoria + estrelas;
                     const novasDoacoes = (usuario.qtd_doacoes || 0) + 1;
 
                     const { error: errorUpdate } = await _supabase
@@ -437,15 +401,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (errorUpdate) throw errorUpdate;
 
-                    // --- PASSO 4: ATUALIZAR LOCALSTORAGE PARA O HEADER MUDAR NA HORA ---
+                    // 4. Atualização do Cache Local
                     const usuarioLocal = JSON.parse(localStorage.getItem('usuarioEcoClass'));
                     if (usuarioLocal) {
                         usuarioLocal.qtd_pontos = novosPontos;
-                        usuarioLocal.doacoes = novasDoacoes;
+                        usuarioLocal.qtd_doacoes = novasDoacoes;
                         localStorage.setItem('usuarioEcoClass', JSON.stringify(usuarioLocal));
                     }
 
-                    // SUCESSO FINAL
                     if (typeof confetti === 'function') {
                         confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
                     }
@@ -460,447 +423,448 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
+    
 
-        // Lógica do sistema de estrelas para a página de doação
-        const starsContainer = document.getElementById('doar-stars');
-        if (starsContainer) {
-            const stars = starsContainer.querySelectorAll('.doar-star');
-            let ratingInput = document.getElementById('doarRatingValue');
-            if (!ratingInput) {
-                ratingInput = document.createElement('input');
-                ratingInput.type = 'hidden';
-                ratingInput.id = 'doarRatingValue';
-                ratingInput.name = 'estadoMaterial';
-                ratingInput.value = '0';
-                starsContainer.appendChild(ratingInput);
-            }
-
-            stars.forEach(star => {
-                star.addEventListener('click', () => {
-                    const value = parseInt(star.getAttribute('data-value'));
-                    ratingInput.value = value;
-                    stars.forEach((s, index) => {
-                        if (index < value) {
-                            s.classList.add('filled');
-                        } else {
-                            s.classList.remove('filled');
-                        }
-                    });
-                });
-                star.addEventListener('mouseover', () => {
-                    const value = parseInt(star.getAttribute('data-value'));
-                    stars.forEach((s, index) => {
-                        if (index < value) {
-                            s.classList.add('hover-filled');
-                        } else {
-                            s.classList.remove('hover-filled');
-                        }
-                    });
-                });
-                star.addEventListener('mouseout', () => {
-                    stars.forEach(s => s.classList.remove('hover-filled'));
-                    const currentValue = parseInt(ratingInput.value);
-                    stars.forEach((s, index) => {
-                        if (index < currentValue) {
-                            s.classList.add('filled');
-                        } else {
-                            s.classList.remove('filled');
-                        }
-                    });
-                });
-            });
-            const initialRating = parseInt(ratingInput.value);
-            if (initialRating > 0) {
-                stars.forEach((s, index) => {
-                    if (index < initialRating) {
-                        s.classList.add('filled');
-                    }
-                });
-            }
+    // Lógica do sistema de estrelas para a página de doação
+    const starsContainer = document.getElementById('doar-stars');
+    if (starsContainer) {
+        const stars = starsContainer.querySelectorAll('.doar-star');
+        let ratingInput = document.getElementById('doarRatingValue');
+        if (!ratingInput) {
+            ratingInput = document.createElement('input');
+            ratingInput.type = 'hidden';
+            ratingInput.id = 'doarRatingValue';
+            ratingInput.name = 'estadoMaterial';
+            ratingInput.value = '0';
+            starsContainer.appendChild(ratingInput);
         }
 
-        // Lógica do upload de imagem para a página de doação
-        const imageUploadContainer = document.getElementById('imageUploadContainer');
-        const fileInput = document.getElementById('imagem');
-        const imagePreview = document.getElementById('imagePreview');
-        const cameraIcon = document.querySelector('.doar-camera-icon');
-        const uploadText = document.querySelector('.doar-image-upload p');
-
-        if (imageUploadContainer && fileInput && imagePreview) {
-            imageUploadContainer.addEventListener('click', () => {
-                fileInput.click();
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = parseInt(star.getAttribute('data-value'));
+                ratingInput.value = value;
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.classList.add('filled');
+                    } else {
+                        s.classList.remove('filled');
+                    }
+                });
             });
-            fileInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                        if (cameraIcon) cameraIcon.style.display = 'none';
-                        if (uploadText) uploadText.style.display = 'none';
-                        imageUploadContainer.classList.add('has-image');
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    imagePreview.src = '';
-                    imagePreview.style.display = 'none';
-                    if (cameraIcon) cameraIcon.style.display = 'block';
-                    if (uploadText) uploadText.style.display = 'block';
-                    imageUploadContainer.classList.remove('has-image');
-                }
+            star.addEventListener('mouseover', () => {
+                const value = parseInt(star.getAttribute('data-value'));
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.classList.add('hover-filled');
+                    } else {
+                        s.classList.remove('hover-filled');
+                    }
+                });
             });
-            imageUploadContainer.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                imageUploadContainer.classList.add('drag-over');
+            star.addEventListener('mouseout', () => {
+                stars.forEach(s => s.classList.remove('hover-filled'));
+                const currentValue = parseInt(ratingInput.value);
+                stars.forEach((s, index) => {
+                    if (index < currentValue) {
+                        s.classList.add('filled');
+                    } else {
+                        s.classList.remove('filled');
+                    }
+                });
             });
-            imageUploadContainer.addEventListener('dragleave', () => {
-                imageUploadContainer.classList.remove('drag-over');
-            });
-            imageUploadContainer.addEventListener('drop', (e) => {
-                e.preventDefault();
-                imageUploadContainer.classList.remove('drag-over');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    fileInput.files = files;
-                    const event = new Event('change');
-                    fileInput.dispatchEvent(event);
+        });
+        const initialRating = parseInt(ratingInput.value);
+        if (initialRating > 0) {
+            stars.forEach((s, index) => {
+                if (index < initialRating) {
+                    s.classList.add('filled');
                 }
             });
         }
     }
+
+    // Lógica do upload de imagem para a página de doação
+    const imageUploadContainer = document.getElementById('imageUploadContainer');
+    const fileInput = document.getElementById('imagem');
+    const imagePreview = document.getElementById('imagePreview');
+    const cameraIcon = document.querySelector('.doar-camera-icon');
+    const uploadText = document.querySelector('.doar-image-upload p');
+
+    if (imageUploadContainer && fileInput && imagePreview) {
+        imageUploadContainer.addEventListener('click', () => {
+            fileInput.click();
+        });
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    if (cameraIcon) cameraIcon.style.display = 'none';
+                    if (uploadText) uploadText.style.display = 'none';
+                    imageUploadContainer.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = '';
+                imagePreview.style.display = 'none';
+                if (cameraIcon) cameraIcon.style.display = 'block';
+                if (uploadText) uploadText.style.display = 'block';
+                imageUploadContainer.classList.remove('has-image');
+            }
+        });
+        imageUploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadContainer.classList.add('drag-over');
+        });
+        imageUploadContainer.addEventListener('dragleave', () => {
+            imageUploadContainer.classList.remove('drag-over');
+        });
+        imageUploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadContainer.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        });
+    }
+}
 
     // Lógica para a página "Preciso Receber" (precisoreceber.html)
     const solicitacaoForm = document.getElementById('solicitacaoForm');
-    if (solicitacaoForm) {
-        // Star rating functionality (Non-interactive)
-        const starsContainer = document.getElementById('receber-stars');
-        if (starsContainer) {
-            const stars = starsContainer.querySelectorAll('.receber-star');
-            const ratingInput = document.getElementById('ratingValue');
-            const initialRating = parseInt(ratingInput.value);
-            if (initialRating > 0) {
-                stars.forEach((s, index) => {
-                    if (index < initialRating) {
-                        s.classList.add('filled');
-                    }
-                });
-            }
+if (solicitacaoForm) {
+    // Star rating functionality (Non-interactive)
+    const starsContainer = document.getElementById('receber-stars');
+    if (starsContainer) {
+        const stars = starsContainer.querySelectorAll('.receber-star');
+        const ratingInput = document.getElementById('ratingValue');
+        const initialRating = parseInt(ratingInput.value);
+        if (initialRating > 0) {
+            stars.forEach((s, index) => {
+                if (index < initialRating) {
+                    s.classList.add('filled');
+                }
+            });
         }
-
-        // Simulação do formulário de solicitação
-        solicitacaoForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            // Cria um modal ou um elemento de mensagem para exibir o sucesso
-            const successMessage = document.createElement('div');
-            successMessage.className = 'solicitacao-sucesso';
-            successMessage.textContent = 'Material solicitado com sucesso! Redirecionando...';
-
-            // Adiciona a mensagem ao corpo do documento
-            document.body.appendChild(successMessage);
-
-            // Código para disparar os confetes
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 150,
-                    spread: 90,
-                    origin: { y: 0.6 }
-                });
-            }
-
-            // Redireciona após 3 segundos
-            setTimeout(function () {
-                window.location.href = 'EcoClassReceberMaterial.html';
-            }, 3000); // 3 seconds
-        });
     }
 
+    // Simulação do formulário de solicitação
+    solicitacaoForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Cria um modal ou um elemento de mensagem para exibir o sucesso
+        const successMessage = document.createElement('div');
+        successMessage.className = 'solicitacao-sucesso';
+        successMessage.textContent = 'Material solicitado com sucesso! Redirecionando...';
+
+        // Adiciona a mensagem ao corpo do documento
+        document.body.appendChild(successMessage);
+
+        // Código para disparar os confetes
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 }
+            });
+        }
+
+        // Redireciona após 3 segundos
+        setTimeout(function () {
+            window.location.href = 'EcoClassReceberMaterial.html';
+        }, 3000); // 3 seconds
+    });
+}
 
 
-    // Lógica para as páginas de cadastro PF e PJ
-    const formPessoaFisica = document.getElementById('formPessoaFisica');
-    const formPessoaJuridica = document.getElementById('formPessoaJuridica');
 
-    if (formPessoaFisica) {
-        const btnPessoaJuridica = document.getElementById('btnPessoaJuridica');
-        const cpfInput = document.getElementById('cpf');
-        const contatoInput = document.getElementById('contato');
-        const cepInput = document.getElementById('cep');
-        const souEstudanteCheckbox = document.getElementById('sou-estudante');
-        const naoSouEstudanteCheckbox = document.getElementById('nao-sou-estudante');
-        const escolaSelect = document.getElementById('escola');
-        const nivelEscolarSelect = document.getElementById('nivel-escolar');
-        const formGroupEscola = escolaSelect ? escolaSelect.closest('.cad-form-group') : null;
-        const formGroupNivelEscolar = nivelEscolarSelect ? nivelEscolarSelect.closest('.cad-form-group') : null;
+// Lógica para as páginas de cadastro PF e PJ
+const formPessoaFisica = document.getElementById('formPessoaFisica');
+const formPessoaJuridica = document.getElementById('formPessoaJuridica');
 
-        if (btnPessoaJuridica) btnPessoaJuridica.addEventListener('click', function () { window.location.href = 'Cad_PJ.html'; });
+if (formPessoaFisica) {
+    const btnPessoaJuridica = document.getElementById('btnPessoaJuridica');
+    const cpfInput = document.getElementById('cpf');
+    const contatoInput = document.getElementById('contato');
+    const cepInput = document.getElementById('cep');
+    const souEstudanteCheckbox = document.getElementById('sou-estudante');
+    const naoSouEstudanteCheckbox = document.getElementById('nao-sou-estudante');
+    const escolaSelect = document.getElementById('escola');
+    const nivelEscolarSelect = document.getElementById('nivel-escolar');
+    const formGroupEscola = escolaSelect ? escolaSelect.closest('.cad-form-group') : null;
+    const formGroupNivelEscolar = nivelEscolarSelect ? nivelEscolarSelect.closest('.cad-form-group') : null;
 
-        if (cpfInput) cpfInput.addEventListener('input', function (event) {
-            let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
-            if (valor.length > 9) valor = valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, '$1.$2.$3-$4');
-            else if (valor.length > 6) valor = valor.replace(/^(\d{3})(\d{3})(\d{3}).*/, '$1.$2.$3');
-            else if (valor.length > 3) valor = valor.replace(/^(\d{3})(\d{3}).*/, '$1.$2');
-            else if (valor.length >= 1) valor = valor.replace(/^(\d{3}).*/, '$1');
-            event.target.value = valor;
-        });
+    if (btnPessoaJuridica) btnPessoaJuridica.addEventListener('click', function () { window.location.href = 'Cad_PJ.html'; });
+
+    if (cpfInput) cpfInput.addEventListener('input', function (event) {
+        let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
+        if (valor.length > 9) valor = valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, '$1.$2.$3-$4');
+        else if (valor.length > 6) valor = valor.replace(/^(\d{3})(\d{3})(\d{3}).*/, '$1.$2.$3');
+        else if (valor.length > 3) valor = valor.replace(/^(\d{3})(\d{3}).*/, '$1.$2');
+        else if (valor.length >= 1) valor = valor.replace(/^(\d{3}).*/, '$1');
+        event.target.value = valor;
+    });
 
 
-        if (contatoInput) contatoInput.addEventListener('input', function (event) {
-            let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
-            if (valor.length > 10) valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            else if (valor.length > 6) valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-            else if (valor.length > 2) valor = valor.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
-            else if (valor.length > 0) valor = valor.replace(/^(\d*)/, '($1');
-            event.target.value = valor;
-        });
+    if (contatoInput) contatoInput.addEventListener('input', function (event) {
+        let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
+        if (valor.length > 10) valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+        else if (valor.length > 6) valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+        else if (valor.length > 2) valor = valor.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+        else if (valor.length > 0) valor = valor.replace(/^(\d*)/, '($1');
+        event.target.value = valor;
+    });
 
-        if (cepInput) cepInput.addEventListener('input', function (event) {
-            let valor = event.target.value.replace(/\D/g, "").substring(0, 8);
-            if (valor.length > 5) valor = valor.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
-            event.target.value = valor;
-        });
+    if (cepInput) cepInput.addEventListener('input', function (event) {
+        let valor = event.target.value.replace(/\D/g, "").substring(0, 8);
+        if (valor.length > 5) valor = valor.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
+        event.target.value = valor;
+    });
 
-        if (souEstudanteCheckbox && naoSouEstudanteCheckbox && formGroupEscola && formGroupNivelEscolar) {
-            function gerenciarCamposEstudante() {
-                if (souEstudanteCheckbox.checked) {
-                    formGroupEscola.style.display = 'block';
-                    formGroupNivelEscolar.style.display = 'block';
-                    void formGroupEscola.offsetWidth;
-                    void formGroupNivelEscolar.offsetWidth;
-                    formGroupEscola.classList.add('show');
-                    formGroupNivelEscolar.classList.add('show');
-                    escolaSelect.setAttribute('required', 'required');
-                    nivelEscolarSelect.setAttribute('required', 'required');
-                } else {
-                    formGroupEscola.classList.remove('show');
-                    formGroupNivelEscolar.classList.remove('show');
-                    const hideAfterTransition = (element) => {
-                        const onTransitionEnd = () => {
-                            if (!element.classList.contains('show')) {
-                                element.style.display = 'none';
-                                element.removeEventListener('transitionend', onTransitionEnd);
-                            }
-                        };
-                        element.addEventListener('transitionend', onTransitionEnd);
+    if (souEstudanteCheckbox && naoSouEstudanteCheckbox && formGroupEscola && formGroupNivelEscolar) {
+        function gerenciarCamposEstudante() {
+            if (souEstudanteCheckbox.checked) {
+                formGroupEscola.style.display = 'block';
+                formGroupNivelEscolar.style.display = 'block';
+                void formGroupEscola.offsetWidth;
+                void formGroupNivelEscolar.offsetWidth;
+                formGroupEscola.classList.add('show');
+                formGroupNivelEscolar.classList.add('show');
+                escolaSelect.setAttribute('required', 'required');
+                nivelEscolarSelect.setAttribute('required', 'required');
+            } else {
+                formGroupEscola.classList.remove('show');
+                formGroupNivelEscolar.classList.remove('show');
+                const hideAfterTransition = (element) => {
+                    const onTransitionEnd = () => {
+                        if (!element.classList.contains('show')) {
+                            element.style.display = 'none';
+                            element.removeEventListener('transitionend', onTransitionEnd);
+                        }
                     };
-                    hideAfterTransition(formGroupEscola);
-                    hideAfterTransition(formGroupNivelEscolar);
-                    escolaSelect.value = "";
-                    nivelEscolarSelect.value = "";
-                    escolaSelect.removeAttribute('required');
-                    nivelEscolarSelect.removeAttribute('required');
-                    escolaSelect.classList.remove('is-invalid');
-                    nivelEscolarSelect.classList.remove('is-invalid');
-                    const escolaMessage = formGroupEscola.querySelector('.validation-message');
-                    if (escolaMessage) escolaMessage.remove();
-                    const nivelMessage = formGroupNivelEscolar.querySelector('.validation-message');
-                    if (nivelMessage) nivelMessage.remove();
-                }
+                    element.addEventListener('transitionend', onTransitionEnd);
+                };
+                hideAfterTransition(formGroupEscola);
+                hideAfterTransition(formGroupNivelEscolar);
+                escolaSelect.value = "";
+                nivelEscolarSelect.value = "";
+                escolaSelect.removeAttribute('required');
+                nivelEscolarSelect.removeAttribute('required');
+                escolaSelect.classList.remove('is-invalid');
+                nivelEscolarSelect.classList.remove('is-invalid');
+                const escolaMessage = formGroupEscola.querySelector('.validation-message');
+                if (escolaMessage) escolaMessage.remove();
+                const nivelMessage = formGroupNivelEscolar.querySelector('.validation-message');
+                if (nivelMessage) nivelMessage.remove();
             }
-            souEstudanteCheckbox.addEventListener('change', function () {
-                if (this.checked) naoSouEstudanteCheckbox.checked = false;
-                gerenciarCamposEstudante();
-            });
-            naoSouEstudanteCheckbox.addEventListener('change', function () {
-                if (this.checked) souEstudanteCheckbox.checked = false;
-                gerenciarCamposEstudante();
-            });
+        }
+        souEstudanteCheckbox.addEventListener('change', function () {
+            if (this.checked) naoSouEstudanteCheckbox.checked = false;
             gerenciarCamposEstudante();
-        }
-
-        formPessoaFisica.addEventListener('submit', function (event) {
-            event.preventDefault();
-            let isValid = true;
-            formPessoaFisica.querySelectorAll('.validation-message').forEach(msg => msg.remove());
-            formPessoaFisica.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
-            const requiredFields = formPessoaFisica.querySelectorAll('input[required], select[required]');
-            requiredFields.forEach(field => {
-                if (field.value.trim() === '' || (field.type === 'checkbox' && !field.checked && field.name === 'tipo_usuario_pf')) {
-                    if (field.name === 'tipo_usuario_pf' && !souEstudanteCheckbox.checked && !naoSouEstudanteCheckbox.checked) {
-                        showValidationMessage(souEstudanteCheckbox.closest('.cad-form-row'), "Por favor, selecione se você é 'estudante' ou 'não estudante'.");
-                        isValid = false;
-                    } else if (field.value.trim() === '') {
-                        showValidationMessage(field, 'Este campo é obrigatório.');
-                        isValid = false;
-                    }
-                }
-            });
-            const senhaInput = document.getElementById('senha');
-            const confirmarSenhaInput = document.getElementById('confirmar-senha');
-            if (senhaInput && confirmarSenhaInput) {
-                if (senhaInput.value.length < 6) {
-                    showValidationMessage(senhaInput, 'A senha deve ter pelo menos 6 caracteres.');
-                    isValid = false;
-                } else if (senhaInput.value !== confirmarSenhaInput.value) {
-                    showValidationMessage(confirmarSenhaInput, 'As senhas não coincidem. Por favor, verifique.');
-                    isValid = false;
-                }
-            }
-            if (isValid) {
-                console.log('Cadastro finalizado! Faça login para acessar.');
-                formPessoaFisica.reset();
-                gerenciarCamposEstudante();
-                showSuccessMessage('Cadastro realizado com sucesso!', 'index.html');
-            }
         });
+        naoSouEstudanteCheckbox.addEventListener('change', function () {
+            if (this.checked) souEstudanteCheckbox.checked = false;
+            gerenciarCamposEstudante();
+        });
+        gerenciarCamposEstudante();
     }
 
-    if (formPessoaJuridica) {
-        const btnPessoaFisica = document.getElementById('btnPessoaFisica');
-        const cnpjInput = document.getElementById('cnpj');
-        const ieInput = document.getElementById('ie');
-        const isentoCheckbox = document.getElementById('isento');
-        const instituicaoEnsinoCheckbox = document.getElementById('instituicao-ensino');
-        const empresaDoadoraCheckbox = document.getElementById('empresa-doadora');
-        const codigoInepInput = document.getElementById('codigo-inep');
-        const contatoInput = document.getElementById('contato');
-        const cepInput = document.getElementById('cep');
-        const formGroupCodigoInep = codigoInepInput ? codigoInepInput.closest('.cad-form-group') : null;
-
-        if (btnPessoaFisica) btnPessoaFisica.addEventListener('click', function () { window.location.href = 'Cad_PF.html'; });
-
-        if (cnpjInput) cnpjInput.addEventListener('input', function (event) {
-            let valor = event.target.value.replace(/\D/g, "").substring(0, 14);
-            if (valor.length > 12) valor = valor.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/, '$1.$2.$3/$4-$5');
-            else if (valor.length > 8) valor = valor.replace(/^(\d{2})(\d{3})(\d{3})(\d{4}).*/, '$1.$2.$3/$4');
-            else if (valor.length > 5) valor = valor.replace(/^(\d{2})(\d{3})(\d{3}).*/, '$1.$2.$3');
-            else if (valor.length > 2) valor = valor.replace(/^(\d{2})(\d{3}).*/, '$1.$2');
-            event.target.value = valor;
-        });
-
-        if (contatoInput) contatoInput.addEventListener('input', function (event) {
-            let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
-            if (valor.length > 10) valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            else if (valor.length > 6) valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-            else if (valor.length > 2) valor = valor.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
-            else if (valor.length > 0) valor = valor.replace(/^(\d*)/, '($1');
-            event.target.value = valor;
-        });
-
-        if (cepInput) cepInput.addEventListener('input', function (event) {
-            let valor = event.target.value.replace(/\D/g, "").substring(0, 8);
-            if (valor.length > 5) valor = valor.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
-            event.target.value = valor;
-        });
-
-        if (ieInput && isentoCheckbox) {
-            function validarInputIE(valor) { const apenasNumeros = /^\d*$/; return apenasNumeros.test(valor); }
-            ieInput.addEventListener('input', function (event) {
-                let valorIE = event.target.value.trim();
-                if (!validarInputIE(valorIE)) { event.target.value = valorIE.replace(/\D/g, ""); return; }
-                if (valorIE !== "") { isentoCheckbox.checked = false; isentoCheckbox.disabled = true; isentoCheckbox.style.cursor = 'not-allowed'; }
-                else { isentoCheckbox.disabled = false; isentoCheckbox.style.cursor = 'pointer'; }
-            });
-            isentoCheckbox.addEventListener('change', function () {
-                if (isentoCheckbox.checked) {
-                    ieInput.value = '';
-                    ieInput.removeAttribute('required');
-                    ieInput.classList.remove('is-invalid');
-                    const ieMessage = ieInput.parentNode.querySelector('.validation-message');
-                    if (ieMessage) ieMessage.remove();
-                }
-            });
-        }
-
-        if (instituicaoEnsinoCheckbox && empresaDoadoraCheckbox && formGroupCodigoInep) {
-            function gerenciarTipoEntidade() {
-                if (instituicaoEnsinoCheckbox.checked) {
-                    empresaDoadoraCheckbox.checked = false;
-                    formGroupCodigoInep.style.display = 'block';
-                    void formGroupCodigoInep.offsetWidth;
-                    formGroupCodigoInep.classList.add('show');
-                    codigoInepInput.setAttribute('required', 'required');
-                    codigoInepInput.focus();
-                } else if (empresaDoadoraCheckbox.checked) {
-                    instituicaoEnsinoCheckbox.checked = false;
-                    formGroupCodigoInep.classList.remove('show');
-                    const hideAfterTransition = (element) => {
-                        const onTransitionEnd = () => {
-                            if (!element.classList.contains('show')) {
-                                element.style.display = 'none';
-                                element.removeEventListener('transitionend', onTransitionEnd);
-                            }
-                        };
-                        element.addEventListener('transitionend', onTransitionEnd);
-                    };
-                    hideAfterTransition(formGroupCodigoInep);
-                    codigoInepInput.value = '';
-                    codigoInepInput.removeAttribute('required');
-                    codigoInepInput.classList.remove('is-invalid');
-                    const inepMessage = formGroupCodigoInep.querySelector('.validation-message');
-                    if (inepMessage) inepMessage.remove();
-                } else {
-                    formGroupCodigoInep.classList.remove('show');
-                    const hideAfterTransition = (element) => {
-                        const onTransitionEnd = () => {
-                            if (!element.classList.contains('show')) {
-                                element.style.display = 'none';
-                                element.removeEventListener('transitionend', onTransitionEnd);
-                            }
-                        };
-                        element.addEventListener('transitionend', onTransitionEnd);
-                    };
-                    hideAfterTransition(formGroupCodigoInep);
-                    codigoInepInput.value = '';
-                    codigoInepInput.removeAttribute('required');
-                    codigoInepInput.classList.remove('is-invalid');
-                    const inepMessage = formGroupCodigoInep.querySelector('.validation-message');
-                    if (inepMessage) inepMessage.remove();
-                }
-                if (!instituicaoEnsinoCheckbox.checked && !empresaDoadoraCheckbox.checked && formGroupCodigoInep) {
-                    formGroupCodigoInep.style.display = 'none';
-                }
-            }
-            instituicaoEnsinoCheckbox.addEventListener('change', gerenciarTipoEntidade);
-            empresaDoadoraCheckbox.addEventListener('change', gerenciarTipoEntidade);
-            gerenciarTipoEntidade();
-        }
-
-        formPessoaJuridica.addEventListener('submit', function (event) {
-            event.preventDefault();
-            let isValid = true;
-            formPessoaJuridica.querySelectorAll('.validation-message').forEach(msg => msg.remove());
-            formPessoaJuridica.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
-            const requiredFields = formPessoaJuridica.querySelectorAll('input[required], select[required]');
-            for (const field of requiredFields) {
-                if (field.value.trim() === '') {
+    formPessoaFisica.addEventListener('submit', function (event) {
+        event.preventDefault();
+        let isValid = true;
+        formPessoaFisica.querySelectorAll('.validation-message').forEach(msg => msg.remove());
+        formPessoaFisica.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
+        const requiredFields = formPessoaFisica.querySelectorAll('input[required], select[required]');
+        requiredFields.forEach(field => {
+            if (field.value.trim() === '' || (field.type === 'checkbox' && !field.checked && field.name === 'tipo_usuario_pf')) {
+                if (field.name === 'tipo_usuario_pf' && !souEstudanteCheckbox.checked && !naoSouEstudanteCheckbox.checked) {
+                    showValidationMessage(souEstudanteCheckbox.closest('.cad-form-row'), "Por favor, selecione se você é 'estudante' ou 'não estudante'.");
+                    isValid = false;
+                } else if (field.value.trim() === '') {
                     showValidationMessage(field, 'Este campo é obrigatório.');
                     isValid = false;
                 }
             }
-            const valorIE = ieInput.value.trim();
-            if (valorIE === "" && !isentoCheckbox.checked) {
-                showValidationMessage(ieInput, "Para concluir, preencha a Inscrição Estadual ou marque 'Sou ISENTO'.");
+        });
+        const senhaInput = document.getElementById('senha');
+        const confirmarSenhaInput = document.getElementById('confirmar-senha');
+        if (senhaInput && confirmarSenhaInput) {
+            if (senhaInput.value.length < 6) {
+                showValidationMessage(senhaInput, 'A senha deve ter pelo menos 6 caracteres.');
+                isValid = false;
+            } else if (senhaInput.value !== confirmarSenhaInput.value) {
+                showValidationMessage(confirmarSenhaInput, 'As senhas não coincidem. Por favor, verifique.');
                 isValid = false;
             }
-            if (!instituicaoEnsinoCheckbox.checked && !empresaDoadoraCheckbox.checked) {
-                showValidationMessage(instituicaoEnsinoCheckbox.closest('.cad-form-row'), "Por favor, selecione 'Instituição de ensino' ou 'Empresa doadora'.");
-                isValid = false;
-            }
-            if (instituicaoEnsinoCheckbox.checked && codigoInepInput.value.trim().length !== 8) {
-                showValidationMessage(codigoInepInput, "Por favor, digite um Código INEP válido com 8 dígitos.");
-                isValid = false;
-            }
-            const senhaInput = document.getElementById('senha');
-            const confirmarSenhaInput = document.getElementById('confirmar-senha');
-            if (senhaInput && confirmarSenhaInput) {
-                if (senhaInput.value.length < 6) {
-                    showValidationMessage(senhaInput, 'A senha deve ter pelo menos 6 caracteres.');
-                    isValid = false;
-                } else if (senhaInput.value !== confirmarSenhaInput.value) {
-                    showValidationMessage(confirmarSenhaInput, 'As senhas não coincidem. Por favor, verifique.');
-                    isValid = false;
-                }
-            }
-            if (isValid) {
-                console.log('Cadastro finalizado! Faça login para acessar.');
-                formPessoaJuridica.reset();
-                gerenciarTipoEntidade();
-                showSuccessMessage('Cadastro realizado com sucesso!', 'index.html');
+        }
+        if (isValid) {
+            console.log('Cadastro finalizado! Faça login para acessar.');
+            formPessoaFisica.reset();
+            gerenciarCamposEstudante();
+            showSuccessMessage('Cadastro realizado com sucesso!', 'index.html');
+        }
+    });
+}
+
+if (formPessoaJuridica) {
+    const btnPessoaFisica = document.getElementById('btnPessoaFisica');
+    const cnpjInput = document.getElementById('cnpj');
+    const ieInput = document.getElementById('ie');
+    const isentoCheckbox = document.getElementById('isento');
+    const instituicaoEnsinoCheckbox = document.getElementById('instituicao-ensino');
+    const empresaDoadoraCheckbox = document.getElementById('empresa-doadora');
+    const codigoInepInput = document.getElementById('codigo-inep');
+    const contatoInput = document.getElementById('contato');
+    const cepInput = document.getElementById('cep');
+    const formGroupCodigoInep = codigoInepInput ? codigoInepInput.closest('.cad-form-group') : null;
+
+    if (btnPessoaFisica) btnPessoaFisica.addEventListener('click', function () { window.location.href = 'Cad_PF.html'; });
+
+    if (cnpjInput) cnpjInput.addEventListener('input', function (event) {
+        let valor = event.target.value.replace(/\D/g, "").substring(0, 14);
+        if (valor.length > 12) valor = valor.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/, '$1.$2.$3/$4-$5');
+        else if (valor.length > 8) valor = valor.replace(/^(\d{2})(\d{3})(\d{3})(\d{4}).*/, '$1.$2.$3/$4');
+        else if (valor.length > 5) valor = valor.replace(/^(\d{2})(\d{3})(\d{3}).*/, '$1.$2.$3');
+        else if (valor.length > 2) valor = valor.replace(/^(\d{2})(\d{3}).*/, '$1.$2');
+        event.target.value = valor;
+    });
+
+    if (contatoInput) contatoInput.addEventListener('input', function (event) {
+        let valor = event.target.value.replace(/\D/g, "").substring(0, 11);
+        if (valor.length > 10) valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+        else if (valor.length > 6) valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+        else if (valor.length > 2) valor = valor.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+        else if (valor.length > 0) valor = valor.replace(/^(\d*)/, '($1');
+        event.target.value = valor;
+    });
+
+    if (cepInput) cepInput.addEventListener('input', function (event) {
+        let valor = event.target.value.replace(/\D/g, "").substring(0, 8);
+        if (valor.length > 5) valor = valor.replace(/^(\d{5})(\d{1,3}).*/, '$1-$2');
+        event.target.value = valor;
+    });
+
+    if (ieInput && isentoCheckbox) {
+        function validarInputIE(valor) { const apenasNumeros = /^\d*$/; return apenasNumeros.test(valor); }
+        ieInput.addEventListener('input', function (event) {
+            let valorIE = event.target.value.trim();
+            if (!validarInputIE(valorIE)) { event.target.value = valorIE.replace(/\D/g, ""); return; }
+            if (valorIE !== "") { isentoCheckbox.checked = false; isentoCheckbox.disabled = true; isentoCheckbox.style.cursor = 'not-allowed'; }
+            else { isentoCheckbox.disabled = false; isentoCheckbox.style.cursor = 'pointer'; }
+        });
+        isentoCheckbox.addEventListener('change', function () {
+            if (isentoCheckbox.checked) {
+                ieInput.value = '';
+                ieInput.removeAttribute('required');
+                ieInput.classList.remove('is-invalid');
+                const ieMessage = ieInput.parentNode.querySelector('.validation-message');
+                if (ieMessage) ieMessage.remove();
             }
         });
     }
+
+    if (instituicaoEnsinoCheckbox && empresaDoadoraCheckbox && formGroupCodigoInep) {
+        function gerenciarTipoEntidade() {
+            if (instituicaoEnsinoCheckbox.checked) {
+                empresaDoadoraCheckbox.checked = false;
+                formGroupCodigoInep.style.display = 'block';
+                void formGroupCodigoInep.offsetWidth;
+                formGroupCodigoInep.classList.add('show');
+                codigoInepInput.setAttribute('required', 'required');
+                codigoInepInput.focus();
+            } else if (empresaDoadoraCheckbox.checked) {
+                instituicaoEnsinoCheckbox.checked = false;
+                formGroupCodigoInep.classList.remove('show');
+                const hideAfterTransition = (element) => {
+                    const onTransitionEnd = () => {
+                        if (!element.classList.contains('show')) {
+                            element.style.display = 'none';
+                            element.removeEventListener('transitionend', onTransitionEnd);
+                        }
+                    };
+                    element.addEventListener('transitionend', onTransitionEnd);
+                };
+                hideAfterTransition(formGroupCodigoInep);
+                codigoInepInput.value = '';
+                codigoInepInput.removeAttribute('required');
+                codigoInepInput.classList.remove('is-invalid');
+                const inepMessage = formGroupCodigoInep.querySelector('.validation-message');
+                if (inepMessage) inepMessage.remove();
+            } else {
+                formGroupCodigoInep.classList.remove('show');
+                const hideAfterTransition = (element) => {
+                    const onTransitionEnd = () => {
+                        if (!element.classList.contains('show')) {
+                            element.style.display = 'none';
+                            element.removeEventListener('transitionend', onTransitionEnd);
+                        }
+                    };
+                    element.addEventListener('transitionend', onTransitionEnd);
+                };
+                hideAfterTransition(formGroupCodigoInep);
+                codigoInepInput.value = '';
+                codigoInepInput.removeAttribute('required');
+                codigoInepInput.classList.remove('is-invalid');
+                const inepMessage = formGroupCodigoInep.querySelector('.validation-message');
+                if (inepMessage) inepMessage.remove();
+            }
+            if (!instituicaoEnsinoCheckbox.checked && !empresaDoadoraCheckbox.checked && formGroupCodigoInep) {
+                formGroupCodigoInep.style.display = 'none';
+            }
+        }
+        instituicaoEnsinoCheckbox.addEventListener('change', gerenciarTipoEntidade);
+        empresaDoadoraCheckbox.addEventListener('change', gerenciarTipoEntidade);
+        gerenciarTipoEntidade();
+    }
+
+    formPessoaJuridica.addEventListener('submit', function (event) {
+        event.preventDefault();
+        let isValid = true;
+        formPessoaJuridica.querySelectorAll('.validation-message').forEach(msg => msg.remove());
+        formPessoaJuridica.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
+        const requiredFields = formPessoaJuridica.querySelectorAll('input[required], select[required]');
+        for (const field of requiredFields) {
+            if (field.value.trim() === '') {
+                showValidationMessage(field, 'Este campo é obrigatório.');
+                isValid = false;
+            }
+        }
+        const valorIE = ieInput.value.trim();
+        if (valorIE === "" && !isentoCheckbox.checked) {
+            showValidationMessage(ieInput, "Para concluir, preencha a Inscrição Estadual ou marque 'Sou ISENTO'.");
+            isValid = false;
+        }
+        if (!instituicaoEnsinoCheckbox.checked && !empresaDoadoraCheckbox.checked) {
+            showValidationMessage(instituicaoEnsinoCheckbox.closest('.cad-form-row'), "Por favor, selecione 'Instituição de ensino' ou 'Empresa doadora'.");
+            isValid = false;
+        }
+        if (instituicaoEnsinoCheckbox.checked && codigoInepInput.value.trim().length !== 8) {
+            showValidationMessage(codigoInepInput, "Por favor, digite um Código INEP válido com 8 dígitos.");
+            isValid = false;
+        }
+        const senhaInput = document.getElementById('senha');
+        const confirmarSenhaInput = document.getElementById('confirmar-senha');
+        if (senhaInput && confirmarSenhaInput) {
+            if (senhaInput.value.length < 6) {
+                showValidationMessage(senhaInput, 'A senha deve ter pelo menos 6 caracteres.');
+                isValid = false;
+            } else if (senhaInput.value !== confirmarSenhaInput.value) {
+                showValidationMessage(confirmarSenhaInput, 'As senhas não coincidem. Por favor, verifique.');
+                isValid = false;
+            }
+        }
+        if (isValid) {
+            console.log('Cadastro finalizado! Faça login para acessar.');
+            formPessoaJuridica.reset();
+            gerenciarTipoEntidade();
+            showSuccessMessage('Cadastro realizado com sucesso!', 'index.html');
+        }
+    });
+}
 });
 
 const { createClient } = supabase;
@@ -1317,9 +1281,9 @@ async function carregarTabelaPontuacao() {
         // 4. Preenche as linhas da tabela dinamicamente
         categorias.forEach(item => {
             const tr = document.createElement('tr');
-            
+
             // Adiciona a classe de borda que você já usa no seu CSS
-            tr.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)"; 
+            tr.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
 
             tr.innerHTML = `
                 <td style="padding: 12px 10px;">${item.id}</td>
@@ -1363,7 +1327,7 @@ async function inativarCategoria(idCategoria) {
         alert("Categoria inativada com sucesso!");
 
         // Recarrega a tabela para que o item inativado suma da tela
-        carregarTabelaPontuacao(); 
+        carregarTabelaPontuacao();
 
         // Opcional: Se você estiver usando aquela função do Dropdown na mesma página, recarregue-a também:
         if (typeof carregarCategoriasDropdown === 'function') {
