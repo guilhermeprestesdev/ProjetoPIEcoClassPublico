@@ -1182,7 +1182,7 @@ async function carregarCategoriasDropdown() {
         if (error) throw error;
 
         // 2. Limpa o select e insere a opção padrão (Placeholder)
-        selectCategoria.innerHTML = '<option value="" selected>Selecionar Opção</option>';
+        selectCategoria.innerHTML = '<option value="" selected>Todas</option>';
 
         // 3. Cria as tags <option> para cada categoria encontrada
         if (categorias) {
