@@ -344,20 +344,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     submitBtn.disabled = true;
 
                     // 1. Upload da Imagem
-                    let urlPublica = null;
+                    
+                    //preciso saber se foi adicionado arquivo de imagem senão, acusar alerta para carregar imagem.
+                    if (!fileInput.files[0]) {
+                        alert("Por favor, carregue uma imagem.");
+                        return;
+                    }
+
+                    let urlPublica = null; // Variável para armazenar a URL pública da imagem após o upload
                     const arquivo = fileInput.files[0];
-                    if (arquivo) {
-                        const nomeArquivo = `${Date.now()}_${arquivo.name}`;
-                        const { data: uploadData, error: uploadError } = await _supabase.storage
-                            .from('imagens')
-                            .upload('img/' + nomeArquivo, arquivo);
+                    if (arquivo) { //Verifica se o usuário selecionou um arquivo antes de tentar fazer upload
+                        const reader = new FileReader();
+                        reader.onload = async function () {
+                            const base64String = reader.result.split(',')[1];
+                            const nomeArquivo = `${Date.now()}_${arquivo.name}`;
+                            const { data: uploadData, error: uploadError } = await _supabase.storage
+                                .from('imagens')
+                                .upload('img/' + nomeArquivo, arquivo);
 
-                        if (uploadError) throw uploadError;
+                            if (uploadError) throw uploadError;
 
-                        const { data: urlData } = _supabase.storage
-                            .from('imagens')
-                            .getPublicUrl('img/' + nomeArquivo);
+                            const { data: urlData } = _supabase.storage
+                                .from('imagens')
+                                .getPublicUrl('img/' + nomeArquivo);
                         urlPublica = urlData.publicUrl;
+                        }
                     }
 
                     // 2. Inserção na Tabela Doacao
@@ -490,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const cameraIcon = document.querySelector('.doar-camera-icon');
     const uploadText = document.querySelector('.doar-image-upload p');
 
-    if (imageUploadContainer && fileInput && imagePreview) {
+    if (imageUploadContainer && fileInput && imagePreview) { 
         imageUploadContainer.addEventListener('click', () => {
             fileInput.click();
         });
@@ -525,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             imageUploadContainer.classList.remove('drag-over');
             const files = e.dataTransfer.files;
-            if (files.length > 0) {
+            if (files.length > 0) { 
                 fileInput.files = files;
                 const event = new Event('change');
                 fileInput.dispatchEvent(event);
