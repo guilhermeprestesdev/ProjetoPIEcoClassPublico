@@ -225,6 +225,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // --- 4. FECHAMENTO DO LOGIN CLICANDO FORA ---
+
+        // ao clicar no link do rodapé abre o popup de login, mas sem que o clique seja propagado para o documento, para evitar que o clique abra e feche o popup ao mesmo tempo.
+        footerLoginLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            loginPopup.style.display = 'block';
+        });
+
         document.addEventListener('click', function (event) {
             if (loginPopup && loginPopup.style.display === 'block') {
                 // Se o clique não foi no botão de login nem dentro do popup, fecha ele
@@ -345,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // 1. Upload da Imagem
                     
-                    //preciso saber se foi adicionado arquivo de imagem senão, acusar alerta para carregar imagem.
+                    //Validação se existe imagem carregada antes de tentar fazer upload, para evitar erros desnecessários.
                     if (!fileInput.files[0]) {
                         alert("Por favor, carregue uma imagem.");
                         return;
