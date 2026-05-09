@@ -137,146 +137,278 @@ document.addEventListener('DOMContentLoaded', function () {
     //         });
     //     }
 
-
-
 function setupHeaderPopups() {
+    const loginInfo = document.getElementById('loginInfo');
+    const loginPopup = document.getElementById('loginPopup');
+    const dadosSalvos = localStorage.getItem('usuarioEcoClass');
     const mobileMenuIcon = document.getElementById('mobileMenuIcon');
     const mainNav = document.getElementById('mainNav');
 
-    if (mobileMenuIcon && mainNav) {
-        mobileMenuIcon.addEventListener('click', () => {
-            mainNav.classList.toggle('active');
-            mobileMenuIcon.classList.toggle('toggle');
-        });
+    // --- 1. VERIFICAÇÃO DE LOGIN E RENDERIZAÇÃO DO POPUP ---
+    if (dadosSalvos) {
+        const usuario = JSON.parse(dadosSalvos);
 
-        // Seleciona todos os links de navegação
-        document.querySelectorAll('.nav-item').forEach(link => {
-            link.addEventListener('click', (event) => {
-                // Se NÃO estiver logado e o link NÃO for para a home ('index.html' ou '#')
-                const href = link.getAttribute('href');
-                if (!estaLogado() && href !== 'index.html' && href !== '#' && href !== '/') {
-                    event.preventDefault(); // Impede a navegação
-                    alert("Acesso restrito! Por favor, faça login para acessar esta página.");
-                    window.location.href = 'index.html'; // Redireciona para o início
+        // Atualiza o Header
+        const nameDisplay = document.getElementById('userNameDisplay');
+        const pointsDisplay = document.getElementById('userPointsDisplay');
+        if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
+
+        // Altera o conteúdo do Popup para exibir Perfil e Logoff
+        if (loginPopup) {
+            loginPopup.innerHTML = `
+                <div class="user-profile-panel" style="padding: 10px; color: white;">
+                    <h2 style="margin-bottom: 15px;">Minha Conta</h2>
+                    <p style="margin: 5px 0;"><strong>Olá, ${usuario.nome.split(' ')[0]}!</strong></p>
+                    <p style="margin: 5px 0;">Pontos: ${usuario.qtd_pontos}</p>
+                    <p style="margin: 5px 0;">Doações: ${usuario.doacoes || 0}</p>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <button id="btnLogoff" class="login-submit-btn">SAIR</button>
+                </div>
+            `;
+
+            document.getElementById('btnLogoff').addEventListener('click', () => {
+                localStorage.removeItem('usuarioEcoClass');
+                window.location.href = 'index.html';
+            });
+        }
+    }
+
+    // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', (event) => {
+            const href = link.getAttribute('href');
+            const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
+            
+            if (!dadosSalvos && !paginasLivres.includes(href)) {
+                event.preventDefault();
+                alert("Por favor, faça login para acessar esta página!");
+                loginPopup.style.display = 'block'; // Abre o login automaticamente
+            } else {
+                // Fecha menu mobile se estiver aberto
+                if (mainNav) mainNav.classList.remove('active');
+                if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
+            }
+        });
+    });
+
+    // --- 3. LÓGICA DE ABRIR/FECHAR POPUP ---
+    if (loginInfo && loginPopup) {
+        loginInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
+        });
+    }
+
+    // --- 4. LÓGICA DE LOGIN (APENAS SE NÃO LOGADO) ---
+    const loginForm = document.getElementById('loginForm');
+    if (!dadosSalvos && loginForm) {
+        loginForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const input_login = document.getElementById('login-username');
+            const mensagem = document.getElementById('loginError');
+            const senha = document.getElementById('login-password').value;
+
+            let cpf = input_login.value.length === 14 ? input_login.value : null;
+            let cnpj = input_login.value.length === 18 ? input_login.value : null;
+
+            if (!cpf && !cnpj) {
+                mensagem.textContent = 'CPF/CNPJ inválido.';
+                mensagem.style.display = 'block';
+                return;
+            }
+
+            try {
+                let query = _supabase.from('Usuarios').select('*');
+                if (cpf) query = query.eq('cpf', cpf);
+                else query = query.eq('cnpj', cnpj);
+
+                const { data: usuario, error } = await query.eq('senha', senha).single();
+
+                if (error || !usuario) {
+                    mensagem.style.display = 'block';
                     return;
                 }
 
-                // Lógica original de fechar o menu mobile
-                mainNav.classList.remove('active');
-                mobileMenuIcon.classList.remove('toggle');
-            });
+                localStorage.setItem('usuarioEcoClass', JSON.stringify({
+                    nome: usuario.nome,
+                    qtd_pontos: usuario.qtd_pontos,
+                    doacoes: usuario.qtd_doacoes || 0,
+                    id: usuario.id
+                }));
+                window.location.reload();
+            } catch (err) {
+                console.error(err);
+            }
         });
     }
+
+    // Fechar ao clicar fora
+    document.addEventListener('click', (event) => {
+        if (loginPopup && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
+            loginPopup.style.display = 'none';
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function setupHeaderPopups() {
+//     const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+//     const mainNav = document.getElementById('mainNav');
+
+//     if (mobileMenuIcon && mainNav) {
+//         mobileMenuIcon.addEventListener('click', () => {
+//             mainNav.classList.toggle('active');
+//             mobileMenuIcon.classList.toggle('toggle');
+//         });
+
+//         // Seleciona todos os links de navegação
+//         document.querySelectorAll('.nav-item').forEach(link => {
+//             link.addEventListener('click', (event) => {
+//                 // Se NÃO estiver logado e o link NÃO for para a home ('index.html' ou '#')
+//                 const href = link.getAttribute('href');
+//                 if (!estaLogado() && href !== 'index.html' && href !== '#' && href !== '/') {
+//                     event.preventDefault(); // Impede a navegação
+//                     alert("Acesso restrito! Por favor, faça login para acessar esta página.");
+//                     window.location.href = 'index.html'; // Redireciona para o início
+//                     return;
+//                 }
+
+//                 // Lógica original de fechar o menu mobile
+//                 mainNav.classList.remove('active');
+//                 mobileMenuIcon.classList.remove('toggle');
+//             });
+//         });
+//     }
     
  
 
 
 
-        // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
-        const dadosSalvos = localStorage.getItem('usuarioEcoClass');
-        if (dadosSalvos) {
-            const usuario = JSON.parse(dadosSalvos);
+//         // --- 1. VERIFICAÇÃO DE PERSISTÊNCIA (AO CARREGAR A PÁGINA) ---
+//         const dadosSalvos = localStorage.getItem('usuarioEcoClass');
+//         if (dadosSalvos) {
+//             const usuario = JSON.parse(dadosSalvos);
 
-            const nameDisplay = document.getElementById('userNameDisplay');
-            const pointsDisplay = document.getElementById('userPointsDisplay');
-            const pagePointsValue = document.getElementById('pagePointsValue');
-            const pageDonationsValue = document.getElementById('pageDonationsValue');
+//             const nameDisplay = document.getElementById('userNameDisplay');
+//             const pointsDisplay = document.getElementById('userPointsDisplay');
+//             const pagePointsValue = document.getElementById('pagePointsValue');
+//             const pageDonationsValue = document.getElementById('pageDonationsValue');
 
-            if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
-            if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
+//             if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+//             if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
 
-            // Alimenta os dados na página de pontuação, se o usuário estiver nela
-            if (pagePointsValue) pagePointsValue.textContent = usuario.qtd_pontos;
-            if (pageDonationsValue) pageDonationsValue.textContent = usuario.doacoes || 0;
-        }
+//             // Alimenta os dados na página de pontuação, se o usuário estiver nela
+//             if (pagePointsValue) pagePointsValue.textContent = usuario.qtd_pontos;
+//             if (pageDonationsValue) pageDonationsValue.textContent = usuario.doacoes || 0;
+//         }
 
-        // --- 2. SELEÇÃO DE ELEMENTOS ---
-        const loginInfo = document.getElementById('loginInfo');
-        const loginPopup = document.getElementById('loginPopup');
-        const loginForm = document.getElementById('loginForm');
+//         // --- 2. SELEÇÃO DE ELEMENTOS ---
+//         const loginInfo = document.getElementById('loginInfo');
+//         const loginPopup = document.getElementById('loginPopup');
+//         const loginForm = document.getElementById('loginForm');
 
-        // --- 3. LÓGICA DE LOGIN ---
-        if (loginInfo && loginPopup) {
-            loginInfo.addEventListener('click', function (event) {
-                event.stopPropagation();
-                loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
-            });
+//         // --- 3. LÓGICA DE LOGIN ---
+//         if (loginInfo && loginPopup) {
+//             loginInfo.addEventListener('click', function (event) {
+//                 event.stopPropagation();
+//                 loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
+//             });
 
-            if (loginForm) {
-                loginForm.addEventListener('submit', async function (event) {
-                    event.preventDefault();
+//             if (loginForm) {
+//                 loginForm.addEventListener('submit', async function (event) {
+//                     event.preventDefault();
 
-                    const input_login = document.getElementById('login-username');
-                    const mensagem = document.getElementById('loginError');
+//                     const input_login = document.getElementById('login-username');
+//                     const mensagem = document.getElementById('loginError');
 
-                    let cpf = null;
-                    let cnpj = null;
+//                     let cpf = null;
+//                     let cnpj = null;
 
-                    const tamanhoInput = input_login.value.length;
-                    if (tamanhoInput === 14) {
-                        cpf = input_login.value;
-                    }
-                    else if (tamanhoInput === 18) {
-                        cnpj = input_login.value;
-                    }
-                    else {
-                        mensagem.textContent = 'Por favor, insira o CPF ou CNPJ formatado.';
-                        mensagem.style.display = 'block';
-                        return;
-                    }
+//                     const tamanhoInput = input_login.value.length;
+//                     if (tamanhoInput === 14) {
+//                         cpf = input_login.value;
+//                     }
+//                     else if (tamanhoInput === 18) {
+//                         cnpj = input_login.value;
+//                     }
+//                     else {
+//                         mensagem.textContent = 'Por favor, insira o CPF ou CNPJ formatado.';
+//                         mensagem.style.display = 'block';
+//                         return;
+//                     }
 
-                    const senha = document.getElementById('login-password').value;
+//                     const senha = document.getElementById('login-password').value;
 
-                    try {
-                        let query = _supabase.from('Usuarios').select('*');
+//                     try {
+//                         let query = _supabase.from('Usuarios').select('*');
 
-                        if (cpf) query = query.eq('cpf', cpf);
-                        else if (cnpj) query = query.eq('cnpj', cnpj);
+//                         if (cpf) query = query.eq('cpf', cpf);
+//                         else if (cnpj) query = query.eq('cnpj', cnpj);
 
-                        const { data: usuario, error } = await query.eq('senha', senha).single();
+//                         const { data: usuario, error } = await query.eq('senha', senha).single();
 
-                        if (error || !usuario) {
-                            mensagem.textContent = 'CPF/CNPJ ou senha incorretos.';
-                            mensagem.style.display = 'block';
-                            return;
-                        }
+//                         if (error || !usuario) {
+//                             mensagem.textContent = 'CPF/CNPJ ou senha incorretos.';
+//                             mensagem.style.display = 'block';
+//                             return;
+//                         }
 
-                        const dadosParaPersistir = {
-                            nome: usuario.nome,
-                            qtd_pontos: usuario.qtd_pontos,
-                            doacoes: usuario.qtd_doacoes || 0,
-                            id: usuario.id
-                        };
+//                         const dadosParaPersistir = {
+//                             nome: usuario.nome,
+//                             qtd_pontos: usuario.qtd_pontos,
+//                             doacoes: usuario.qtd_doacoes || 0,
+//                             id: usuario.id
+//                         };
 
-                        localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
-                        window.location.reload();
+//                         localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
+//                         window.location.reload();
 
-                    } catch (err) {
-                        console.error('Erro:', err);
-                        mensagem.textContent = 'Erro ao conectar com o servidor.';
-                        mensagem.style.display = 'block';
-                    }
-                });
-            }
-        }
+//                     } catch (err) {
+//                         console.error('Erro:', err);
+//                         mensagem.textContent = 'Erro ao conectar com o servidor.';
+//                         mensagem.style.display = 'block';
+//                     }
+//                 });
+//             }
+//         }
 
-        // --- 4. FECHAMENTO DO LOGIN CLICANDO FORA ---
+//         // --- 4. FECHAMENTO DO LOGIN CLICANDO FORA ---
 
-        // ao clicar no link do rodapé abre o popup de login, mas sem que o clique seja propagado para o documento, para evitar que o clique abra e feche o popup ao mesmo tempo.
-        footerLoginLink.addEventListener('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            loginPopup.style.display = 'block';
-        });
+//         // ao clicar no link do rodapé abre o popup de login, mas sem que o clique seja propagado para o documento, para evitar que o clique abra e feche o popup ao mesmo tempo.
+//         footerLoginLink.addEventListener('click', function (event) {
+//             event.preventDefault();
+//             event.stopPropagation();
+//             loginPopup.style.display = 'block';
+//         });
 
-        document.addEventListener('click', function (event) {
-            if (loginPopup && loginPopup.style.display === 'block') {
-                // Se o clique não foi no botão de login nem dentro do popup, fecha ele
-                if (loginInfo && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
-                    loginPopup.style.display = 'none';
-                }
-            }
-        });
+//         document.addEventListener('click', function (event) {
+//             if (loginPopup && loginPopup.style.display === 'block') {
+//                 // Se o clique não foi no botão de login nem dentro do popup, fecha ele
+//                 if (loginInfo && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
+//                     loginPopup.style.display = 'none';
+//                 }
+//             }
+//         });
 
         // Configura os links do rodapé (Apenas para o Login agora)
         function setupFooterLinks() {
