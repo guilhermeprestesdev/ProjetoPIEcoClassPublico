@@ -48,7 +48,7 @@ Open `index.html` file
 
  You can also access it in the following way:
  
-Access the following address: https://github.com/GuilhermeP54/PiSenacEcoclass.git
+Access the following address: https://guilhermeprestesdev.github.io/ProjetoPIEcoClassPublico/
 1.Click on "< > Code" on the left side of the screen.
 2.Click on "Download ZIP".
 3.Once the download is complete, open the .rar file on your local machine and click "Extract All".

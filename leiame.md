@@ -60,7 +60,7 @@ Abrir o arquivo index.html no seu navegador:
 Abrir o arquivo `index.html`
 Você também pode acessá-lo da seguinte forma:
 
-Acesse o seguinte endereço: https://github.com/guilhermeprestesdev/ProjetoPIEcoClassPublico.git
+Acesse o seguinte endereço: https://guilhermeprestesdev.github.io/ProjetoPIEcoClassPublico/
 
 Clique em "< > Code" (Código) no lado esquerdo da tela.
 
@@ -142,7 +142,7 @@ Abrir o arquivo index.html no seu navegador:
 Abrir o arquivo `index.html`
 Você também pode acessá-lo da seguinte forma:
 
-Acesse o seguinte endereço: https://github.com/guilhermeprestesdev/ProjetoPIEcoClassPublico.git
+Acesse o seguinte endereço: https://guilhermeprestesdev.github.io/ProjetoPIEcoClassPublico/
 
 Clique em "< > Code" (Código) no lado esquerdo da tela.
 
