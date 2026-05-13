@@ -2,21 +2,22 @@
 function verificarAcesso() {
     const dados = localStorage.getItem('usuarioEcoClass');
 
-    if (!dados) {
-        // Se não tem dado, manda de volta para o index
-        alert("Acesso negado! Faça login.");
-        window.location.href = 'index.html';
-        return;
-    }
+    // if (!dados) {
+    //     // Se não tem dado, manda de volta para o index
+    //     alert("Acesso negado! Faça login.");
+    //     window.location.href = 'index.html';
+    //     return;
+    // }
 
     const usuario = JSON.parse(dados);
     // Agora você pode usar o ID do usuário para buscar doações no Supabase
     const usuarioId = usuario.id;
     return usuarioId; // Retorna o ID do usuário para ser usado em outras funções, se necessário
 }
-
+verificarAcesso(); // Verifica o acesso do usuário (E redireciona se não tiver acesso)
 // Inicialização de Eventos (Tudo dentro de UM único DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
+        
     carregarPontuacaoEDoacoes();
     carregarTabelaPontuacao();
     

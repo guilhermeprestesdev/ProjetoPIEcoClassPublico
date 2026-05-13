@@ -154,23 +154,74 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        // //existem links para acessar a pagina quero doar e preciso receber dentro da pagina index, preciso ajustar o codigo
+        // //para bloquear o acesso a essas páginas também, caso o usuário não esteja logado.
+
+        // // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
+        // document.querySelectorAll('.nav-item').forEach(link => {
+        //     link.addEventListener('click', (event) => {
+        //         const href = link.getAttribute('href');
+        //         const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
+        //         const paginasRestritas = ['Doacoes.html', 'Doacoes.html#', 'Doacoes.html?'];
+
+        //         if (!dadosSalvos && !paginasLivres.includes(href)) {
+        //             event.preventDefault();
+        //             alert("Por favor, faça login para acessar esta página!");
+        //             loginPopup.style.display = 'block'; // Abre o login automaticamente
+        //         } else {
+        //             // Fecha menu mobile se estiver aberto
+        //             if (mainNav) mainNav.classList.remove('active');
+        //             if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
+        //         }
+        //     });
+        // });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
-        document.querySelectorAll('.nav-item').forEach(link => {
+
+        // Adicionamos '.cta-buttons a' ao seletor para pegar os links do corpo da index.html
+        const linksParaProteger = document.querySelectorAll('.nav-item, .cta-buttons a, footerPontuacaoClass'); // Seletor atualizado para incluir os links de chamada à ação e o link do rodapé
+
+        linksParaProteger.forEach(link => {
             link.addEventListener('click', (event) => {
                 const href = link.getAttribute('href');
+
+                // Lista de páginas que QUALQUER UM pode acessar
                 const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
 
+                // Se o usuário NÃO está logado E a página que ele quer ir NÃO está na lista livre
                 if (!dadosSalvos && !paginasLivres.includes(href)) {
-                    event.preventDefault();
+                    event.preventDefault(); // Impede a navegação
                     alert("Por favor, faça login para acessar esta página!");
-                    loginPopup.style.display = 'block'; // Abre o login automaticamente
+
+                    if (loginPopup) {
+                        loginPopup.style.display = 'block'; // Abre o login automaticamente
+                    }
                 } else {
-                    // Fecha menu mobile se estiver aberto
+                    // Fecha menu mobile se estiver aberto (apenas se os elementos existirem)
                     if (mainNav) mainNav.classList.remove('active');
                     if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
                 }
             });
         });
+
 
         // --- 3. LÓGICA DE ABRIR/FECHAR POPUP ---
         if (loginInfo && loginPopup) {
@@ -220,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
                     // Substitua seu alert por este:
                     const usuarioLogado = JSON.parse(localStorage.getItem('usuarioEcoClass'));
-                   
+
                     window.location.reload(); // Recarrega a página para atualizar o header e liberar acesso às páginas restritas
 
                 } catch (err) {
