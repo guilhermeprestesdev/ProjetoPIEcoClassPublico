@@ -1,7 +1,52 @@
-// 4. Inicialização de Eventos (Tudo dentro de UM único DOMContentLoaded)
+// Inicializa com os dados da Session Storage (Se tiver)
+function verificarAcesso() {
+    const dados = localStorage.getItem('usuarioEcoClass');
+
+    if (!dados) {
+        // Se não tem dado, manda de volta para o index
+        alert("Acesso negado! Faça login.");
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const usuario = JSON.parse(dados);
+    // Agora você pode usar o ID do usuário para buscar doações no Supabase
+    const usuarioId = usuario.id;
+    return usuarioId; // Retorna o ID do usuário para ser usado em outras funções, se necessário
+}
+
+// Inicialização de Eventos (Tudo dentro de UM único DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
+    carregarPontuacaoEDoacoes();
     carregarTabelaPontuacao();
+    
 });
+
+//Carrega a pontuação e doações do usuário logado na página de header e retornar os dados na pagina de pontuação
+async function carregarPontuacaoEDoacoes() {
+  
+    try {
+       
+        const usuarioId = verificarAcesso(); // Obtém o ID do usuário logado
+        const { data: usuario, error } = await _supabase
+            .from('Usuarios')
+            .select('qtd_pontos, qtd_doacoes')
+            .eq('id', usuarioId)
+            .single();
+
+        if (error) throw error;
+
+        const { qtd_pontos, qtd_doacoes } = usuario || {};
+        // Informa as qtd_pontos e qtd_doacoes nos campos pagePointsValue e pageDonationsValue
+        document.getElementById('pagePointsValue').textContent = `${qtd_pontos}`;
+        document.getElementById('pageDonationsValue').textContent = `${qtd_doacoes}`;
+
+    } catch (err) {
+        console.error("Erro ao carregar pontuação e doações:", err.message);
+    }
+}
+
+
 
 // Função para buscar e preencher a tabela de pontuação
 async function carregarTabelaPontuacao() {

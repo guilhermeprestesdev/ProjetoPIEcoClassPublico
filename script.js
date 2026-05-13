@@ -1,6 +1,6 @@
 // script.js - Arquivo de script consolidado e otimizado para o site
 
-// // 1. Configuração do Supabase (Substitua pelos seus dados reais)
+// // 1. Configuração do Supabase 
 const SUPABASE_URL = 'https://tutftcxochiptvizqlci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1dGZ0Y3hvY2hpcHR2aXpxbGNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MjQyMDAsImV4cCI6MjA4NzIwMDIwMH0.lWoYhKcgXElgrEJFYc_DXi-1lql6HWMXxmGsCPXFEak';
 
@@ -116,26 +116,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-function setupHeaderPopups() {
-    const loginInfo = document.getElementById('loginInfo');
-    const loginPopup = document.getElementById('loginPopup');
-    const dadosSalvos = localStorage.getItem('usuarioEcoClass');
-    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
-    const mainNav = document.getElementById('mainNav');
+    function setupHeaderPopups() {
+        const loginInfo = document.getElementById('loginInfo');
+        const loginPopup = document.getElementById('loginPopup');
+        const dadosSalvos = localStorage.getItem('usuarioEcoClass');
+        const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+        const mainNav = document.getElementById('mainNav');
 
-    // --- 1. VERIFICAÇÃO DE LOGIN E RENDERIZAÇÃO DO POPUP ---
-    if (dadosSalvos) {
-        const usuario = JSON.parse(dadosSalvos);
+        // --- 1. VERIFICAÇÃO DE LOGIN E RENDERIZAÇÃO DO POPUP ---
+        if (dadosSalvos) {
+            const usuario = JSON.parse(dadosSalvos);
 
-        // Atualiza o Header
-        const nameDisplay = document.getElementById('userNameDisplay');
-        const pointsDisplay = document.getElementById('userPointsDisplay');
-        if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
-        if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
+            // Atualiza o Header
+            const nameDisplay = document.getElementById('userNameDisplay');
+            const pointsDisplay = document.getElementById('userPointsDisplay');
 
-        // Altera o conteúdo do Popup para exibir Perfil e Logoff
-        if (loginPopup) {
-            loginPopup.innerHTML = `
+            if (nameDisplay) nameDisplay.textContent = usuario.nome.toUpperCase();
+            if (pointsDisplay) pointsDisplay.textContent = `PONTOS: ${usuario.qtd_pontos}`;
+
+            // Altera o conteúdo do Popup para exibir Perfil e Logoff
+            if (loginPopup) {
+                loginPopup.innerHTML = `
                 <div class="user-profile-panel" style="padding: 10px; color: white;">
                     <h2 style="margin-bottom: 15px;">Minha Conta</h2>
                     <p><strong>Olá, ${usuario.nome.split(' ')[0]}!</strong></p>
@@ -146,88 +147,94 @@ function setupHeaderPopups() {
                 </div>
             `;
 
-            document.getElementById('btnLogoff').addEventListener('click', () => {
-                localStorage.removeItem('usuarioEcoClass');
-                window.location.href = 'index.html';
+                document.getElementById('btnLogoff').addEventListener('click', () => {
+                    localStorage.removeItem('usuarioEcoClass');
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
+        // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', (event) => {
+                const href = link.getAttribute('href');
+                const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
+
+                if (!dadosSalvos && !paginasLivres.includes(href)) {
+                    event.preventDefault();
+                    alert("Por favor, faça login para acessar esta página!");
+                    loginPopup.style.display = 'block'; // Abre o login automaticamente
+                } else {
+                    // Fecha menu mobile se estiver aberto
+                    if (mainNav) mainNav.classList.remove('active');
+                    if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
+                }
+            });
+        });
+
+        // --- 3. LÓGICA DE ABRIR/FECHAR POPUP ---
+        if (loginInfo && loginPopup) {
+            loginInfo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
             });
         }
-    }
 
-    // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
-    document.querySelectorAll('.nav-item').forEach(link => {
-        link.addEventListener('click', (event) => {
-            const href = link.getAttribute('href');
-            const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
-            
-            if (!dadosSalvos && !paginasLivres.includes(href)) {
+        // --- 4. LÓGICA DE LOGIN (APENAS SE NÃO LOGADO) ---
+        const loginForm = document.getElementById('loginForm');
+        if (!dadosSalvos && loginForm) {
+            loginForm.addEventListener('submit', async function (event) {
                 event.preventDefault();
-                alert("Por favor, faça login para acessar esta página!");
-                loginPopup.style.display = 'block'; // Abre o login automaticamente
-            } else {
-                // Fecha menu mobile se estiver aberto
-                if (mainNav) mainNav.classList.remove('active');
-                if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
-            }
-        });
-    });
+                const input_login = document.getElementById('login-username');
+                const mensagem = document.getElementById('loginError');
+                const senha = document.getElementById('login-password').value;
 
-    // --- 3. LÓGICA DE ABRIR/FECHAR POPUP ---
-    if (loginInfo && loginPopup) {
-        loginInfo.addEventListener('click', (e) => {
-            e.stopPropagation();
-            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
-        });
-    }
+                let cpf = input_login.value.length === 14 ? input_login.value : null;
+                let cnpj = input_login.value.length === 18 ? input_login.value : null;
 
-    // --- 4. LÓGICA DE LOGIN (APENAS SE NÃO LOGADO) ---
-    const loginForm = document.getElementById('loginForm');
-    if (!dadosSalvos && loginForm) {
-        loginForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            const input_login = document.getElementById('login-username');
-            const mensagem = document.getElementById('loginError');
-            const senha = document.getElementById('login-password').value;
-
-            let cpf = input_login.value.length === 14 ? input_login.value : null;
-            let cnpj = input_login.value.length === 18 ? input_login.value : null;
-
-            if (!cpf && !cnpj) {
-                mensagem.textContent = 'CPF/CNPJ inválido.';
-                mensagem.style.display = 'block';
-                return;
-            }
-
-            try {
-                let query = _supabase.from('Usuarios').select('*');
-                if (cpf) query = query.eq('cpf', cpf);
-                else query = query.eq('cnpj', cnpj);
-
-                const { data: usuario, error } = await query.eq('senha', senha).single();
-
-                if (error || !usuario) {
+                if (!cpf && !cnpj) {
+                    mensagem.textContent = 'CPF/CNPJ inválido.';
                     mensagem.style.display = 'block';
                     return;
                 }
 
-                localStorage.setItem('usuarioEcoClass', JSON.stringify({
-                    nome: usuario.nome,
-                    qtd_pontos: usuario.qtd_pontos,
-                    doacoes: usuario.qtd_doacoes || 0,
-                    id: usuario.id
-                }));
-                window.location.reload();
-            } catch (err) {
-                console.error(err);
+                try {
+                    let query = _supabase.from('Usuarios').select('*');
+                    if (cpf) query = query.eq('cpf', cpf);
+                    else query = query.eq('cnpj', cnpj);
+
+                    const { data: usuario, error } = await query.eq('senha', senha).single();
+
+                    if (error || !usuario) {
+                        mensagem.style.display = 'block';
+                        return;
+                    }
+
+                    const dadosParaPersistir = {
+
+                        nome: usuario.nome, // Armazena o nome completo para exibição no header
+                        qtd_pontos: usuario.qtd_pontos || 0, // Armazena a quantidade de pontos para exibição no header
+                        doacoes: usuario.qtd_doacoes || 0, // Armazena a quantidade de doações para exibição no header
+                        id: usuario.id // Armazena o ID do usuário para futuras consultas (como carregar pontuação, etc.)
+                    };
+                    localStorage.setItem('usuarioEcoClass', JSON.stringify(dadosParaPersistir));
+                    // Substitua seu alert por este:
+                    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioEcoClass'));
+                   
+                    window.location.reload(); // Recarrega a página para atualizar o header e liberar acesso às páginas restritas
+
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+        }
+
+        // Fechar ao clicar fora
+        document.addEventListener('click', (event) => {
+            if (loginPopup && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
+                loginPopup.style.display = 'none';
             }
         });
-    }
-
-    // Fechar ao clicar fora
-    document.addEventListener('click', (event) => {
-        if (loginPopup && !loginInfo.contains(event.target) && !loginPopup.contains(event.target)) {
-            loginPopup.style.display = 'none';
-        }
-    });
 
 
 
