@@ -7,6 +7,60 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 
 
+// =======================================================
+// --- SISTEMA UNIFICADO DE PROTEÇÃO DE ACESSO E ROTAS ---
+// =======================================================
+
+// 1. LISTA DE PÁGINAS PERMITIDAS PARA USUÁRIOS DESLOGADOS
+const paginasLivres = ['', 'index.html', 'Cad_PF.html', 'Cad_PJ.html'];
+
+// 2. BLOQUEIO DE ROTA DIRETA (Se o usuário digitar a URL direto no navegador)
+(function bloqueioDeRota() {
+    const usuarioLogado = localStorage.getItem('usuarioEcoClass');
+    // Descobre o nome do arquivo atual
+    const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
+
+    // Se NÃO está logado E a página atual NÃO é livre
+    if (!usuarioLogado && !paginasLivres.includes(paginaAtual)) {
+        window.location.href = 'index.html?login=necessario'; // Manda pro index com aviso
+    }
+})();
+
+// 3. INTERCEPTADOR DE CLIQUES (Vigia qualquer link clicado na página)
+document.addEventListener('click', (event) => {
+    // Procura se o clique foi em um link (tag <a>)
+    const link = event.target.closest('a');
+    if (!link) return;
+
+    const href = link.getAttribute('href');
+    if (!href || href.startsWith('javascript')) return;
+
+    // Extrai qual é a página de destino (ignorando # e ?)
+    const paginaDestino = href.split('/').pop().split('#')[0].split('?')[0] || 'index.html';
+    const usuarioLogado = localStorage.getItem('usuarioEcoClass');
+
+    // Se NÃO está logado e clicou em link de uma página restrita
+    if (!usuarioLogado && !paginasLivres.includes(paginaDestino)) {
+        event.preventDefault(); // Impede o link de funcionar
+        
+        const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
+        
+        if (paginaAtual === 'index.html') {
+            // Se já está na tela inicial, apenas sobe o popup de login
+            alert("⚠️ Acesso restrito! Por favor, faça login para continuar.");
+            const loginPopup = document.getElementById('loginPopup');
+            if (loginPopup) loginPopup.style.display = 'block';
+        } else {
+            // Se por algum milagre está em outra página, manda pra index
+            window.location.href = 'index.html?login=necessario';
+        }
+    }
+});
+
+
+
+
+
 
 // Validação e Formatação Híbrida (CPF/CNPJ) para o Header
 // Adiciona o ouvinte de eventos no documento inteiro
@@ -59,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return response.text();
             })
+            // Substitua este trecho dentro do seu loadHTML original:
             .then(html => {
                 const targetElement = document.getElementById(elementId);
                 if (targetElement) {
@@ -66,6 +121,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (elementId === 'header-placeholder') {
                         setupHeaderPopups();
+                        
+                        // --- NOVA LÓGICA: LÊ A URL E ABRE POPUP DE LOGIN ---
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('login') === 'necessario') {
+                            const loginPopup = document.getElementById('loginPopup');
+                            if (loginPopup) {
+                                alert("⚠️ Acesso restrito! Por favor, faça login para continuar.");
+                                loginPopup.style.display = 'block';
+                                
+                                // Limpa a URL de forma invisível para o popup não reabrir se o usuário der F5
+                                window.history.replaceState({}, document.title, window.location.pathname);
+                            }
+                        }
                     }
                     if (elementId === 'footer-placeholder') {
                         setupFooterButton();
@@ -154,73 +222,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // //existem links para acessar a pagina quero doar e preciso receber dentro da pagina index, preciso ajustar o codigo
-        // //para bloquear o acesso a essas páginas também, caso o usuário não esteja logado.
-
-        // // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
-        // document.querySelectorAll('.nav-item').forEach(link => {
-        //     link.addEventListener('click', (event) => {
-        //         const href = link.getAttribute('href');
-        //         const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
-        //         const paginasRestritas = ['Doacoes.html', 'Doacoes.html#', 'Doacoes.html?'];
-
-        //         if (!dadosSalvos && !paginasLivres.includes(href)) {
-        //             event.preventDefault();
-        //             alert("Por favor, faça login para acessar esta página!");
-        //             loginPopup.style.display = 'block'; // Abre o login automaticamente
-        //         } else {
-        //             // Fecha menu mobile se estiver aberto
-        //             if (mainNav) mainNav.classList.remove('active');
-        //             if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
-        //         }
-        //     });
-        // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        // --- 2. TRAVA DE NAVEGAÇÃO PARA DESLOGADOS ---
-
-        // Adicionamos '.cta-buttons a' ao seletor para pegar os links do corpo da index.html
-        const linksParaProteger = document.querySelectorAll('.nav-item, .cta-buttons a, footerPontuacaoClass'); // Seletor atualizado para incluir os links de chamada à ação e o link do rodapé
-
-        linksParaProteger.forEach(link => {
-            link.addEventListener('click', (event) => {
-                const href = link.getAttribute('href');
-
-                // Lista de páginas que QUALQUER UM pode acessar
-                const paginasLivres = ['index.html', 'index.html#', '#', '/', 'Cad_PF.html', 'Cad_PJ.html'];
-
-                // Se o usuário NÃO está logado E a página que ele quer ir NÃO está na lista livre
-                if (!dadosSalvos && !paginasLivres.includes(href)) {
-                    event.preventDefault(); // Impede a navegação
-                    alert("Por favor, faça login para acessar esta página!");
-
-                    if (loginPopup) {
-                        loginPopup.style.display = 'block'; // Abre o login automaticamente
-                    }
-                } else {
-                    // Fecha menu mobile se estiver aberto (apenas se os elementos existirem)
-                    if (mainNav) mainNav.classList.remove('active');
-                    if (mobileMenuIcon) mobileMenuIcon.classList.remove('toggle');
-                }
-            });
-        });
 
 
         // --- 3. LÓGICA DE ABRIR/FECHAR POPUP ---
