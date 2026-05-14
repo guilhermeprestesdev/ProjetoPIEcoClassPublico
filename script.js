@@ -7,51 +7,57 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 
 
-// =======================================================
-// --- SISTEMA UNIFICADO DE PROTEÇÃO DE ACESSO E ROTAS ---
-// =======================================================
-
-// 1. LISTA DE PÁGINAS PERMITIDAS PARA USUÁRIOS DESLOGADOS
+// =====================================================================
+// --- SISTEMA UNIFICADO DE PROTEÇÃO DE ACESSO E ROTAS (Route Guard) ---
+// =====================================================================
 const paginasLivres = ['', 'index.html', 'Cad_PF.html', 'Cad_PJ.html'];
 
-// 2. BLOQUEIO DE ROTA DIRETA (Se o usuário digitar a URL direto no navegador)
-(function bloqueioDeRota() {
+(function verificarAcesso() {
     const usuarioLogado = localStorage.getItem('usuarioEcoClass');
-    // Descobre o nome do arquivo atual
     const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
 
     // Se NÃO está logado E a página atual NÃO é livre
     if (!usuarioLogado && !paginasLivres.includes(paginaAtual)) {
-        window.location.href = 'index.html?login=necessario'; // Manda pro index com aviso
+        // Redireciona para o index com sinalizador para abrir o login
+        window.location.href = 'index.html?login=necessario';
     }
 })();
 
-// 3. INTERCEPTADOR DE CLIQUES (Vigia qualquer link clicado na página)
+
+// Interceptador de cliques (Proteção de Rotas + Abertura de Login Global)
 document.addEventListener('click', (event) => {
-    // Procura se o clique foi em um link (tag <a>)
     const link = event.target.closest('a');
     if (!link) return;
 
     const href = link.getAttribute('href');
     if (!href || href.startsWith('javascript')) return;
 
-    // Extrai qual é a página de destino (ignorando # e ?)
-    const paginaDestino = href.split('/').pop().split('#')[0].split('?')[0] || 'index.html';
+    // --- NOVA REGRA: ABRIR LOGIN CLICANDO EM QUALQUER LINK COM href="#login" ---
+    if (href === '#login') {
+        event.preventDefault(); // Impede a página de pular para o topo
+        const loginPopup = document.getElementById('loginPopup');
+
+        if (loginPopup) {
+            // Se o popup existir, abre ele
+            loginPopup.style.display = loginPopup.style.display === 'block' ? 'none' : 'block';
+
+            // Opcional: Rola a página para o topo para o usuário ver o popup (caso esteja no rodapé)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        return; // Para a execução aqui, não precisa checar as rotas abaixo
+    }
+
+    const destino = href.split('/').pop().split('#')[0].split('?')[0] || 'index.html';
     const usuarioLogado = localStorage.getItem('usuarioEcoClass');
 
-    // Se NÃO está logado e clicou em link de uma página restrita
-    if (!usuarioLogado && !paginasLivres.includes(paginaDestino)) {
-        event.preventDefault(); // Impede o link de funcionar
-        
-        const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
-        
-        if (paginaAtual === 'index.html') {
-            // Se já está na tela inicial, apenas sobe o popup de login
-            alert("⚠️ Acesso restrito! Por favor, faça login para continuar.");
-            const loginPopup = document.getElementById('loginPopup');
-            if (loginPopup) loginPopup.style.display = 'block';
+    if (!usuarioLogado && !paginasLivres.includes(destino)) {
+        event.preventDefault();
+        alert("⚠️ Acesso restrito! Por favor, faça login.");
+
+        const loginPopup = document.getElementById('loginPopup');
+        if (loginPopup) {
+            loginPopup.style.display = 'block';
         } else {
-            // Se por algum milagre está em outra página, manda pra index
             window.location.href = 'index.html?login=necessario';
         }
     }
@@ -107,42 +113,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // Carrega o conteúdo HTML de um arquivo e o insere em um elemento
     function loadHTML(url, elementId) {
         fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erro ao carregar ${url}: ${response.statusText}`);
-                }
-                return response.text();
-            })
-            // Substitua este trecho dentro do seu loadHTML original:
+            .then(response => response.text())
             .then(html => {
-                const targetElement = document.getElementById(elementId);
-                if (targetElement) {
-                    targetElement.innerHTML = html;
+                const target = document.getElementById(elementId);
+                if (target) {
+                    target.innerHTML = html;
 
                     if (elementId === 'header-placeholder') {
-                        setupHeaderPopups();
-                        
-                        // --- NOVA LÓGICA: LÊ A URL E ABRE POPUP DE LOGIN ---
+                        setupHeaderPopups(); // Configura os eventos do cabeçalho
+
+                        // Checa se veio de um redirecionamento por falta de login
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.get('login') === 'necessario') {
                             const loginPopup = document.getElementById('loginPopup');
-                            if (loginPopup) {
-                                alert("⚠️ Acesso restrito! Por favor, faça login para continuar.");
-                                loginPopup.style.display = 'block';
-                                
-                                // Limpa a URL de forma invisível para o popup não reabrir se o usuário der F5
-                                window.history.replaceState({}, document.title, window.location.pathname);
-                            }
+                            if (loginPopup) loginPopup.style.display = 'block';
+                            // Limpa a URL para não reabrir no F5
+                            window.history.replaceState({}, document.title, window.location.pathname);
                         }
                     }
+
                     if (elementId === 'footer-placeholder') {
                         setupFooterButton();
-                        setupFooterLinks();
+                        // Remova a chamada setupFooterLinks() daqui, o interceptador acima já resolve!
                     }
                 }
-            })
-            .catch(error => console.error(`Erro ao carregar ${url}:`, error));
+            });
     }
+
 
     loadHTML('header.html', 'header-placeholder');
     loadHTML('footer.html', 'footer-placeholder');
@@ -190,6 +187,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const dadosSalvos = localStorage.getItem('usuarioEcoClass');
         const mobileMenuIcon = document.getElementById('mobileMenuIcon');
         const mainNav = document.getElementById('mainNav');
+
+        // Lógica para o menu mobile funcionar (isso fará as variáveis "acenderem" de novo)
+        if (mobileMenuIcon && mainNav) {
+            mobileMenuIcon.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+                mobileMenuIcon.classList.toggle('toggle');
+            });
+        }
 
         // --- 1. VERIFICAÇÃO DE LOGIN E RENDERIZAÇÃO DO POPUP ---
         if (dadosSalvos) {
@@ -310,18 +315,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         // Configura os links do rodapé (Apenas para o Login agora)
-        function setupFooterLinks() {
-            const footerLoginLink = document.getElementById('footerLoginLink');
-            const loginPopup = document.getElementById('loginPopup');
+        // function setupFooterLinks() {
+        //     const footerLoginLink = document.getElementById('footerLoginLink');
+        //     const loginPopup = document.getElementById('loginPopup');
 
-            if (footerLoginLink && loginPopup) {
-                footerLoginLink.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    loginPopup.style.display = 'block';
-                });
-            }
-        }
+        //     if (footerLoginLink && loginPopup) {
+        //         footerLoginLink.addEventListener('click', function (event) {
+        //             event.preventDefault();
+        //             event.stopPropagation();
+        //             loginPopup.style.display = 'block';
+        //         });
+        //     }
+        // }
     }
 
     // Função auxiliar para exibir mensagens de validação
